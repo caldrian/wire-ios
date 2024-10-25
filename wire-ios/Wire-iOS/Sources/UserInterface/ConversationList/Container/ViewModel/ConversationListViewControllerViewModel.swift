@@ -33,7 +33,7 @@ protocol ConversationListContainerViewModelDelegate: AnyObject {
 
     func conversationListViewControllerViewModel(
         _ viewModel: ConversationListViewController.ViewModel,
-        didUpdate accountImage: UIImage
+        didUpdate accountImageSource: WireAccountImageUI.AccountImageSource
     )
 
     func conversationListViewControllerViewModel(
@@ -76,8 +76,8 @@ extension ConversationListViewController {
             didSet { viewController?.conversationListViewControllerViewModel(self, didUpdate: selfUserStatus) }
         }
 
-        private(set) var accountImage = UIImage() {
-            didSet { viewController?.conversationListViewControllerViewModel(self, didUpdate: accountImage) }
+        private(set) var accountImageSource: WireAccountImageUI.AccountImageSource = .text("") {
+            didSet { viewController?.conversationListViewControllerViewModel(self, didUpdate: accountImageSource) }
         }
 
         let selfUserLegalHoldSubject: any SelfUserLegalHoldable
@@ -105,7 +105,7 @@ extension ConversationListViewController {
         let shouldPresentNotificationPermissionHintUseCase: ShouldPresentNotificationPermissionHintUseCaseProtocol
         let didPresentNotificationPermissionHintUseCase: DidPresentNotificationPermissionHintUseCaseProtocol
 
-        let getUserAccountImageUseCase: GetUserAccountImageUseCaseProtocol
+        let getUserAccountImageSourceUseCase: any GetUserAccountImageSourceUseCaseProtocol
 
         init(
             account: Account,
@@ -114,7 +114,7 @@ extension ConversationListViewController {
             isSelfUserE2EICertifiedUseCase: IsSelfUserE2EICertifiedUseCaseProtocol,
             notificationCenter: NotificationCenter = .default,
             mainCoordinator: some MainCoordinatorProtocol,
-            getUserAccountImageUseCase: any GetUserAccountImageUseCaseProtocol
+            getUserAccountImageSourceUseCase: any GetUserAccountImageSourceUseCaseProtocol
         ) {
             self.account = account
             self.selfUserLegalHoldSubject = selfUserLegalHoldSubject
@@ -125,7 +125,7 @@ extension ConversationListViewController {
             didPresentNotificationPermissionHintUseCase = DidPresentNotificationPermissionHintUseCase()
             self.notificationCenter = notificationCenter
             self.mainCoordinator = mainCoordinator
-            self.getUserAccountImageUseCase = getUserAccountImageUseCase
+            self.getUserAccountImageSourceUseCase = getUserAccountImageSourceUseCase
             super.init()
 
             updateE2EICertifiedStatus()
@@ -171,6 +171,11 @@ extension ConversationListViewController.ViewModel {
             self?.updateE2EICertifiedStatus()
         }
 
+        // This is a workaround:
+        // When logging in the account image is generated before the account's
+        // `userName` property is set. Therefore this observer listens for
+        // account changes and once the userName is not empty, the image is
+        // updated and the observation stopped.
         accountUpdatedNotificationToken = notificationCenter.addObserver(
             forName: AccountManagerDidUpdateAccountsNotificationName,
             object: nil,
@@ -178,8 +183,15 @@ extension ConversationListViewController.ViewModel {
         ) { [weak self] notification in
             // The notification is also triggered on logout, in which case accessing the account would crash.
             // Therefore only update the account if the accountManager's accounts still contains the instance we have.
-            if let self, let accountManager = notification.object as? AccountManager, accountManager.accounts.contains(account) {
+            if let self,
+               let accountManager = notification.object as? AccountManager,
+               accountManager.accounts.contains(account),
+               accountManager.selectedAccount == account,
+               !account.userName.isEmpty {
                 updateAccountImage()
+                if let accountUpdatedNotificationToken {
+                    notificationCenter.removeObserver(accountUpdatedNotificationToken)
+                }
             }
         }
 
@@ -195,10 +207,14 @@ extension ConversationListViewController.ViewModel {
     private func updateAccountImage() {
         Task { @MainActor in
             do {
-                accountImage = try await getUserAccountImageUseCase.invoke(account: account)
+                let useCase = GetUserAccountImageSourceUseCase()
+                accountImageSource = try await useCase.invoke(
+                    user: userSession.selfUser,
+                    userContext: userSession.contextProvider.viewContext,
+                    account: account
+                ).mapToAccountImageSource()
             } catch {
                 WireLogger.ui.error("Failed to get user account image: \(String(reflecting: error))")
-                accountImage = .init()
             }
         }
     }
