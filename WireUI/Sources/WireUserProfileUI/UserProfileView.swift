@@ -18,21 +18,31 @@
 
 import SwiftUI
 
-public struct UserProfileBuilder {
+public struct UserProfileBuilder<Action: UserDetailsAction> {
 
     public init() {}
 
     @MainActor @ViewBuilder
-    public func build(userDetailsModel: UserDetailsModel) -> some View {
-        UserProfileView(userDetailsModel: userDetailsModel)
+    public func build(
+        userDetailsModel: UserDetailsModel,
+        availableActions: [Action],
+        triggeredAction: @escaping (Action.ID) -> Void
+    ) -> some View {
+        UserProfileView(
+            userDetailsModel: userDetailsModel,
+            availableActions: availableActions,
+            triggeredAction: triggeredAction
+        )
     }
 }
 
-struct UserProfileView: View {
+struct UserProfileView<Action: UserDetailsAction>: View {
 
     @State private var selectedOption = 0
 
     @ObservedObject var userDetailsModel: UserDetailsModel
+    var availableActions: [Action] = []
+    var triggeredAction: (Action.ID) -> Void
 
     var body: some View {
         VStack {
@@ -56,6 +66,16 @@ struct UserProfileView: View {
                 EmptyView()
             }
             Spacer()
+
+            if !availableActions.isEmpty {
+                HStack {
+                    ForEach(availableActions, id: \.self) { action in
+                        Button(action.title) {
+                            triggeredAction(action.id)
+                        }
+                    }
+                }
+            }
         }
         .padding()
     }
@@ -94,6 +114,11 @@ public final class UserDetailsModel: ObservableObject {
         self.accountImage = accountImage
         self.accountRole = accountRole
     }
+}
+
+public protocol UserDetailsAction: Hashable, Identifiable {
+    var id: Int { get }
+    var title: String { get }
 }
 
 struct UserDevicesView: View {

@@ -26,8 +26,15 @@ struct ContentView: View {
         }
         .padding()
         .sheet(isPresented: $isUserProfilePresented) {
-            UserProfileBuilder()
-                .build(userDetailsModel: userDetailsModel)
+            let userDetailsView = UserProfileBuilder<UserProfileAction>()
+                .build(
+                    userDetailsModel: userDetailsModel,
+                    availableActions: [.createGroup],
+                    triggeredAction: { id in
+                        print("triggered action: \(id)")
+                    }
+                )
+            userDetailsView
                 .task { @MainActor in
                     try! await Task.sleep(nanoseconds: 2_000_000_000)
                     userDetailsModel.username = "efgh"
@@ -38,4 +45,22 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
+}
+
+enum UserProfileAction: Int, UserDetailsAction {
+    case createGroup
+
+    var id: Int {
+        switch self {
+        case .createGroup:
+            rawValue
+        }
+    }
+
+    var title: String {
+        switch self {
+        case .createGroup:
+            "Create Group"
+        }
+    }
 }
