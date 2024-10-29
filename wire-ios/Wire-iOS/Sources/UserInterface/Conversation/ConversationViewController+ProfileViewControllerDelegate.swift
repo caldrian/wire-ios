@@ -16,7 +16,9 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
+import SwiftUI
 import WireSyncEngine
+import WireUserProfileUI
 
 extension ConversationViewController {
 
@@ -24,6 +26,11 @@ extension ConversationViewController {
         guard let user = (conversation.firstActiveParticipantOtherThanSelf ?? conversation.connectedUser) else {
             fatal("no firstActiveParticipantOtherThanSelf!")
         }
+
+        let userDetailsProvider = UserDetailsProvider(user: user)
+        let userProfileBuilder = UserProfileBuilder(userDetailsProvider: userDetailsProvider)
+        let viewController = UIHostingController(rootView: userProfileBuilder.build())
+        return viewController
 
         return UserDetailViewControllerFactory.createUserDetailViewController(
             user: user,
@@ -42,4 +49,14 @@ extension ConversationViewController: ProfileViewControllerDelegate {
             self.mainCoordinator.openConversation(conversation, focusOnView: true, animated: true)
         }
     }
+}
+
+struct UserDetailsProvider: UserDetailsProviderProtocol {
+
+    var user: ZMUser
+
+    var displayName: String { user.name ?? "?" }
+    var username: String { user.handle ?? "?" }
+    var accountImage: UIImage { .init() }
+    var accountRole: String { "?" }
 }

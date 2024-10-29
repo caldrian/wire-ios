@@ -18,11 +18,30 @@
 
 import SwiftUI
 
-public struct UserProfileView: View {
+public struct UserProfileBuilder {
+
+    var userDetailsProvider: any UserDetailsProviderProtocol
+
+    public init(userDetailsProvider: any UserDetailsProviderProtocol) {
+        self.userDetailsProvider = userDetailsProvider
+    }
+
+    @MainActor @ViewBuilder
+    public func build() -> some View {
+
+        let userDetailsModel = UserDetailsModel()
+
+        UserProfileView(userDetailsModel: userDetailsModel)
+    }
+}
+
+struct UserProfileView: View {
 
     @State private var selectedOption = 0
 
-    public var body: some View {
+    @ObservedObject var userDetailsModel: UserDetailsModel
+
+    var body: some View {
         VStack {
             
             Picker("Options", selection: $selectedOption) {
@@ -35,8 +54,7 @@ public struct UserProfileView: View {
 
             switch selectedOption {
             case 0:
-                let model = UserDetailsModel()
-                UserDetailsView(model: model)
+                UserDetailsView(model: userDetailsModel)
                     .padding()
             case 1:
                 UserDevicesView()
@@ -71,8 +89,11 @@ final class UserDetailsModel: ObservableObject {
     @Published private(set) var accountRole = "admin"
 }
 
-public protocol UserDetailsProtocol {
-    
+public protocol UserDetailsProviderProtocol {
+    var displayName: String { get }
+    var username: String { get }
+    var accountImage: UIImage { get }
+    var accountRole: String { get }
 }
 
 struct UserDevicesView: View {
@@ -82,5 +103,6 @@ struct UserDevicesView: View {
 }
 
 #Preview {
-    UserProfileView()
+    let userDetailsModel = UserDetailsModel()
+    UserProfileView(userDetailsModel: userDetailsModel)
 }
