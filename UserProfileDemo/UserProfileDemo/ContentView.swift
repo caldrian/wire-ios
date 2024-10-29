@@ -11,7 +11,7 @@ import WireUserProfileUI
 struct ContentView: View {
 
     @State private var isUserProfilePresented = false
-    @State private var someInfo = "abc"
+    @StateObject private var userDetailsModel = UserDetailsModel()
 
     var body: some View {
         VStack {
@@ -26,28 +26,16 @@ struct ContentView: View {
         }
         .padding()
         .sheet(isPresented: $isUserProfilePresented) {
-            let provider = UserDetailsProvider()
-            VStack {
-                Text(someInfo)
-                UserProfileBuilder(userDetailsProvider: provider)
-                    .build()
-            }
-        }
-        .task { @MainActor in
-            try! await Task.sleep(nanoseconds: 5_000_000_000)
-            someInfo = "efgh"
+            UserProfileBuilder()
+                .build(userDetailsModel: userDetailsModel)
+                .task { @MainActor in
+                    try! await Task.sleep(nanoseconds: 2_000_000_000)
+                    userDetailsModel.username = "efgh"
+                }
         }
     }
 }
 
 #Preview {
     ContentView()
-}
-
-struct UserDetailsProvider: UserDetailsProviderProtocol {
-
-    var displayName: String { "name" }
-    var username: String { "username" }
-    var accountImage: UIImage { .init() }
-    var accountRole: String { "admin" }
 }

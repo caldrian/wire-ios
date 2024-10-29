@@ -20,17 +20,10 @@ import SwiftUI
 
 public struct UserProfileBuilder {
 
-    var userDetailsProvider: any UserDetailsProviderProtocol
-
-    public init(userDetailsProvider: any UserDetailsProviderProtocol) {
-        self.userDetailsProvider = userDetailsProvider
-    }
+    public init() {}
 
     @MainActor @ViewBuilder
-    public func build() -> some View {
-
-        let userDetailsModel = UserDetailsModel()
-
+    public func build(userDetailsModel: UserDetailsModel) -> some View {
         UserProfileView(userDetailsModel: userDetailsModel)
     }
 }
@@ -70,7 +63,7 @@ struct UserProfileView: View {
 
 struct UserDetailsView: View {
 
-    var model: UserDetailsModel
+    @ObservedObject var model: UserDetailsModel
 
     var body: some View {
         VStack {
@@ -81,19 +74,26 @@ struct UserDetailsView: View {
     }
 }
 
-final class UserDetailsModel: ObservableObject {
+public final class UserDetailsModel: ObservableObject {
 
-    @Published private(set) var displayName = "John Doe"
-    @Published private(set) var username = "@john_doe"
-    @Published private(set) var accountImage = UIImage(systemName: "gearshape")
-    @Published private(set) var accountRole = "admin"
-}
+    @Published /*private(set)*/ public var displayName = "John Doe"
+    @Published /*private(set)*/ public var username = "@john_doe"
+    @Published /*private(set)*/ public var accountImage = UIImage(systemName: "gearshape")
+    @Published /*private(set)*/ public var accountRole = "admin"
 
-public protocol UserDetailsProviderProtocol {
-    var displayName: String { get }
-    var username: String { get }
-    var accountImage: UIImage { get }
-    var accountRole: String { get }
+    public init() {}
+
+    public init(
+        displayName: String,
+        username: String,
+        accountImage: UIImage?,
+        accountRole: String
+    ) {
+        self.displayName = displayName
+        self.username = username
+        self.accountImage = accountImage
+        self.accountRole = accountRole
+    }
 }
 
 struct UserDevicesView: View {
@@ -102,7 +102,7 @@ struct UserDevicesView: View {
     }
 }
 
-#Preview {
-    let userDetailsModel = UserDetailsModel()
-    UserProfileView(userDetailsModel: userDetailsModel)
-}
+//#Preview {
+//    let userDetailsModel = UserDetailsModel()
+//    UserProfileView(userDetailsModel: userDetailsModel)
+//}
