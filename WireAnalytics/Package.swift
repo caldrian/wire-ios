@@ -33,7 +33,7 @@ let package = Package(
                 .product(name: "DatadogTrace", package: "dd-sdk-ios")
             ],
             linkerSettings: [
-                .linkedLibrary("c++")
+                .unsafeFlags(["-fprofile-instr-generate"], .when(configuration: .debug))
             ]
         ),
         .target(
