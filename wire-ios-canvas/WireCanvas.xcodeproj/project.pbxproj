@@ -230,10 +230,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 16CB8A371DBA73B900B5BC47 /* WireCanvas.xcconfig */;
 			buildSettings = {
-				"ARCHS[sdk=iphonesimulator*]" = (
-					x86_64,
-					arm64,
-				);
 				INFOPLIST_FILE = Sources/Info.plist;
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wire.Canvas;
@@ -245,10 +241,6 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = 16CB8A371DBA73B900B5BC47 /* WireCanvas.xcconfig */;
 			buildSettings = {
-				"ARCHS[sdk=iphonesimulator*]" = (
-					x86_64,
-					arm64,
-				);
 				INFOPLIST_FILE = Sources/Info.plist;
 				PRODUCT_BUNDLE_IDENTIFIER = com.wire.Canvas;
 				SKIP_INSTALL = YES;

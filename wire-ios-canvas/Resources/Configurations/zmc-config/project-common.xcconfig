@@ -22,8 +22,6 @@
 // Architectures
 //
 SDKROOT = iphoneos
-ARCHS[sdk=iphoneos*] = arm64
-ARCHS[sdk=iphonesimulator*] = x86_64
 SUPPORTED_PLATFORMS = iphoneos iphonesimulator
 
 // Code Signing
