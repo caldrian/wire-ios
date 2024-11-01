@@ -31,6 +31,9 @@ let package = Package(
                 .product(name: "DatadogLogs", package: "dd-sdk-ios"),
                 .product(name: "DatadogRUM", package: "dd-sdk-ios"),
                 .product(name: "DatadogTrace", package: "dd-sdk-ios")
+            ],
+            linkerSettings: [
+                .linkedLibrary("c++")
             ]
         ),
         .target(
@@ -61,12 +64,8 @@ for target in package.targets {
 if isDataDogEnabled() {
     let wireAnalyticsIndex = package.targets.firstIndex { $0.name == "WireAnalytics" }!
     package.targets[wireAnalyticsIndex].dependencies += ["WireDatadog"]
-    package.targets[wireAnalyticsIndex].linkerSettings = (package.targets[wireAnalyticsIndex].linkerSettings ?? []) + [
-        .linkedLibrary("c++")
-    ]
 }
 
 private func isDataDogEnabled() -> Bool {
-    true
-    // ProcessInfo.processInfo.environment["ENABLE_DATADOG"] == "true"
+    ProcessInfo.processInfo.environment["ENABLE_DATADOG"] == "true"
 }
