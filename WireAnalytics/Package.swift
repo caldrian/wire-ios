@@ -19,10 +19,9 @@ let package = Package(
     targets: [
         .target(
             name: "WireAnalytics",
-            dependencies: resolveWireAnalyticsDependencies() + [
+            dependencies: [
                 .product(name: "Countly", package: "countly-sdk-ios")
-            ],
-            swiftSettings: swiftSettings
+            ]
         ),
         .target(
             name: "WireDatadog",
@@ -32,8 +31,7 @@ let package = Package(
                 .product(name: "DatadogLogs", package: "dd-sdk-ios"),
                 .product(name: "DatadogRUM", package: "dd-sdk-ios"),
                 .product(name: "DatadogTrace", package: "dd-sdk-ios")
-            ],
-            swiftSettings: swiftSettings
+            ]
         ),
         .target(
             name: "WireAnalyticsSupport",
@@ -52,25 +50,23 @@ let package = Package(
     ]
 )
 
-func resolveWireAnalyticsDependencies() -> [Target.Dependency] {
-    // You can enable/disable Datadog for debugging by overriding the boolean.
-    if hasEnvironmentVariable("ENABLE_DATADOG", "true") {
-        ["WireDatadog"]
-    } else {
-        []
-    }
+for target in package.targets {
+    target.swiftSettings = (target.swiftSettings ?? []) + [
+        .enableUpcomingFeature("ExistentialAny"),
+        .enableUpcomingFeature("GlobalConcurrency"),
+        .enableExperimentalFeature("StrictConcurrency")
+    ]
 }
 
-func hasEnvironmentVariable(_ name: String, _ value: String? = nil) -> Bool {
-    if let value {
-        ProcessInfo.processInfo.environment[name] == value
-    } else {
-        ProcessInfo.processInfo.environment[name] != nil
-    }
+if isDataDogEnabled() {
+    let wireAnalyticsIndex = package.targets.firstIndex { $0.name == "WireAnalytics" }!
+    package.targets[wireAnalyticsIndex].dependencies += ["WireDatadog"]
+    package.targets[wireAnalyticsIndex].linkerSettings = (package.targets[wireAnalyticsIndex].linkerSettings ?? []) + [
+        .linkedLibrary("c++")
+    ]
 }
 
-let swiftSettings: [SwiftSetting] = [
-    .enableUpcomingFeature("ExistentialAny"),
-    .enableUpcomingFeature("GlobalConcurrency"),
-    .enableExperimentalFeature("StrictConcurrency")
-]
+private func isDataDogEnabled() -> Bool {
+    true
+    // ProcessInfo.processInfo.environment["ENABLE_DATADOG"] == "true"
+}
