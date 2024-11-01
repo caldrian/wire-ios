@@ -31,9 +31,6 @@ let package = Package(
                 .product(name: "DatadogLogs", package: "dd-sdk-ios"),
                 .product(name: "DatadogRUM", package: "dd-sdk-ios"),
                 .product(name: "DatadogTrace", package: "dd-sdk-ios")
-            ],
-            linkerSettings: [
-                .unsafeFlags(["-fprofile-instr-generate"], .when(configuration: .debug))
             ]
         ),
         .target(
