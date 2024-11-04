@@ -411,17 +411,17 @@ public final class MainCoordinator<Dependencies>: NSObject, MainCoordinatorProto
 
     public var isConversationListVisible: Bool {
         if mainSplitViewState == .expanded {
-            splitViewController.conversationListUI == nil
+            splitViewController.conversationListUI == nil // TODO: fix condition
         } else {
-            tabBarController.conversationListUI == nil
+            tabBarController.conversationListUI != nil && tabBarController.conversationUI == nil && splitViewController.presentedViewController == nil
         }
     }
 
     public var isConversationVisible: Bool {
         if mainSplitViewState == .expanded {
-            splitViewController.conversationUI == nil
+            splitViewController.conversationUI == nil // TODO: fix condition
         } else {
-            tabBarController.conversationUI == nil
+            tabBarController.conversationUI != nil // TODO: fix condition
         }
     }
 }
