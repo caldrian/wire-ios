@@ -421,7 +421,7 @@ public final class MainCoordinator<Dependencies>: NSObject, MainCoordinatorProto
         if mainSplitViewState == .expanded {
             splitViewController.conversationUI == nil // TODO: fix condition
         } else {
-            tabBarController.conversationUI != nil // TODO: fix condition
+            tabBarController.conversationUI != nil && splitViewController.presentedViewController == nil
         }
     }
 }
