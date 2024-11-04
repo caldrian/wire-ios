@@ -16,6 +16,8 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
+TODO: make pr which takes "func popViewController(animated: Bool, completion: (() -> Void)?) -> UIViewController?" into main navigation
+
 import SwiftUI
 
 // TODO: [WPB-11448] Bug: The call screen doesn't rotate to landscape
@@ -217,7 +219,7 @@ public final class MainTabBarController<
         settingsNavigationController.view.layoutIfNeeded()
     }
 
-    public func setConversationUI(_ conversationUI: ConversationUI?, animated: Bool) {
+    public func setConversationUI(_ conversationUI: ConversationUI?, animated: Bool) async {
         _conversationUI = conversationUI
 
         if conversationListUI == nil, conversationUI != nil {
@@ -225,11 +227,11 @@ public final class MainTabBarController<
         }
 
         let viewControllers = [conversationListUI, conversationUI].compactMap { $0 }
-        conversationListNavigationController.setViewControllers(viewControllers, animated: animated)
+        conversationListNavigationController.setViewControllers(viewControllers, animated: animated) // TODO: make async
         conversationListNavigationController.view.layoutIfNeeded()
     }
 
-    public func setSettingsContentUI(_ settingsContentUI: UIViewController?, animated: Bool) {
+    public func setSettingsContentUI(_ settingsContentUI: UIViewController?, animated: Bool) async {
         _settingsContentUI = settingsContentUI
 
         if settingsUI == nil, settingsContentUI != nil {
@@ -237,7 +239,7 @@ public final class MainTabBarController<
         }
 
         let viewControllers = [settingsUI, settingsContentUI].compactMap { $0 }
-        settingsNavigationController.setViewControllers(viewControllers, animated: animated)
+        settingsNavigationController.setViewControllers(viewControllers, animated: animated) // TODO: make async
         settingsNavigationController.view.layoutIfNeeded()
     }
 }
