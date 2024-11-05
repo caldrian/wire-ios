@@ -103,13 +103,12 @@ public final class MainCoordinator<Dependencies>: NSObject, MainCoordinatorProto
 
         // switch to the conversation list tab
         tabBarController.selectedContent = .conversations
-        await Task.yield() // without this line subsequent navigation controller push animations don't work // TODO: still true?
+        await Task.yield() // without this line subsequent navigation controller push animations don't work
 
         switch mainSplitViewState {
-
         case .collapsed:
             // if `showConversationList` is called while in collapsed mode, pop the conversation view controller
-            await tabBarController.setConversationUI(nil, animated: true)
+            tabBarController.setConversationUI(nil, animated: true)
 
         case .expanded:
             dismissArchiveIfNeeded()
@@ -146,7 +145,7 @@ public final class MainCoordinator<Dependencies>: NSObject, MainCoordinatorProto
 
         if mainSplitViewState == .collapsed, tabBarController.conversationUI != nil {
             // if the method is called while in collapsed mode, pop the conversation view controller
-            await tabBarController.setConversationUI(nil, animated: false)
+            tabBarController.setConversationUI(nil, animated: false)
         } else if splitViewController.conversationUI == nil {
             // display either the conversation or the placeholder in the secondary column
             splitViewController.conversationUI = tabBarController.conversationUI
@@ -194,29 +193,31 @@ public final class MainCoordinator<Dependencies>: NSObject, MainCoordinatorProto
     public func showConversation(
         conversation: ConversationModel,
         message: ConversationMessageModel?
-    ) async {
-        if mainSplitViewState == .expanded, splitViewController.splitBehavior == .overlay {
-            splitViewController.hideSidebar()
-        }
+    ) {
+        Task { @MainActor in
+            if mainSplitViewState == .expanded, splitViewController.splitBehavior == .overlay {
+                splitViewController.hideSidebar()
+            }
 
-        await dismissPresentedViewController()
+            await dismissPresentedViewController()
 
-        let conversationUI = conversationUIBuilder.build(
-            conversation: conversation,
-            message: nil,
-            mainCoordinator: self
-        )
-        if mainSplitViewState == .collapsed {
-            tabBarController.selectedContent = .conversations
-            await Task.yield() // without this line subsequent navigation controller push animations don't work // TODO: still true?
-            await tabBarController.setConversationUI(conversationUI, animated: true)
-        } else {
-            splitViewController.conversationUI = conversationUI
+            let conversationUI = conversationUIBuilder.build(
+                conversation: conversation,
+                message: nil,
+                mainCoordinator: self
+            )
+            if mainSplitViewState == .collapsed {
+                tabBarController.selectedContent = .conversations
+                await Task.yield() // without this line subsequent navigation controller push animations don't work
+                tabBarController.setConversationUI(conversationUI, animated: true)
+            } else {
+                splitViewController.conversationUI = conversationUI
+            }
         }
     }
 
-    public func hideConversation() async {
-        await tabBarController.setConversationUI(nil, animated: true)
+    public func hideConversation() {
+        tabBarController.setConversationUI(nil, animated: true)
         splitViewController.conversationUI = nil
     }
 
@@ -233,16 +234,14 @@ public final class MainCoordinator<Dependencies>: NSObject, MainCoordinatorProto
         let contentViewController = settingsContentUIBuilder.build(topLevelMenuItem: topLevelMenuItem, mainCoordinator: self)
         switch mainSplitViewState {
         case .collapsed:
-            Task {
-                await tabBarController.setSettingsContentUI(contentViewController, animated: true) // TODO: [WPB-11347] make the selection visible
-            }
+            tabBarController.setSettingsContentUI(contentViewController, animated: true) // TODO: [WPB-11347] make the selection visible
         case .expanded:
             splitViewController.settingsContentUI = contentViewController
         }
     }
 
-    public func hideSettingsContent() async {
-        await tabBarController.setSettingsContentUI(nil, animated: true)
+    public func hideSettingsContent() {
+        tabBarController.setSettingsContentUI(nil, animated: true)
         splitViewController.settingsContentUI = nil
     }
 
@@ -408,19 +407,29 @@ public final class MainCoordinator<Dependencies>: NSObject, MainCoordinatorProto
 
     // MARK: - Legacy Helpers
 
+    /// A notification should be shown if the conversation list is the topmost view controller.
     public var isConversationListVisible: Bool {
-        if mainSplitViewState == .expanded {
-            splitViewController.conversationListUI == nil // TODO: fix condition
-        } else {
-            tabBarController.conversationListUI != nil && tabBarController.conversationUI == nil && splitViewController.presentedViewController == nil
+        guard splitViewController.presentedViewController == nil else { return false }
+
+        return switch mainSplitViewState {
+        case .collapsed:
+            tabBarController.conversationListUI != nil &&
+            tabBarController.conversationUI == nil
+        case .expanded:
+            splitViewController.conversationListUI != nil
         }
     }
 
+    /// A notification should not be shown if the conversation screen is the topmost view
+    /// controller and the visible conversation matches the one of the notification.
     public var isConversationVisible: Bool {
-        if mainSplitViewState == .expanded {
-            splitViewController.conversationUI == nil // TODO: fix condition
-        } else {
-            tabBarController.conversationUI != nil && splitViewController.presentedViewController == nil
+        guard splitViewController.presentedViewController == nil else { return false }
+
+        return switch mainSplitViewState {
+        case .collapsed:
+            tabBarController.conversationUI != nil
+        case .expanded:
+            splitViewController.conversationUI != nil
         }
     }
 }
