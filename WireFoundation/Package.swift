@@ -13,7 +13,7 @@ let package = Package(
         .library(name: "WireTestingPackage", targets: ["WireTestingPackage"])
     ],
     dependencies: [
-        .package(url: "https://github.com/Matejkob/swift-spyable", from: "0.6.1"),
+        .package(url: "https://github.com/caldrian/swift-spyable", branch: "public-spies"),
         .package(url: "https://github.com/swiftlang/swift-docc-plugin", from: "1.1.0"),
         .package(url: "https://github.com/pointfreeco/swift-snapshot-testing", from: "1.17.4"),
         .package(path: "../WirePlugins")

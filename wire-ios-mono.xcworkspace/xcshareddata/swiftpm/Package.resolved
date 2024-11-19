@@ -174,11 +174,11 @@
       },
       {
         "package": "swift-spyable",
-        "repositoryURL": "https://github.com/Matejkob/swift-spyable",
+        "repositoryURL": "https://github.com/caldrian/swift-spyable",
         "state": {
-          "branch": null,
-          "revision": "9401500d02be4ddfe488480c177f0a89fcc8a9b8",
-          "version": "0.6.1"
+          "branch": "public-spies",
+          "revision": "55b87f3a7589884b2b85cfa335a70a4394749ceb",
+          "version": null
         }
       },
       {

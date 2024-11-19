@@ -16,12 +16,12 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
+import Spyable
 import UIKit
 
 // sourcery: AutoMockable
 /// A protocol which allows for abstracting `UIDevice`.
-// @Spyable
-@MainActor
+@MainActor @Spyable(behindPreprocessorFlag: "DEBUG")
 public protocol DeviceAbstraction {
     var userInterfaceIdiom: UIUserInterfaceIdiom { get }
     var orientation: UIDeviceOrientation { get }
