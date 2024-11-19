@@ -19,6 +19,7 @@
 import Foundation
 
 // sourcery: AutoMockable
+// @Spyable
 public protocol ProteusMessage: OTREntity {
 
     /// Messages can expire, e.g. if network conditions are too slow to send.

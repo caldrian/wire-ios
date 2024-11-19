@@ -21,6 +21,7 @@ import LocalAuthentication
 
 // sourcery: AutoMockable
 /// An abstraction around authentication via `LAContext`.
+// @Spyable
 public protocol AuthenticationContextProtocol {
     var laContext: LAContext { get }
     var evaluatedPolicyDomainState: Data? { get }

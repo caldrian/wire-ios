@@ -20,6 +20,7 @@ import Foundation
 import WireCoreCrypto
 
 // sourcery: AutoMockable
+// @Spyable
 public protocol GetIsE2EIdentityEnabledUseCaseProtocol {
     func invoke() async throws -> Bool
 }

@@ -19,6 +19,7 @@
 import Foundation
 
 // sourcery: AutoMockable
+// @Spyable
 public protocol SyncProgress: AnyObject {
 
     var currentSyncPhase: SyncPhase { get }
