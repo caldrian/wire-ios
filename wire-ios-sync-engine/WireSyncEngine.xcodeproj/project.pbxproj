@@ -282,6 +282,7 @@
 		591B6E132C8B092B009F8A7B /* WireDataModelSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 59D1C30F2B1DEE6E0016F6B2 /* WireDataModelSupport.framework */; };
 		59271BE82B908DAC0019B726 /* SecurityClassificationProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59271BE72B908DAC0019B726 /* SecurityClassificationProviding.swift */; };
 		59271BEA2B908E150019B726 /* SecurityClassification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 59271BE92B908E150019B726 /* SecurityClassification.swift */; };
+		5939D2062CECC938000F6FAD /* Spyable in Frameworks */ = {isa = PBXBuildFile; productRef = 5939D2052CECC938000F6FAD /* Spyable */; };
 		597B70C32B03984C006C2121 /* ZMUserSession+DeveloperMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 597B70C22B03984C006C2121 /* ZMUserSession+DeveloperMenu.swift */; };
 		598D04362C89C6FB00B64D71 /* WireFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 598D04352C89C6FB00B64D71 /* WireFoundation */; };
 		598D04392C89C70500B64D71 /* WireFoundation in Frameworks */ = {isa = PBXBuildFile; productRef = 598D04382C89C70500B64D71 /* WireFoundation */; };
@@ -1428,6 +1429,7 @@
 				E9816C8E2CC9231500D77F22 /* WireAPI in Frameworks */,
 				E9C60E922C259F3C004E5F13 /* WireAnalytics in Frameworks */,
 				EE668BB62954AA7F00D939E7 /* WireRequestStrategy.framework in Frameworks */,
+				5939D2062CECC938000F6FAD /* Spyable in Frameworks */,
 				015519462C20D20800037358 /* WireDomain.framework in Frameworks */,
 				59B99FAE2C89DF7B00201827 /* WireDomainPackage in Frameworks */,
 				598D04362C89C6FB00B64D71 /* WireFoundation in Frameworks */,
@@ -2898,6 +2900,7 @@
 				598D04352C89C6FB00B64D71 /* WireFoundation */,
 				59B99FAD2C89DF7B00201827 /* WireDomainPackage */,
 				E9C60E912C259F3C004E5F13 /* WireAnalytics */,
+				5939D2052CECC938000F6FAD /* Spyable */,
 			);
 			productName = "WireSyncEngine-ios";
 			productReference = 549815931A43232400A7CE2E /* WireSyncEngine.framework */;
@@ -2971,6 +2974,7 @@
 			);
 			mainGroup = 540029AA1918CA8500578793;
 			packageReferences = (
+				5939D2042CECC938000F6FAD /* XCRemoteSwiftPackageReference "swift-spyable" */,
 			);
 			productRefGroup = 540029B51918CA8500578793 /* Products */;
 			projectDirPath = "";
@@ -4116,10 +4120,26 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		5939D2042CECC938000F6FAD /* XCRemoteSwiftPackageReference "swift-spyable" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Matejkob/swift-spyable";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.6.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		01A532502CCA218A005FD421 /* WireAnalyticsSupport */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WireAnalyticsSupport;
+		};
+		5939D2052CECC938000F6FAD /* Spyable */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5939D2042CECC938000F6FAD /* XCRemoteSwiftPackageReference "swift-spyable" */;
+			productName = Spyable;
 		};
 		598D04352C89C6FB00B64D71 /* WireFoundation */ = {
 			isa = XCSwiftPackageProductDependency;

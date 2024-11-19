@@ -173,6 +173,15 @@
         }
       },
       {
+        "package": "swift-spyable",
+        "repositoryURL": "https://github.com/Matejkob/swift-spyable",
+        "state": {
+          "branch": null,
+          "revision": "9401500d02be4ddfe488480c177f0a89fcc8a9b8",
+          "version": "0.6.1"
+        }
+      },
+      {
         "package": "swift-syntax",
         "repositoryURL": "https://github.com/swiftlang/swift-syntax",
         "state": {

@@ -285,6 +285,7 @@
 		591F8A022B8CB4DE00D562A6 /* IsSelfUserE2EICertifiedUseCaseProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591F8A012B8CB4DE00D562A6 /* IsSelfUserE2EICertifiedUseCaseProtocol.swift */; };
 		591F8A042B8CB4EF00D562A6 /* IsSelfUserE2EICertifiedUseCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591F8A032B8CB4EF00D562A6 /* IsSelfUserE2EICertifiedUseCase.swift */; };
 		591F8A072B8CB82400D562A6 /* IsSelfUserE2EICertifiedUseCaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 591F8A052B8CB81400D562A6 /* IsSelfUserE2EICertifiedUseCaseTests.swift */; };
+		5939D20C2CECC96F000F6FAD /* Spyable in Frameworks */ = {isa = PBXBuildFile; productRef = 5939D20B2CECC96F000F6FAD /* Spyable */; };
 		5952B89B2BA3179100C48B01 /* MLSClientID+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5952B89A2BA3179100C48B01 /* MLSClientID+random.swift */; };
 		5952B89D2BA3189F00C48B01 /* MLSConferenceInfo+random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5952B89C2BA3189F00C48B01 /* MLSConferenceInfo+random.swift */; };
 		5966D82E2BD6A33F00305BBC /* UserPropertyValidating.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5966D82D2BD6A33F00305BBC /* UserPropertyValidating.swift */; };
@@ -1873,6 +1874,7 @@
 				EE8DA9672954A02B00F58B79 /* WireCryptobox.framework in Frameworks */,
 				591B6E4C2C8B09C6009F8A7B /* CoreData.framework in Frameworks */,
 				EE8DA96D2954A03800F58B79 /* WireLinkPreview.framework in Frameworks */,
+				5939D20C2CECC96F000F6FAD /* Spyable in Frameworks */,
 				E6707E902BBD683F00469D57 /* PINCache in Frameworks */,
 				EE8DA9632954A02400F58B79 /* WireProtos.framework in Frameworks */,
 				59B48C5C2C89CBBD00EA7999 /* WireFoundation in Frameworks */,
@@ -3505,7 +3507,6 @@
 				F9C9A4FD1CAD5DF10039E10C /* Products */,
 				F9C9A6701CAD779E0039E10C /* Frameworks */,
 				63709F622993E70A00577D4B /* Packages */,
-				012F3CFE2CD0505D00A9EACB /* Recovered References */,
 			);
 			indentWidth = 4;
 			sourceTree = "<group>";
@@ -3828,6 +3829,7 @@
 			packageProductDependencies = (
 				E6707E8F2BBD683F00469D57 /* PINCache */,
 				59B48C5B2C89CBBD00EA7999 /* WireFoundation */,
+				5939D20B2CECC96F000F6FAD /* Spyable */,
 			);
 			productName = WireDataModel;
 			productReference = F9C9A4FC1CAD5DF10039E10C /* WireDataModel.framework */;
@@ -3914,6 +3916,7 @@
 			mainGroup = F9C9A4F21CAD5DF10039E10C;
 			packageReferences = (
 				E6707E8E2BBD683F00469D57 /* XCRemoteSwiftPackageReference "PINCache" */,
+				5939D20A2CECC96F000F6FAD /* XCRemoteSwiftPackageReference "swift-spyable" */,
 			);
 			productRefGroup = F9C9A4FD1CAD5DF10039E10C /* Products */;
 			projectDirPath = "";
@@ -5179,6 +5182,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		5939D20A2CECC96F000F6FAD /* XCRemoteSwiftPackageReference "swift-spyable" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Matejkob/swift-spyable";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.6.1;
+			};
+		};
 		E6707E8E2BBD683F00469D57 /* XCRemoteSwiftPackageReference "PINCache" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/pinterest/PINCache";
@@ -5190,6 +5201,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		5939D20B2CECC96F000F6FAD /* Spyable */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5939D20A2CECC96F000F6FAD /* XCRemoteSwiftPackageReference "swift-spyable" */;
+			productName = Spyable;
+		};
 		59B48C5B2C89CBBD00EA7999 /* WireFoundation */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = WireFoundation;
