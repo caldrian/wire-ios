@@ -16,8 +16,8 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Spyable
-import UIKit
+public import Spyable
+public import UIKit
 
 // sourcery: AutoMockable
 /// A protocol which allows for abstracting `UIDevice`.
