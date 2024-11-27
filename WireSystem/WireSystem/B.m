@@ -16,12 +16,8 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-#import <Foundation/Foundation.h>
+#import "B.h"
 
-//! Project version number for WireSystem.
-FOUNDATION_EXPORT double WireSystemVersionNumber;
+@implementation B
 
-//! Project version string for WireSystem.
-FOUNDATION_EXPORT const unsigned char WireSystemVersionString[];
-
-// In this header, you should import all the public headers of your framework using statements like #import <WireSystem/PublicHeader.h>
+@end

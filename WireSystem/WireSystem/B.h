@@ -18,10 +18,10 @@
 
 #import <Foundation/Foundation.h>
 
-//! Project version number for WireSystem.
-FOUNDATION_EXPORT double WireSystemVersionNumber;
+NS_ASSUME_NONNULL_BEGIN
 
-//! Project version string for WireSystem.
-FOUNDATION_EXPORT const unsigned char WireSystemVersionString[];
+@interface B : NSObject
 
-// In this header, you should import all the public headers of your framework using statements like #import <WireSystem/PublicHeader.h>
+@end
+
+NS_ASSUME_NONNULL_END
