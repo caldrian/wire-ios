@@ -1174,7 +1174,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		594AFD0A2CF7B45700478C64 /* Exceptions for "WireSystem" folder in "WireSystem" target */ = {
+		594AFD0A2CF7B45700478C64 /* Exceptions for "Sources" folder in "WireSystem" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
 				WireSystem.h,
@@ -1184,22 +1184,22 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		594A049B2CF7B7B700478C64 /* WireSystemSupport */ = {
+		594A049B2CF7B7B700478C64 /* Support */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = WireSystemSupport;
+			path = Support;
 			sourceTree = "<group>";
 		};
-		594AFCFA2CF7B45700478C64 /* WireSystem */ = {
+		594AFCFA2CF7B45700478C64 /* Sources */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				594AFD0A2CF7B45700478C64 /* Exceptions for "WireSystem" folder in "WireSystem" target */,
+				594AFD0A2CF7B45700478C64 /* Exceptions for "Sources" folder in "WireSystem" target */,
 			);
-			path = WireSystem;
+			path = Sources;
 			sourceTree = "<group>";
 		};
-		594AFD062CF7B45700478C64 /* WireSystemTests */ = {
+		594AFD062CF7B45700478C64 /* Tests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			path = WireSystemTests;
+			path = Tests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -3499,9 +3499,9 @@
 		594AFCEE2CF7B45700478C64 = {
 			isa = PBXGroup;
 			children = (
-				594AFCFA2CF7B45700478C64 /* WireSystem */,
-				594AFD062CF7B45700478C64 /* WireSystemTests */,
-				594A049B2CF7B7B700478C64 /* WireSystemSupport */,
+				594AFCFA2CF7B45700478C64 /* Sources */,
+				594AFD062CF7B45700478C64 /* Tests */,
+				594A049B2CF7B7B700478C64 /* Support */,
 				594AFE522CF7B5E000478C64 /* Frameworks */,
 				594AFCF92CF7B45700478C64 /* Products */,
 			);
@@ -4668,7 +4668,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				594A049B2CF7B7B700478C64 /* WireSystemSupport */,
+				594A049B2CF7B7B700478C64 /* Support */,
 			);
 			name = WireSystemSupport;
 			packageProductDependencies = (
@@ -4691,7 +4691,7 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				594AFCFA2CF7B45700478C64 /* WireSystem */,
+				594AFCFA2CF7B45700478C64 /* Sources */,
 			);
 			name = WireSystem;
 			packageProductDependencies = (
@@ -4716,7 +4716,7 @@
 				594AFD052CF7B45700478C64 /* PBXTargetDependency */,
 			);
 			fileSystemSynchronizedGroups = (
-				594AFD062CF7B45700478C64 /* WireSystemTests */,
+				594AFD062CF7B45700478C64 /* Tests */,
 			);
 			name = WireSystemTests;
 			packageProductDependencies = (
@@ -5198,7 +5198,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.wire.WireSystemTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "WireSystemTests/WireSystemTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/WireSystemTests-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -5216,7 +5216,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.wire.WireSystemTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OBJC_BRIDGING_HEADER = "WireSystemTests/WireSystemTests-Bridging-Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "Tests/WireSystemTests-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
