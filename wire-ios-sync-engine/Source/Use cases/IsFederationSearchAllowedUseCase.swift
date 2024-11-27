@@ -37,6 +37,10 @@ public struct IsFederationSearchAllowedUseCase: IsFederationSearchAllowedUseCase
         }
 
     public func invoke(conversationProtocol: MessageProtocol?) -> Bool {
+        guard BackendInfo.isMLSEnabled else {
+            // If there is no MLS removal key configured,federation search is allowed.
+            return true
+        }
         guard let conversationProtocol else {
             return defaultProtocol != .proteus
         }
