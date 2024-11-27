@@ -23,6 +23,18 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		594A04982CF7B7B700478C64 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
 		594A00002CF7B5E000478C64 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		594A00012CF7B5E000478C64 /* package.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = package.json; sourceTree = "<group>"; };
@@ -829,6 +841,7 @@
 		594A03DB2CF7B5E000478C64 /* ZipArchive */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = ZipArchive; sourceTree = "<group>"; };
 		594A03DD2CF7B5E000478C64 /* carthage-0.40.0 */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.executable"; path = "carthage-0.40.0"; sourceTree = "<group>"; };
 		594A03EF2CF7B5E100478C64 /* TestObjects.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = TestObjects.xcdatamodel; sourceTree = "<group>"; };
+		594A049A2CF7B7B700478C64 /* libWireSystemSupport.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libWireSystemSupport.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		594AFCF82CF7B45700478C64 /* WireSystem.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = WireSystem.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		594AFD022CF7B45700478C64 /* WireSystemTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = WireSystemTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		594AFE532CF7B5E000478C64 /* .core-crypto.version */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".core-crypto.version"; sourceTree = "<group>"; };
@@ -1171,6 +1184,11 @@
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
+		594A049B2CF7B7B700478C64 /* WireSystemSupport */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = WireSystemSupport;
+			sourceTree = "<group>";
+		};
 		594AFCFA2CF7B45700478C64 /* WireSystem */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
@@ -1187,6 +1205,13 @@
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		594A04972CF7B7B700478C64 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		594AFCF52CF7B45700478C64 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -3476,6 +3501,7 @@
 			children = (
 				594AFCFA2CF7B45700478C64 /* WireSystem */,
 				594AFD062CF7B45700478C64 /* WireSystemTests */,
+				594A049B2CF7B7B700478C64 /* WireSystemSupport */,
 				594AFE522CF7B5E000478C64 /* Frameworks */,
 				594AFCF92CF7B45700478C64 /* Products */,
 			);
@@ -3486,6 +3512,7 @@
 			children = (
 				594AFCF82CF7B45700478C64 /* WireSystem.framework */,
 				594AFD022CF7B45700478C64 /* WireSystemTests.xctest */,
+				594A049A2CF7B7B700478C64 /* libWireSystemSupport.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -4628,6 +4655,28 @@
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
+		594A04992CF7B7B700478C64 /* WireSystemSupport */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 594A049E2CF7B7B700478C64 /* Build configuration list for PBXNativeTarget "WireSystemSupport" */;
+			buildPhases = (
+				594A04962CF7B7B700478C64 /* Sources */,
+				594A04972CF7B7B700478C64 /* Frameworks */,
+				594A04982CF7B7B700478C64 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				594A049B2CF7B7B700478C64 /* WireSystemSupport */,
+			);
+			name = WireSystemSupport;
+			packageProductDependencies = (
+			);
+			productName = WireSystemSupport;
+			productReference = 594A049A2CF7B7B700478C64 /* libWireSystemSupport.a */;
+			productType = "com.apple.product-type.library.static";
+		};
 		594AFCF72CF7B45700478C64 /* WireSystem */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 594AFD0B2CF7B45700478C64 /* Build configuration list for PBXNativeTarget "WireSystem" */;
@@ -4686,6 +4735,9 @@
 				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
+					594A04992CF7B7B700478C64 = {
+						CreatedOnToolsVersion = 16.1;
+					};
 					594AFCF72CF7B45700478C64 = {
 						CreatedOnToolsVersion = 16.1;
 						LastSwiftMigration = 1610;
@@ -4749,6 +4801,7 @@
 			targets = (
 				594AFCF72CF7B45700478C64 /* WireSystem */,
 				594AFD012CF7B45700478C64 /* WireSystemTests */,
+				594A04992CF7B7B700478C64 /* WireSystemSupport */,
 			);
 		};
 /* End PBXProject section */
@@ -4771,6 +4824,13 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		594A04962CF7B7B700478C64 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		594AFCF42CF7B45700478C64 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -4911,6 +4971,30 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		594A049F2CF7B7B700478C64 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		594A04A02CF7B7B700478C64 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		594AFD0C2CF7B45700478C64 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -5141,6 +5225,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		594A049E2CF7B7B700478C64 /* Build configuration list for PBXNativeTarget "WireSystemSupport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				594A049F2CF7B7B700478C64 /* Debug */,
+				594A04A02CF7B7B700478C64 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		594AFCF22CF7B45700478C64 /* Build configuration list for PBXProject "WireSystem" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
