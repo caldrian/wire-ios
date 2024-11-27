@@ -1178,6 +1178,9 @@
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			publicHeaders = (
 				WireSystem.h,
+				ZMSAsserts.h,
+				ZMSDefines.h,
+				ZMSLogging.h,
 			);
 			target = 594AFCF72CF7B45700478C64 /* WireSystem */;
 		};

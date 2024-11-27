@@ -18,10 +18,14 @@
 
 #import <Foundation/Foundation.h>
 
-//! Project version number for WireSystem.
-FOUNDATION_EXPORT double WireSystemVersionNumber;
+//! Project version number for ZMSystem.
+FOUNDATION_EXPORT double ZMSystemVersionNumber;
 
-//! Project version string for WireSystem.
-FOUNDATION_EXPORT const unsigned char WireSystemVersionString[];
+//! Project version string for ZMSystem.
+FOUNDATION_EXPORT const unsigned char ZMSystemVersionString[];
 
-// In this header, you should import all the public headers of your framework using statements like #import <WireSystem/PublicHeader.h>
+// In this header, you should import all the public headers of your framework using statements like #import <ZMSystem/PublicHeader.h>
+
+#import <WireSystem/ZMSAsserts.h>
+#import <WireSystem/ZMSDefines.h>
+#import <WireSystem/ZMSLogging.h>
