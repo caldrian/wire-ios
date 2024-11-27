@@ -1,0 +1,25 @@
+{
+  "configurations" : [
+    {
+      "id" : "6252BA07-8402-414B-B201-8FF0B34B999D",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+
+  },
+  "testTargets" : [
+    {
+      "parallelizable" : true,
+      "target" : {
+        "containerPath" : "container:WireSystem.xcodeproj",
+        "identifier" : "594AFD012CF7B45700478C64",
+        "name" : "WireSystemTests"
+      }
+    }
+  ],
+  "version" : 1
+}
