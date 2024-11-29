@@ -76,15 +76,15 @@ public final class FetchBackendMLSPublicKeysRequestStrategy: AbstractRequestStra
 
                 WireLogger.mls.info("slow sync start fetch backend MLS public keys!")
 
-                let mlsFeature = await FeatureRepository(context: managedObjectContext).fetchMLS()
-                guard mlsFeature.isEnabled else {
-                    WireLogger.mls.info("slow sync can't fetch backend MLS public keys, MlS feature flag is disabled!")
-
-                    await managedObjectContext.perform {
-                        syncStatus.finishCurrentSyncPhase(phase: syncPhase)
-                    }
-                    return
-                }
+//                let mlsFeature = await FeatureRepository(context: managedObjectContext).fetchMLS()
+//                guard mlsFeature.isEnabled else {
+//                    WireLogger.mls.info("slow sync can't fetch backend MLS public keys, MlS feature flag is disabled!")
+//
+//                    await managedObjectContext.perform {
+//                        syncStatus.finishCurrentSyncPhase(phase: syncPhase)
+//                    }
+//                    return
+//                }
 
                 do {
                     // perform action notifies the registered action handler `FetchBackendMLSPublicKeysActionHandler`.
