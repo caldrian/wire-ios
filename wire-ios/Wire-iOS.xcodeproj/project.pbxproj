@@ -42,6 +42,8 @@
 		01D2C78F2CECC41D00F05E5E /* QRCodeScannerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D2C78E2CECC41D00F05E5E /* QRCodeScannerViewController.swift */; };
 		01D8E71A2BA39CE900B71CB7 /* PrivacyWarningChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D8E7192BA39CE900B71CB7 /* PrivacyWarningChecker.swift */; };
 		01F5EAE42B712DD7009FD25D /* LogFileDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01F5EAE32B712DD6009FD25D /* LogFileDestination.swift */; };
+		06006BB32CFE030600D6C61F /* MLSFeatureFlagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06006BB22CFE030600D6C61F /* MLSFeatureFlagView.swift */; };
+		06006BB52CFE033E00D6C61F /* MLSFeatureFlagViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06006BB42CFE033E00D6C61F /* MLSFeatureFlagViewModel.swift */; };
 		06024ABC29E69A860032CC31 /* ConversationMessageFailedRecipientsCellDescription.swift in Sources */ = {isa = PBXBuildFile; fileRef = 06024ABB29E69A850032CC31 /* ConversationMessageFailedRecipientsCellDescription.swift */; };
 		0608828F29EC742B0053772B /* ConversationMessageFailedRecipientsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0608828E29EC742B0053772B /* ConversationMessageFailedRecipientsTests.swift */; };
 		060A36902CBCF1010066908C /* ConversationListViewController+EmptyState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 060A368F2CBCF1010066908C /* ConversationListViewController+EmptyState.swift */; };
@@ -2017,6 +2019,8 @@
 		01D2C78E2CECC41D00F05E5E /* QRCodeScannerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeScannerViewController.swift; sourceTree = "<group>"; };
 		01D8E7192BA39CE900B71CB7 /* PrivacyWarningChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PrivacyWarningChecker.swift; sourceTree = "<group>"; };
 		01F5EAE32B712DD6009FD25D /* LogFileDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogFileDestination.swift; sourceTree = "<group>"; };
+		06006BB22CFE030600D6C61F /* MLSFeatureFlagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLSFeatureFlagView.swift; sourceTree = "<group>"; };
+		06006BB42CFE033E00D6C61F /* MLSFeatureFlagViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MLSFeatureFlagViewModel.swift; sourceTree = "<group>"; };
 		06024ABB29E69A850032CC31 /* ConversationMessageFailedRecipientsCellDescription.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationMessageFailedRecipientsCellDescription.swift; sourceTree = "<group>"; };
 		0608828E29EC742B0053772B /* ConversationMessageFailedRecipientsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationMessageFailedRecipientsTests.swift; sourceTree = "<group>"; };
 		060A368F2CBCF1010066908C /* ConversationListViewController+EmptyState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationListViewController+EmptyState.swift"; sourceTree = "<group>"; };
@@ -4042,6 +4046,15 @@
 				01A5E048297FDAB500624B65 /* copyExtraAudioNotifications */,
 			);
 			path = Scripts;
+			sourceTree = "<group>";
+		};
+		06006BAF2CFE020600D6C61F /* FeatureFlags */ = {
+			isa = PBXGroup;
+			children = (
+				06006BB42CFE033E00D6C61F /* MLSFeatureFlagViewModel.swift */,
+				06006BB22CFE030600D6C61F /* MLSFeatureFlagView.swift */,
+			);
+			path = FeatureFlags;
 			sourceTree = "<group>";
 		};
 		060A368E2CBCF0A90066908C /* Empty placeholders */ = {
@@ -7983,6 +7996,7 @@
 				EE593F982B73C3D2008D1109 /* DeepLinks */,
 				EE2DF75C2875E29F0028ECA2 /* PreferredAPIVersion */,
 				EE08ADEB29C8860600B6C14D /* SwitchBackend */,
+				06006BAF2CFE020600D6C61F /* FeatureFlags */,
 			);
 			path = DeveloperTools;
 			sourceTree = "<group>";
@@ -9667,6 +9681,7 @@
 				EF6E9FE623193478000B7785 /* UIViewControllerTransitioningDelegate+Present.swift in Sources */,
 				5E65A79E21303F97008BFCC0 /* AuthenticationCoordinator+UserChange.swift in Sources */,
 				A93B528924FE98200061255E /* DebugActions.swift in Sources */,
+				06006BB52CFE033E00D6C61F /* MLSFeatureFlagViewModel.swift in Sources */,
 				EF71BFD620EBCC5F00894A7C /* UIView+IPadPopover.swift in Sources */,
 				EFBCC917215548EE006AAB70 /* AVAudioSessionType.swift in Sources */,
 				87BEB03C1D3E44BA00DE9575 /* CameraKeyboardViewController.swift in Sources */,
@@ -10167,6 +10182,7 @@
 				7C5DF2CC1FD7DEAD00B793B6 /* AvailabilityExtensions.swift in Sources */,
 				E97661812BDA4D1E0033AACC /* SecureLinkHeaderCell.swift in Sources */,
 				A92CB35723CDF6D100F12797 /* ConversationContentViewControllerDelegate.swift in Sources */,
+				06006BB32CFE030600D6C61F /* MLSFeatureFlagView.swift in Sources */,
 				BFAF4CB51CECEF3C00780537 /* WaveFormView.swift in Sources */,
 				A956554E23ED9D460004720E /* TokenizedTextView.swift in Sources */,
 				A9806A3B23E2024E00691DFE /* AudioTrackPlayer.swift in Sources */,

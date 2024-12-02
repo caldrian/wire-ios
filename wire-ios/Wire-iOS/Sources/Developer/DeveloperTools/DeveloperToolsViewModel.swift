@@ -138,6 +138,9 @@ final class DeveloperToolsViewModel: ObservableObject {
         setupPushToken()
 
         setupDatadog()
+
+        featureFlags()
+
     }
 
     // MARK: - Section Builders
@@ -205,6 +208,17 @@ final class DeveloperToolsViewModel: ObservableObject {
         }
     }
 
+    private func featureFlags() {
+        sections.append(Section(
+            header: "Feature flags",
+            items: [
+                .destination(DestinationItem(title: "MLS", makeView: {
+                    AnyView(MLSFeatureFlagView(viewModel: MLSFeatureFlagViewModel()))
+                }))
+            ]
+        ))
+    }
+
     private func setupContextualItems() {
         let context = Self.context
         let actionsProviders: [DeveloperToolsContextItemsProvider?] = [
@@ -269,6 +283,7 @@ final class DeveloperToolsViewModel: ObservableObject {
         })))
 
         items.append(.text(TextItem(title: "Is federation enabled?", value: isFederationEnabled)))
+        items.append(.text(TextItem(title: "Is MLS enabled?", value: isMLSEnabled)))
         items.append(.button(ButtonItem(title: "Stop federating with Foma", action: { [weak self] in
             self?.stopFederatingFoma()
         })))
@@ -367,6 +382,10 @@ final class DeveloperToolsViewModel: ObservableObject {
 
     private var isFederationEnabled: String {
         String(describing: BackendInfo.isFederationEnabled)
+    }
+
+    private var isMLSEnabled: String {
+        String(describing: BackendInfo.isMLSEnabled)
     }
 
     private var selfUser: ZMUser? {
