@@ -16,13 +16,30 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
+import XCTest
 
-/// Errors originating from `UserClientsAPI`.
+@testable import WireCrypto
 
-public enum UserClientsAPIError: Error {
+final class SecureRandomByteGeneratorTests: XCTestCase {
 
-    /// A request url is invalid.
+    func testByteGenerationIsRandom() throws {
+        // When
+        let randomBytes1 = try SecureRandomByteGenerator.generateBytes(count: 10)
+        let randomBytes2 = try SecureRandomByteGenerator.generateBytes(count: 10)
 
-    case invalidURL
+        // Then
+        XCTAssertNotEqual(randomBytes1, randomBytes2)
+    }
+
+    func testCorrectNumberOfBytesAreGenerated() throws {
+        // Given
+        let count = UInt.random(in: 0 ... 1000)
+
+        // When
+        let bytes = try SecureRandomByteGenerator.generateBytes(count: count)
+
+        // Then
+        XCTAssertEqual(bytes.count, Int(count))
+    }
+
 }
