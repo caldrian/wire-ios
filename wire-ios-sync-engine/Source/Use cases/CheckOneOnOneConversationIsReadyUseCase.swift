@@ -56,21 +56,22 @@ struct CheckOneOnOneConversationIsReadyUseCase: CheckOneOnOneConversationIsReady
     // MARK: - Public interface
 
     public func invoke(userID: QualifiedID) async throws -> Bool {
-        let conversation = try await context.perform {
+        let validConversation = try await context.perform {
             guard let user = ZMUser.fetch(with: userID, in: context) else {
                 throw CheckOneOnOneConversationIsReadyError.userNotFound
             }
-            return user.oneOnOneConversation
+
+            return user.oneOnOneConversation?.conversationType == .invalid ? nil : user.oneOnOneConversation
         }
 
-        if let conversation {
-            let messageProtocol = await context.perform { conversation.messageProtocol }
+        if let validConversation {
+            let messageProtocol = await context.perform { validConversation.messageProtocol }
 
             switch messageProtocol {
             case .proteus:
                 return true
             case .mls:
-                guard let groupID = await context.perform({ conversation.mlsGroupID }) else {
+                guard let groupID = await context.perform({ validConversation.mlsGroupID }) else {
                     throw CheckOneOnOneConversationIsReadyError.missingGroupID
                 }
 
