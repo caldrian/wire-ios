@@ -18,6 +18,44 @@
 
 import CoreData
 
+public class CleanInvalidConnectionUseCase {
+    private let context: NSManagedObjectContext
+
+    public init(context: NSManagedObjectContext) {
+        self.context = context
+    }
+
+    // FIXME: Don't pass managed object
+    public func invoke(userID: UUID, domain: String?) throws {
+        return
+        try context.performAndWait { [context] in
+            guard let user = ZMUser.fetch(with: userID, domain: domain, in: context) else {
+                return // FIXME: Throw error
+            }
+
+            guard
+                let teamID = ZMUser.selfUser(in: context).teamIdentifier,
+                user.teamIdentifier == teamID,
+                let connection = user.connection,
+                connection.status != .accepted,
+                connection.status != .blocked
+            else {
+                return
+            }
+
+            let invalidConversationTypes: [ZMConversationType] = [.invalid, .connection]
+            if
+                let conversation = connection.to.oneOnOneConversation,
+                invalidConversationTypes.contains(conversation.conversationType) {
+                    context.delete(conversation)
+            }
+            context.delete(connection)
+
+            try context.save()
+        }
+    }
+}
+
 public class CleanTeamConnectionsUseCase {
     private let context: NSManagedObjectContext
 
@@ -26,12 +64,50 @@ public class CleanTeamConnectionsUseCase {
     }
 
     public func invoke() throws {
+        print(">>>>>> Cleaning team connections")
+
+        try context.performAndWait {
+            guard let teamID = ZMUser.selfUser(in: context).teamIdentifier else { return }
+            print(">>>>>>> Team ID: ", teamID)
+
+            let notStatus: [Int16] = [ZMConnectionStatus.accepted, ZMConnectionStatus.blocked].map { $0.rawValue }
+            let fetchRequest = NSFetchRequest<ZMConnection>(entityName: ZMConnection.entityName())
+            fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
+//                NSPredicate(format: "to.membership != nil"),
+//                NSPredicate(format: "to.membership.team != nil"),
+                NSPredicate(format: "NOT (status IN %@)", notStatus),
+
+            ])
+
+            let conversationTypes: [ZMConversationType] = [.invalid, .connection]
+            let connections = try context.fetch(fetchRequest)
+            print(">>>>>> CONNECTIONS:")
+            for connection in connections {
+                print(">>>>>>>>", connection.to.name ?? "No name", ": ", connection.to.teamIdentifier ?? "No team", ": status - ", connection.status)
+            }
+
+            for connection in connections where connection.to.teamIdentifier == teamID && connection.status != .accepted && connection.status != .blocked {
+                print(">>>>>>> Cleaning" )
+                if
+                    let conversation = connection.to.oneOnOneConversation,
+                    conversationTypes.contains(conversation.conversationType)  {
+                        context.delete(conversation)
+                }
+                context.delete(connection)
+            }
+
+            try context.save()
+        }
+    }
+
+    public func invoke2() throws {
+        print(">>>>>> Cleaning team connections")
         try context.performAndWait {
             let notStatus: [Int16] = [ZMConnectionStatus.accepted, ZMConnectionStatus.blocked].map { $0.rawValue }
             let fetchRequest = NSFetchRequest<ZMConnection>(entityName: ZMConnection.entityName())
             fetchRequest.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [
-                NSPredicate(format: "to.membership != nil"),
-                NSPredicate(format: "to.membership.team != nil"),
+//                NSPredicate(format: "to.membership != nil"),
+//                NSPredicate(format: "to.membership.team != nil"),
                 NSPredicate(format: "NOT (status IN %@)", notStatus),
 
             ])
@@ -39,12 +115,15 @@ public class CleanTeamConnectionsUseCase {
             let conversationTypes: [ZMConversationType] = [.invalid, .connection]
             let connections = try context.fetch(fetchRequest)
             for connection in connections {
-                if
-                    let conversation = connection.to.oneOnOneConversation,
-                    conversationTypes.contains(conversation.conversationType)  {
-                        context.delete(conversation)
-                }
-                context.delete(connection)
+                print(">>>>>>>>", connection.to.name ?? "No name", ": ", connection.to.membership?.team?.name ?? "No team")
+
+
+//                if
+//                    let conversation = connection.to.oneOnOneConversation,
+//                    conversationTypes.contains(conversation.conversationType)  {
+//                        context.delete(conversation)
+//                }
+//                context.delete(connection)
             }
 
             try context.save()
