@@ -185,7 +185,6 @@ extension UserProfileRequestStrategy: ZMEventConsumer {
     }
 
     func processUserUpdate(_ updateEvent: ZMUpdateEvent) {
-        print(">>>>>>> UPDATE USER")
         guard updateEvent.type == .userUpdate else { return }
 
         guard
@@ -210,14 +209,18 @@ extension UserProfileRequestStrategy: ZMEventConsumer {
             authoritative: false
         )
 
-        // Check if team id has changed
-//
-//        let useCase = CleanInvalidConnectionUseCase(context: managedObjectContext)
-//        do {
-//            try useCase.invoke(userID: user.remoteIdentifier, domain: user.domain)
-//        } catch {
-//            print(">>>>>>>> Failed to clean:", error)
-//        }
+        if userProfile.updatedKeys.contains(.teamID) {
+            let useCase = PerformPostMembershipCleanUpUseCase(
+                context: managedObjectContext,
+                userID: user.objectID,
+                shouldCreateMissingMemberships: false
+            )
+            do {
+                try useCase.invoke()
+            } catch {
+                WireLogger.individualToTeamMigration.error("Error performing post membership cleanup")
+            }
+        }
     }
 
     func processUserDeletion(_ updateEvent: ZMUpdateEvent) {

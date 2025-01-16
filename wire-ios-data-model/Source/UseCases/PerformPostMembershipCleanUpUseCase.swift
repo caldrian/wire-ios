@@ -18,75 +18,85 @@
 
 import CoreData
 
-public class CleanInvalidConnectionUseCase {
-    private let context: NSManagedObjectContext
+public class PerformPostMembershipCleanUpUseCase {
 
-    public init(context: NSManagedObjectContext) {
-        self.context = context
+    enum Failure: Swift.Error {
+        case userNotFound
     }
 
-    public func invoke(userID: UUID, domain: String?) throws {
-        return
-
-        try context.performAndWait { [context] in
-            guard let user = ZMUser.fetch(with: userID, domain: domain, in: context) else {
-                return // FIXME: Throw error
-            }
-
-            guard
-                let teamID = ZMUser.selfUser(in: context).teamIdentifier,
-                user.teamIdentifier == teamID,
-                let connection = user.connection,
-                connection.status != .accepted,
-                connection.status != .blocked
-            else {
-                return
-            }
-
-            let invalidConversationTypes: [ZMConversationType] = [.invalid, .connection]
-            if
-                let conversation = connection.to.oneOnOneConversation,
-                invalidConversationTypes.contains(conversation.conversationType) {
-                    context.delete(conversation)
-            }
-            context.delete(connection)
-
-            try context.save()
-        }
-    }
-}
-
-public class CleanTeamConnectionsUseCase {
     private let context: NSManagedObjectContext
+    private let userID: NSManagedObjectID?
+    private let shouldCreateMissingMemberships: Bool
 
-    public init(context: NSManagedObjectContext) {
+    public init(
+        context: NSManagedObjectContext,
+        userID: NSManagedObjectID?,
+        shouldCreateMissingMemberships: Bool
+    ) {
         self.context = context
+        self.userID = userID
+        self.shouldCreateMissingMemberships = false
     }
 
     public func invoke() async throws {
         try await context.perform { [self] in
-            guard let teamID = ZMUser.selfUser(in: context).teamIdentifier else { return }
-
-            try removeSameTeamConnections(selfUserTeamID: teamID)
-            try createMissingMemberships(selfUserTeamID: teamID)
-
-            try context.save()
+            try internalInvoke()
         }
     }
 
-    /// Deletes `ZMConnection` from users on the same team as `selfUser` along with associated conversations of type
-    /// `invalid` or `connection`. In cases where the connection is `accepted` or `blocked` the existing connection and
-    /// conversation is kept.
+    public func invoke() throws {
+        try context.performAndWait { [self] in
+            try internalInvoke()
+        }
+    }
+
+    // MARK: - Private
+
+    private func keepConnectionStatuses() -> [ZMConnectionStatus] {
+        [.accepted, .blocked]
+    }
+
+    private func internalInvoke() throws {
+        guard let teamID = ZMUser.selfUser(in: context).teamIdentifier else { return }
+
+        if let userID = userID {
+            try invokeForSingleUser(userID: userID, selfUserTeamID: teamID)
+        } else {
+            try invokeForAllUsers(selfUserTeamID: teamID)
+        }
+
+        try context.save()
+    }
+
+    private func invokeForSingleUser(userID: NSManagedObjectID, selfUserTeamID: UUID) throws {
+        guard let user = try context.existingObject(with: userID) as? ZMUser else {
+            throw Failure.userNotFound
+        }
+
+        if user.isSelfUser {
+            try removeSameTeamConnections(selfUserTeamID: selfUserTeamID)
+        } else if let connection = user.connection, !keepConnectionStatuses().contains(connection.status) {
+            try removeConnections([connection], withTeamID: selfUserTeamID)
+        }
+    }
+
+    private func invokeForAllUsers(selfUserTeamID: UUID) throws {
+        try removeSameTeamConnections(selfUserTeamID: selfUserTeamID)
+        try createMissingMemberships(selfUserTeamID: selfUserTeamID)
+    }
+
     private func removeSameTeamConnections(selfUserTeamID: UUID) throws {
         let keepStatuses: [ZMConnectionStatus] = [.accepted, .blocked]
-
         let fetchRequest = NSFetchRequest<ZMConnection>(entityName: ZMConnection.entityName())
         fetchRequest.predicate = NSPredicate(format: "NOT (status IN %@)", keepStatuses.map { $0.rawValue })
 
-        let removeConversationTypes: [ZMConversationType] = [.invalid, .connection]
         let connections = try context.fetch(fetchRequest)
+        try removeConnections(connections, withTeamID: selfUserTeamID)
+    }
 
-        for connection in connections where connection.to.teamIdentifier == selfUserTeamID {
+    private func removeConnections(_ connections: [ZMConnection], withTeamID teamID: UUID) throws {
+        let removeConversationTypes: [ZMConversationType] = [.invalid, .connection]
+        for connection in connections where connection.to.teamIdentifier == teamID {
             if
                 let conversation = connection.to.oneOnOneConversation,
                 removeConversationTypes.contains(conversation.conversationType)  {
