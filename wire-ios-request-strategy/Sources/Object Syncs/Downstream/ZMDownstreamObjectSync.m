@@ -110,8 +110,11 @@
 
 - (BOOL)needsToSyncObject:(NSObject *)object
 {
-    return [self.predicateForObjectsToDownload evaluateWithObject:object] &&
+    BOOL result = [self.predicateForObjectsToDownload evaluateWithObject:object] &&
            (self.filter == nil || [self.filter evaluateWithObject:object]);
+    NSLog(@">>>>>>> NEEDS TO SYNC OBJECT: %d, ON: %@", result, self);
+
+    return  result;
 }
 
 - (void)objectsDidChange:(NSSet *)objects

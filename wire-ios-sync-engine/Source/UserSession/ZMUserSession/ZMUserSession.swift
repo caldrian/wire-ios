@@ -968,6 +968,12 @@ extension ZMUserSession: ZMSyncStateDelegate {
 
             await calculateSelfSupportedProtocolsIfNeeded()
             await resolveOneOnOneConversationsIfNeeded()
+            let useCase = CleanTeamConnectionsUseCase(context: syncContext)
+            do {
+                try await useCase.invoke()
+            } catch {
+                print(">>>>> FAILED from user session:", error)
+            }
         }
 
         recurringActionService.performActionsIfNeeded()

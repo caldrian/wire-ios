@@ -158,6 +158,7 @@ struct stringAndStatus {
             break;
             
         default:
+            // HERE WE HANDLE ZMConnectionStatusCancelled among other things which makes the one on one conversation invalid.
             return ZMConversationTypeInvalid;
     }
 }

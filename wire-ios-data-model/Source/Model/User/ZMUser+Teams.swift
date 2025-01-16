@@ -70,6 +70,10 @@ public extension ZMUser {
             return
         }
 
+        // IF TEAM IS SELF USERS TEAM THEN SET needsToRedownloadMembers
+        
+
+
         if !isAccountDeleted {
             createMembership(in: team, context: managedObjectContext)
         } else {

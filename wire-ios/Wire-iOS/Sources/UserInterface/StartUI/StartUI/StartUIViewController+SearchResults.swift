@@ -63,6 +63,7 @@ extension StartUIViewController: SearchResultsViewControllerDelegate {
         if !user.isConnected, !user.isTeamMember {
             presentProfileViewController(for: user, at: indexPath)
         } else {
+            // Because the user is TEAM MEMBER, we attempt to show the existing conversation
             delegate?.startUIViewController(self, didSelect: user)
         }
     }

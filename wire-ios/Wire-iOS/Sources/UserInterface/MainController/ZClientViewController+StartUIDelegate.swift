@@ -30,6 +30,7 @@ extension ZClientViewController: StartUIDelegate {
             let conversation = user.oneToOneConversation
 
             do {
+                // Partial fix is ensuring that an existing conversation is not considered ready if it is invalid.
                 let isReady = try await userSession.checkOneOnOneConversationIsReady.invoke(userID: userID)
 
                 if isReady {

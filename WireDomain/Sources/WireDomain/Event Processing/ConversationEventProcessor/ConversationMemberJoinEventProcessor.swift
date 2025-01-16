@@ -39,6 +39,7 @@ struct ConversationMemberJoinEventProcessor: ConversationMemberJoinEventProcesso
     let userRepository: any UserRepositoryProtocol
 
     func processEvent(_ event: ConversationMemberJoinEvent) async throws {
+        // TODO: Add logic here
         let conversationID = event.conversationID
         let senderID = event.senderID
 
