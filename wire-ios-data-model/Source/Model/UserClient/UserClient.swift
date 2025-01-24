@@ -321,28 +321,13 @@ public class UserClient: ZMManagedObject, UserClientType {
         get async {
             guard
                 let sessionID = await managedObjectContext?.perform({ self.proteusSessionID }),
-                let proteusProvider = await managedObjectContext?
-                .perform({ self.managedObjectContext?.proteusProvider })
+                let proteusService = await managedObjectContext?
+                    .perform({ self.managedObjectContext?.proteusService })
             else {
                 return false
             }
 
-            var hasSession = false
-
-            await proteusProvider.performAsync(
-                withProteusService: { proteusService in
-                    hasSession = await proteusService.sessionExists(id: sessionID)
-                },
-                withKeyStore: { keyStore in
-                    managedObjectContext?.performAndWait {
-                        keyStore.encryptionContext.perform { sessionsDirectory in
-                            hasSession = sessionsDirectory.hasSession(for: sessionID.mapToEncryptionSessionID())
-                        }
-                    }
-                }
-            )
-
-            return hasSession
+            return await proteusService.sessionExists(id: sessionID)
         }
     }
 
@@ -614,17 +599,8 @@ public extension UserClient {
         else {
             return
         }
-        let proteusProvider = await context.perform { context.proteusProvider }
-        try await proteusProvider.performAsync(
-            withProteusService: { proteusService in
-                try await proteusService.deleteSession(id: sessionID)
-            },
-            withKeyStore: { keyStore in
-                keyStore.encryptionContext.perform { sessionsDirectory in
-                    sessionsDirectory.delete(sessionID.mapToEncryptionSessionID())
-                }
-            }
-        )
+        let proteusService = await context.perform { context.proteusService }
+        try await proteusService?.deleteSession(id: sessionID)
     }
 
     func establishSessionWithClient(
@@ -632,7 +608,7 @@ public extension UserClient {
         usingPreKey preKey: String
     ) async -> Bool {
         guard
-            let proteusProvider = await managedObjectContext?.perform({ self.managedObjectContext?.proteusProvider }),
+            let proteusService = await managedObjectContext?.perform({ self.managedObjectContext?.proteusService }),
             let sessionId = await managedObjectContext?.perform({ client.sessionIdentifier })
         else {
             return false
@@ -641,7 +617,7 @@ public extension UserClient {
         return await establishSessionWithClient(
             sessionId: sessionId,
             usingPreKey: preKey,
-            proteusProviding: proteusProvider
+            proteusService: proteusService
         )
     }
 
@@ -651,21 +627,13 @@ public extension UserClient {
     func establishSessionWithClient(
         sessionId: EncryptionSessionIdentifier,
         usingPreKey preKey: String,
-        proteusProviding: ProteusProviding
+        proteusService: ProteusServiceInterface
     ) async -> Bool {
-        await proteusProviding.performAsync { proteusService in
-            await establishSession(
+        await establishSession(
                 through: proteusService,
                 sessionId: sessionId,
                 preKey: preKey
             )
-        } withKeyStore: { keystore in
-            establishSession(
-                through: keystore,
-                sessionId: sessionId,
-                preKey: preKey
-            )
-        }
     }
 
     private func establishSession(
@@ -687,40 +655,6 @@ public extension UserClient {
             zmLog.error("Cannot create session for prekey \(preKey): \(String(describing: error))")
             return false
         }
-    }
-
-    func establishSession(
-        through keystore: UserClientKeysStore,
-        sessionId: EncryptionSessionIdentifier,
-        preKey: String
-    ) -> Bool {
-        var didEstablishSession = false
-        managedObjectContext?.performAndWait {
-
-            keystore.encryptionContext.perform { sessionsDirectory in
-
-                // Session is already established?
-                if sessionsDirectory.hasSession(for: sessionId) {
-                    zmLog.debug("Session with \(sessionId) was already established, re-creating")
-                    sessionsDirectory.delete(sessionId)
-                }
-            }
-
-            // Because of caching within the `perform` block, it commits to disk only at the end of a block.
-            // I don't think the cache is smart enough to perform the sum of operations (delete + recreate)
-            // if at the end of the block the session is still there. Just to be safe, I split the operations
-            // in two separate `perform` blocks.
-
-            keystore.encryptionContext.perform { sessionsDirectory in
-                do {
-                    try sessionsDirectory.createClientSession(sessionId, base64PreKeyString: preKey)
-                    didEstablishSession = true
-                } catch {
-                    zmLog.error("Cannot create session for prekey \(preKey)")
-                }
-            }
-        }
-        return didEstablishSession
     }
 
     /// Use this method only for the selfClient

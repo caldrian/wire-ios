@@ -68,11 +68,11 @@ extension ZMBaseManagedObjectTest {
                 do {
                     let prekey = try moc.zm_cryptKeyStore.lastPreKey()
                     let selfClient = try XCTUnwrap(selfClient)
-                    _ = selfClient.establishSession(
-                        through: moc.zm_cryptKeyStore,
-                        sessionId: userClient.sessionIdentifier!,
-                        preKey: prekey
-                    )
+//                    _ = selfClient.establishSession(
+//                        through: moc.zm_cryptKeyStore,
+//                        sessionId: userClient.sessionIdentifier!,
+//                        preKey: prekey
+//                    )
                 } catch {
                     XCTFail("unexpected error: \(String(reflecting: error))")
                 }

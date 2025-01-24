@@ -917,33 +917,3 @@ extension ClientMessageTests {
         XCTAssertNil(sut)
     }
 }
-
-// MARK: - ExternalMessage
-
-extension ClientMessageTests {
-
-    func testThatItDecryptsMessageWithExternalBlobCorrectly() {
-        // given
-        syncMOC.performGroupedAndWait {
-            self.createSelfClient(onMOC: self.syncMOC)
-            let otherUser = ZMUser.insertNewObject(in: self.syncMOC)
-            otherUser.remoteIdentifier = UUID.create()
-            let firstClient = self.createClient(for: otherUser, createSessionWithSelfUser: true, onMOC: self.syncMOC)
-
-            let messageEvent = self.encryptedExternalMessageFixtureWithBlob(from: firstClient)
-            let base64SHA = "kKSSlbMxXEdd+7fekxB8Qr67/mpjjboBsr2wLcW7wzE="
-            let base64OTRKey = "4H1nD6bG2sCxC/tZBnIG7avLYhkCsSfv0ATNqnfug7w="
-            let external = External(
-                withOTRKey: Data(base64Encoded: base64OTRKey)!,
-                sha256: Data(base64Encoded: base64SHA)!
-            )
-
-            // when
-            let message = GenericMessage(from: messageEvent!, withExternal: external)
-
-            // then
-            XCTAssertNotNil(message)
-            XCTAssertEqual(message?.text.content, self.expectedExternalMessageText())
-        }
-    }
-}

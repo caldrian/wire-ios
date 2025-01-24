@@ -22,7 +22,7 @@ import WireCoreCrypto
 extension NSManagedObjectContext {
 
     private static let proteusServiceUserInfoKey = "ProteusServiceUserInfoKey"
-
+    // TODO: check why it's optional
     public var proteusService: ProteusServiceInterface? {
         get {
             precondition(zm_isSyncContext, "ProteusService should only be accessed on the sync context")
