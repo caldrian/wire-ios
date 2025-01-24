@@ -84,7 +84,6 @@ public final class ZMUserSession: NSObject {
     private(set) lazy var proteusService: ProteusServiceInterface =
         ProteusService(coreCryptoProvider: coreCryptoProvider)
     private(set) var mlsService: MLSServiceInterface
-    private(set) var proteusProvider: ProteusProviding!
     let proteusToMLSMigrationCoordinator: ProteusToMLSMigrationCoordinating
 
     public lazy var featureRepository = FeatureRepository(context: syncContext)
@@ -260,7 +259,7 @@ public final class ZMUserSession: NSObject {
         GetUserClientFingerprintUseCase(
             syncContext: coreDataStack.syncContext,
             transportSession: transportSession,
-            proteusProvider: proteusProvider
+            proteusProvider: proteusService
         )
     }
 
@@ -463,12 +462,6 @@ public final class ZMUserSession: NSObject {
             localNotificationDispatcher = LocalNotificationDispatcher(in: coreDataStack.syncContext)
             configureTransportSession()
 
-            // need to be before we create strategies since it is passed
-            proteusProvider = ProteusProvider(
-                proteusService: proteusService,
-                keyStore: syncManagedObjectContext.zm_cryptKeyStore
-            )
-
             self
                 .strategyDirectory = strategyDirectory ??
                 createStrategyDirectory(useLegacyPushNotifications: configuration.useLegacyPushNotifications)
@@ -584,7 +577,7 @@ public final class ZMUserSession: NSObject {
             useLegacyPushNotifications: useLegacyPushNotifications,
             lastEventIDRepository: lastEventIDRepository,
             transportSession: transportSession,
-            proteusProvider: proteusProvider,
+            proteusProvider: proteusService,
             mlsService: mlsService,
             coreCryptoProvider: coreCryptoProvider,
             pullSelfUserClientsFactory: pullSelfUserClientsFactory,

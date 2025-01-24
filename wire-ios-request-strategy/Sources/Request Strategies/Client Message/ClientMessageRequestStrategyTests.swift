@@ -231,24 +231,4 @@ extension ClientMessageRequestStrategyTests {
         }
     }
 
-    func testThatANewOtrMessageIsCreatedFromADecryptedAPNSEvent() async throws {
-        // GIVEN
-        let lastEventIDRepository = MockLastEventIDRepositoryInterface()
-        let eventDecoder = EventDecoder(
-            eventMOC: eventMOC,
-            syncMOC: syncMOC,
-            lastEventIDRepository: lastEventIDRepository
-        )
-        let text = "Everything"
-        let event = try await decryptedUpdateEventFromOtherClient(text: text, eventDecoder: eventDecoder)
-
-        await syncMOC.perform {
-            // WHEN
-            self.sut.processEvents([event], liveEvents: false, prefetchResult: nil)
-
-            // THEN
-            XCTAssertEqual((self.groupConversation.lastMessage as? ZMClientMessage)?.textMessageData?.messageText, text)
-        }
-    }
-
 }

@@ -18,6 +18,7 @@
 
 import XCTest
 @testable import WireRequestStrategy
+import WireDataModelSupport
 
 private class MockAction: EntityAction, Equatable {
     let uuid = UUID()

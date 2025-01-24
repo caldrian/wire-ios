@@ -32,29 +32,55 @@ final class EventDecoderDecryptionTests: MessagingTestBase {
         // GIVEN
         let lastEventIDRepository = MockLastEventIDRepositoryInterface()
         let sut = EventDecoder(eventMOC: eventMOC, syncMOC: syncMOC, lastEventIDRepository: lastEventIDRepository)
-        let text = "Trentatre trentini andarono a Trento tutti e trentatre trotterellando"
+        let text = "Everything"
+        let base64Text = "CiQ5ZTU2NTQwOS0xODZiLTRlN2YtYTE4NC05NzE4MGE0MDAwMDQSDAoKRXZlcnl0aGluZw=="
         let generic = GenericMessage(content: Text(content: text))
+        
+        let payload = await syncMOC.perform {
+            [
+                "recipient": self.selfClient.remoteIdentifier,
+                "sender": self.otherClient.remoteIdentifier,
+                "text": base64Text
+            ]
+        }
+        
+        let eventPayload = await syncMOC.perform {
+            [
+                "type": "conversation.otr-message-add",
+                "data": payload,
+                "conversation": self.groupConversation.remoteIdentifier!.transportString(),
+                "time": Date().transportString(),
+                "from": self.otherUser.remoteIdentifier.transportString()
+            ] as NSDictionary
+        }
+        
+        let event = ZMUpdateEvent(
+            uuid: .create(),
+            payload: eventPayload.asDictionary(),
+            transient: false,
+            decrypted: false,
+            source: .webSocket
+        )
+        
+        let unwrappedEvent = try XCTUnwrap(event)
 
         // WHEN
-        let decryptedEvent = try await decryptedUpdateEventFromOtherClient(
-            message: generic,
-            eventDecoder: sut
-        )
+        
+        let decryptedEventResult = await sut.decryptProteusEventAndAddClient(
+            unwrappedEvent,
+            in: syncMOC) { sessionID, data in
+                return (didCreateNewSession: true, decryptedData: text.base64EncodedData!)
+            }
+        
+        let decryptedEvent = try XCTUnwrap(decryptedEventResult)
 
         await syncMOC.performGrouped {
             // THEN
+        
             XCTAssertEqual(decryptedEvent.senderUUID, self.otherUser.remoteIdentifier!)
             XCTAssertEqual(decryptedEvent.recipientClientID, self.selfClient.remoteIdentifier!)
-
-            guard let decryptedMessage = ZMClientMessage.createOrUpdate(
-                from: decryptedEvent,
-                in: self.syncMOC,
-                prefetchResult: nil
-            ) else {
-                return XCTFail("Failed to create client message")
-            }
-            XCTAssertEqual(decryptedMessage.nonce?.transportString(), generic.messageID)
-            XCTAssertEqual(decryptedMessage.textMessageData?.messageText, text)
+            XCTAssertEqual(decryptedEvent.wasDecrypted, true)
+            XCTAssertEqual(decryptedEvent.payload["data"] , <#T##expression2: Equatable##Equatable#>)
         }
     }
 

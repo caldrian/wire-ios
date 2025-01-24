@@ -18,6 +18,7 @@
 
 import XCTest
 @testable import WireRequestStrategy
+import WireDataModelSupport
 
 final class MessageSendingStatusPayloadProcessorTests: MessagingTestBase {
 
@@ -116,6 +117,9 @@ final class MessageSendingStatusPayloadProcessorTests: MessagingTestBase {
         // given
         var message: MockOTREntity!
         var payload: Payload.MessageSendingStatus!
+        
+//        proteusService = MockProteusServiceInterface()
+//        proteusService.sessionExistsId_MockValue 
 
         await syncMOC.performGrouped {
             message = MockOTREntity(conversation: self.groupConversation, context: self.syncMOC)

@@ -20,7 +20,7 @@ import WireTesting
 
 @testable import WireDataModel
 
-class GenericMessageTests_LegalHoldStatus: BaseZMClientMessageTests {
+class GenericMessageTests_LegalHoldStatus: XCTestCase {
 
     func testThatItUpdatesLegalHoldStatusFlagForTextMessage() {
 

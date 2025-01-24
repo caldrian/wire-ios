@@ -22,6 +22,7 @@ import WireLogging
 import WireTesting
 
 @testable import WireRequestStrategy
+import WireDataModelSupport
 
 class MessagingTestBase: ZMTBaseTest {
 
@@ -35,6 +36,7 @@ class MessagingTestBase: ZMTBaseTest {
     fileprivate(set) var otherEncryptionContext: EncryptionContext!
     fileprivate(set) var coreDataStack: CoreDataStack!
     fileprivate(set) var accountIdentifier: UUID!
+    var proteusService: ProteusServiceInterface!
 
     let owningDomain = "example.com"
 
@@ -75,6 +77,21 @@ class MessagingTestBase: ZMTBaseTest {
         )
         setupCaches(in: coreDataStack)
         setupTimers()
+        
+        coreDataStack.syncContext.performAndWait {
+            let cryptoboxMigrationManager = CryptoboxMigrationManager()
+            let coreCryptoProvider = CoreCryptoProvider(
+                selfUserID: accountIdentifier,
+                sharedContainerURL: coreDataStack.applicationContainer,
+                accountDirectory: coreDataStack.accountContainer,
+                syncContext: coreDataStack.syncContext,
+                cryptoboxMigrationManager: cryptoboxMigrationManager,
+                allowCreation: false
+            )
+            
+            proteusService = ProteusService(coreCryptoProvider: coreCryptoProvider)
+            coreDataStack.syncContext.proteusService = proteusService
+        }
 
         syncMOC.performGroupedAndWait {
             self.syncMOC.zm_cryptKeyStore.deleteAndCreateNewBox()
@@ -89,7 +106,7 @@ class MessagingTestBase: ZMTBaseTest {
 
     override func tearDown() {
         BackgroundActivityFactory.shared.activityManager = nil
-
+        proteusService = nil
         _ = waitForAllGroupsToBeEmpty(withTimeout: 10)
 
         syncMOC.performGroupedAndWait {
@@ -227,26 +244,17 @@ extension MessagingTestBase {
         }
 
         var decryptedEvent: ZMUpdateEvent?
-        let proteusProvider = await syncMOC.perform { self.syncMOC.proteusProvider }
-        await proteusProvider.performAsync(withProteusService: { proteusService in
+        let proteusService = await syncMOC.perform { self.syncMOC.proteusService }
+        let proteusServiceUnwrapped = try XCTUnwrap(proteusService)
 
             decryptedEvent = await eventDecoder.decryptProteusEventAndAddClient(
                 event,
                 in: self.syncMOC
             ) { sessionID, encryptedData in
-                let result = try await proteusService.decrypt(data: encryptedData, forSession: sessionID)
+                let result = try await proteusServiceUnwrapped.decrypt(data: encryptedData, forSession: sessionID)
                 return (didCreateNewSession: result.didCreateNewSession, decryptedData: result.decryptedData)
             }
-        }, withKeyStore: { keyStore in
-            await keyStore.encryptionContext.performAsync { session in
-                decryptedEvent = await eventDecoder.decryptProteusEventAndAddClient(
-                    event,
-                    in: self.syncMOC
-                ) { sessionID, encryptedData in
-                    try session.decryptData(encryptedData, for: sessionID.mapToEncryptionSessionID())
-                }
-            }
-        })
+       
         return try XCTUnwrap(decryptedEvent)
     }
 

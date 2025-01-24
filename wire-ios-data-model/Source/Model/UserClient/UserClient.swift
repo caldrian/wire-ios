@@ -677,7 +677,42 @@ public extension UserClient {
             setLocallyModifiedKeys([ZMUserClientNumberOfKeysRemainingKey])
         }
     }
+    
+    func establishSession(
+        through keystore: UserClientKeysStore,
+        sessionId: EncryptionSessionIdentifier,
+        preKey: String
+    ) -> Bool {
+        var didEstablishSession = false
+        managedObjectContext?.performAndWait {
+
+            keystore.encryptionContext.perform { sessionsDirectory in
+
+                // Session is already established?
+                if sessionsDirectory.hasSession(for: sessionId) {
+                    zmLog.debug("Session with \(sessionId) was already established, re-creating")
+                    sessionsDirectory.delete(sessionId)
+                }
+            }
+
+            // Because of caching within the `perform` block, it commits to disk only at the end of a block.
+            // I don't think the cache is smart enough to perform the sum of operations (delete + recreate)
+            // if at the end of the block the session is still there. Just to be safe, I split the operations
+            // in two separate `perform` blocks.
+
+            keystore.encryptionContext.perform { sessionsDirectory in
+                do {
+                    try sessionsDirectory.createClientSession(sessionId, base64PreKeyString: preKey)
+                    didEstablishSession = true
+                } catch {
+                    zmLog.error("Cannot create session for prekey \(preKey)")
+                }
+            }
+        }
+        return didEstablishSession
+    }
 }
+
 
 enum SecurityChangeType {
     case clientTrusted // a client was trusted by the user on this device

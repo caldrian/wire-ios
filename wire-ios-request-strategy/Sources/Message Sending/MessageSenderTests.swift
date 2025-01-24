@@ -707,9 +707,10 @@ final class MessageSenderTests: MessagingTestBase {
             return self
         }
 
-        func withProteusConfigured() -> Arrangement {
+        func withProteusConfigured(sessionExists: Bool = true) -> Arrangement {
             coreDataStack.syncContext.performAndWait {
                 coreDataStack.syncContext.proteusService = proteusService
+                proteusService.sessionExistsId_MockValue = sessionExists
                 proteusService.encryptBatchedDataForSessions_MockMethod = { _, _ in
                     // success dumb data
                     ["test": Data()]

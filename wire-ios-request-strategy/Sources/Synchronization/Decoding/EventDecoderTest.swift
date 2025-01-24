@@ -33,11 +33,13 @@ class EventDecoderTest: MessagingTestBase {
 
     var sut: EventDecoder!
     var mockMLSService = MockMLSServiceInterface()
+    var mockProteusService: MockProteusServiceInterface!
     var lastEventIDRepository = MockLastEventIDRepositoryInterface()
 
     override func setUp() {
         super.setUp()
         sut = EventDecoder(eventMOC: eventMOC, syncMOC: syncMOC, lastEventIDRepository: lastEventIDRepository)
+        mockProteusService = MockProteusServiceInterface()
 
         lastEventIDRepository.storeLastEventID_MockMethod = { _ in }
 
@@ -49,11 +51,13 @@ class EventDecoderTest: MessagingTestBase {
             let selfConversation = ZMConversation.insertNewObject(in: self.syncMOC)
             selfConversation.remoteIdentifier = self.accountIdentifier
             selfConversation.conversationType = .self
+            self.syncMOC.proteusService = mockProteusService
         }
     }
 
     override func tearDown() {
         EventDecoder.testingBatchSize = nil
+        mockProteusService = nil
         sut = nil
         super.tearDown()
     }
@@ -443,8 +447,6 @@ extension EventDecoderTest {
 extension EventDecoderTest {
 
     func test_ProteusEventDecryption() async throws {
-        var proteusViaCoreCrypto = DeveloperFlag.proteusViaCoreCrypto
-        let mockProteusService = MockProteusServiceInterface()
 
         // Given
         mockProteusService.decryptDataForSession_MockMethod = { data, _ in
@@ -456,12 +458,6 @@ extension EventDecoderTest {
             return self.encryptedUpdateEventToSelfFromOtherClient(message: message)
         }
 
-        proteusViaCoreCrypto.isOn = true
-
-        await syncMOC.perform {
-            self.syncMOC.proteusService = mockProteusService
-        }
-
         // When
         _ = try await sut.decryptAndStoreEvents([event])
 
@@ -469,18 +465,10 @@ extension EventDecoderTest {
 
         // Then
         XCTAssertEqual(mockProteusService.decryptDataForSession_Invocations.count, 1)
-
-        // Cleanup
-        proteusViaCoreCrypto.isOn = false
     }
 
     func test_ProteusEventDecryptionDoesNotStoreLastEventIdIfFails() async throws {
-        DeveloperFlag.proteusViaCoreCrypto.enable(true, storage: .temporary())
-        defer {
-            DeveloperFlag.proteusViaCoreCrypto.enable(false, storage: .standard)
-        }
 
-        let mockProteusService = MockProteusServiceInterface()
         enum FakeError: Error {
             case decryptionError
         }
@@ -494,10 +482,6 @@ extension EventDecoderTest {
             return self.encryptedUpdateEventToSelfFromOtherClient(message: message)
         }
 
-        await syncMOC.perform {
-            self.syncMOC.proteusService = mockProteusService
-        }
-
         // When
         _ = try await sut.decryptAndStoreEvents([event])
 
@@ -506,29 +490,6 @@ extension EventDecoderTest {
         // Then
         XCTAssertEqual(mockProteusService.decryptDataForSession_Invocations.count, 1)
         XCTAssertEqual(lastEventIDRepository.storeLastEventID_Invocations.count, 0)
-    }
-
-    func test_ProteusEventDecryption_Legacy() async throws {
-        var proteusViaCoreCrypto = DeveloperFlag.proteusViaCoreCrypto
-
-        // Given
-        let event = await syncMOC.perform {
-            let message = GenericMessage(content: Text(content: "foo"))
-            return self.encryptedUpdateEventToSelfFromOtherClient(message: message)
-        }
-
-        proteusViaCoreCrypto.isOn = false
-
-        // When
-        let decryptedEvents = try await sut.decryptAndStoreEvents([event])
-        XCTAssertEqual(decryptedEvents.count, 1)
-
-        // Then
-        // We could decrypt, and the proteus service doesn't exist, so it used the keystore.
-        let proteusService = await syncMOC.perform { self.syncMOC.proteusService }
-        XCTAssertNil(proteusService)
-
-        XCTAssert(waitForAllGroupsToBeEmpty(withTimeout: 0.5))
     }
 
 }
