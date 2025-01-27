@@ -27,6 +27,7 @@ public struct LabeledTextField: View {
     private let title: String?
 
     @Binding private var string: String
+    @FocusState var isFocused: Bool
 
     public init(mandatory: Bool = false, placeholder: String?, title: String?, string: Binding<String>) {
         self.isMandatory = mandatory
@@ -40,18 +41,25 @@ public struct LabeledTextField: View {
             if let title {
                 (
                     isMandatory ? (
-                        Text(title) +
+                        titleLabel(for: title, isFocused: isFocused) +
                         Text(verbatim: " *")
                             .foregroundColor(ColorTheme.Base.requiredField.color)
-                    ) : Text(title)
+                    ) : titleLabel(for: title, isFocused: isFocused)
                 )
                 .wireTextStyle(.h4)
             }
             TextField(placeholder ?? "", text: $string)
                 .textFieldStyle(.roundedBorder)
                 .wireTextStyle(.body1)
+                .focused($isFocused)
         }
     }
+}
+
+@MainActor
+@ViewBuilder private func titleLabel(for title: String, isFocused: Bool) -> Text {
+    Text(title)
+        .foregroundColor(isFocused ? .blue : .primary)
 }
 
 #Preview {
