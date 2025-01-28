@@ -103,6 +103,14 @@ node("Job_distributor") {
         platformVersion = "16.4"
         nodeLabels = "iOS_node200"
         MAX_PARALLEL = 5
+    } else if (params.Grid == "iOS-tablets-arm64") {
+        hubUrl = "http://192.168.2.201:4444/wd/hub"
+        is_simulator = true
+        deviceName = "iPad Air (5th generation)"
+        platformVersion = "16.4"
+        tablet = true
+        nodeLabels = "iOS_node201"
+        MAX_PARALLEL = 3
     } else if (params.Grid == "iOS-phones-arm64-fast") {
         hubUrl = "http://192.168.2.203:4444/wd/hub"
         is_simulator = true
