@@ -173,6 +173,7 @@ final class StarscreamPushChannel: NSObject, PushChannelType {
     }
 
     func scheduleOpen() {
+        return
         scheduler.performGroupedBlock { [weak self] in
             self?.scheduleOpenInternal()
         }

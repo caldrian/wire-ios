@@ -81,8 +81,7 @@ public final class ZMUserSession: NSObject {
     var cryptoboxMigrationManager: CryptoboxMigrationManagerInterface
     private(set) var coreCryptoProvider: CoreCryptoProviderProtocol
     private(set) var userId: UUID
-    private(set) lazy var proteusService: ProteusServiceInterface =
-        ProteusService(coreCryptoProvider: coreCryptoProvider)
+    private(set) var proteusService: ProteusServiceInterface
     private(set) var mlsService: MLSServiceInterface
     private(set) var proteusProvider: ProteusProviding!
     let proteusToMLSMigrationCoordinator: ProteusToMLSMigrationCoordinating
@@ -102,7 +101,7 @@ public final class ZMUserSession: NSObject {
     let lastEventIDRepository: LastEventIDRepositoryInterface
     let conversationEventProcessor: ConversationEventProcessor
 
-    let syncAgent: SyncAgent
+    var syncAgent: SyncAgent?
     public var hasCompletedInitialSync: Bool = false
 
     public var topConversationsDirectory: TopConversationsDirectory
@@ -110,6 +109,8 @@ public final class ZMUserSession: NSObject {
     public internal(set) var mlsGroupVerification: (any MLSGroupVerificationProtocol)?
 
     let analyiticsLogger: WireLogger
+
+    private let userComponent: UserComponent
 
     // MARK: Computed Properties
 
@@ -400,7 +401,9 @@ public final class ZMUserSession: NSObject {
         contextStorage: LAContextStorable,
         recurringActionService: any RecurringActionServiceInterface,
         dependencies: UserSessionDependencies,
-        syncAgent: SyncAgent
+        backendEnvironment: WireAPI.BackendEnvironment,
+        minTLSVersion: WireAPI.TLSVersion,
+        apiVersion: WireAPI.APIVersion
     ) {
         self.apiServiceFactory = apiServiceFactory
         self.application = application
@@ -435,7 +438,23 @@ public final class ZMUserSession: NSObject {
         self.recurringActionService = recurringActionService
         self.dependencies = dependencies
         self.analyiticsLogger = .analytics
-        self.syncAgent = syncAgent
+        self.proteusService = ProteusService(coreCryptoProvider: coreCryptoProvider)
+        self.userComponent = UserComponent(
+            selfUserID: userId,
+            backendEnvironment: backendEnvironment,
+            minTLSVersion: minTLSVersion,
+            apiVersion: apiVersion,
+            sharedUserDefaults: sharedUserDefaults,
+            syncContext: coreDataStack.syncContext,
+            eventContext: coreDataStack.eventContext,
+            mlsService: mlsService,
+            mlsDecryptionService: mlsService,
+            proteusService: proteusService,
+            localDomain: WireTransport.BackendInfo.domain!,
+            isFederationEnabled: WireTransport.BackendInfo.isFederationEnabled,
+            isMLSEnabled: WireTransport.BackendInfo.isMLSEnabled
+        )
+
         super.init()
     }
 
@@ -458,7 +477,6 @@ public final class ZMUserSession: NSObject {
         earService.setInitialEARFlagValue(viewContext.encryptMessagesAtRest)
         earService.delegate = self
         appLockController.delegate = self
-        syncAgent.delegate = self
         applicationStatusDirectory.clientRegistrationStatus.registrationStatusDelegate = self
 
         syncManagedObjectContext.performGroupedAndWait { [self] in
@@ -489,7 +507,7 @@ public final class ZMUserSession: NSObject {
             syncManagedObjectContext.mlsService = mlsService
 
             applicationStatusDirectory.clientRegistrationStatus.prepareForClientRegistration()
-            hasCompletedInitialSync = syncAgent.hasPerformedInitialSync
+            hasCompletedInitialSync = lastEventIDRepository.fetchLastEventID() != nil
             applicationStatusDirectory.clientUpdateStatus.determineInitialClientStatus()
             applicationStatusDirectory.clientRegistrationStatus.determineInitialRegistrationStatus()
         }
@@ -531,13 +549,25 @@ public final class ZMUserSession: NSObject {
                 value: selfUserClient.safeRemoteIdentifier.safeForLoggingDescription
             )
 
-            Task {
-                do {
-                    // Only sync if there is a self client, otherwise we'll perform an
-                    // initial sync when the self client is registered.
-                    try await syncAgent.performSyncIfNeeded()
-                } catch {
-                    WireLogger.sync.error("failed to perform sync on session setup: \(String(describing: error))")
+            if let selfClientID = selfUserClient.remoteIdentifier {
+                let activeSessionComponent = userComponent.makeActiveSessionComponent(selfClientID: selfClientID)
+                let syncAgent = SyncAgent(
+                    lastUpdateEventIDRepository: lastEventIDRepository,
+                    initialSyncBuilder: activeSessionComponent,
+                    legacySyncStatus: syncStatus
+                )
+                applicationStatusDirectory.syncStatus.syncStateDelegate = syncAgent
+                self.syncAgent = syncAgent
+                syncAgent.delegate = self
+
+                Task {
+                    do {
+                        // Only sync if there is a self client, otherwise we'll perform an
+                        // initial sync when the self client is registered.
+                        try await syncAgent.performSyncIfNeeded()
+                    } catch {
+                        WireLogger.sync.error("failed to perform sync on session setup: \(String(describing: error))")
+                    }
                 }
             }
         }
@@ -766,7 +796,7 @@ public final class ZMUserSession: NSObject {
     public func triggerInitialSync() {
         Task {
             do {
-                try await syncAgent.performInitialSync()
+                try await syncAgent?.performInitialSync()
             } catch {
                 WireLogger.sync.error("failed to perform initial sync: \(String(describing: error))")
             }
@@ -776,7 +806,7 @@ public final class ZMUserSession: NSObject {
     public func triggerResourceSync() {
         Task {
             do {
-                try await syncAgent.performResourceSync()
+                try await syncAgent?.performResourceSync()
             } catch {
                 WireLogger.sync.error("failed to perform resource sync: \(String(describing: error))")
             }
@@ -786,7 +816,7 @@ public final class ZMUserSession: NSObject {
     public func triggerIncrementalSync() {
         Task {
             do {
-                try await syncAgent.performIncrementalSync()
+                try await syncAgent?.performIncrementalSync()
             } catch {
                 WireLogger.sync.error("failed to perform incremental sync: \(String(describing: error))")
             }
@@ -955,6 +985,14 @@ extension ZMUserSession: SyncAgentDelegate {
 
     func syncAgentDidFinishInitialSync(_ syncAgent: SyncAgent) {
         didFinishInitialSync()
+    }
+
+    func syncAgentDidStartIncrementalSync(_ syncAgent: SyncAgent) {
+        didStartIncrementalSync()
+    }
+
+    func syncAgentDidFinishIncrementalSync(_ syncAgent: SyncAgent) {
+        didFinishIncrementalSync()
     }
 
     func syncAgentDidStartLegacyInitialSync(_ syncAgent: SyncAgent) {
@@ -1260,6 +1298,19 @@ extension ZMUserSession: ZMClientRegistrationStatusDelegate {
         // The client was just registered and still needs to perform the
         // initial sync.
         triggerInitialSync()
+
+        if let selfClientID = userClient.remoteIdentifier {
+            let activeSessionComponent = userComponent.makeActiveSessionComponent(selfClientID: selfClientID)
+            let syncAgent = SyncAgent(
+                lastUpdateEventIDRepository: lastEventIDRepository,
+                initialSyncBuilder: activeSessionComponent,
+                legacySyncStatus: syncStatus
+            )
+            self.syncAgent = syncAgent
+            applicationStatusDirectory.syncStatus.syncStateDelegate = syncAgent
+            syncAgent.delegate = self
+            triggerInitialSync()
+        }
     }
 
     public func didFailToRegisterSelfUserClient(error: Error) {

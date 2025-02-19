@@ -69,7 +69,7 @@ final class WebSocketTests: XCTestCase {
 
         Task {
             do {
-                for try await _ in try sut.open() {
+                for try await _ in try await sut.open() {
                     didReceiveMessage.fulfill()
                 }
             } catch {
@@ -83,7 +83,7 @@ final class WebSocketTests: XCTestCase {
         await fulfillment(of: [didReceiveMessage], timeout: 1)
 
         // When
-        sut.close()
+        await sut.close()
 
         // Then the stream finished successfully
         await fulfillment(of: [didFinishIterating], timeout: 1)
@@ -113,7 +113,7 @@ final class WebSocketTests: XCTestCase {
 
         Task {
             do {
-                for try await _ in try sut.open() {
+                for try await _ in try await sut.open() {
                     didReceiveMessage.fulfill()
                 }
             } catch {
@@ -157,7 +157,7 @@ final class WebSocketTests: XCTestCase {
 
         Task {
             do {
-                for try await _ in try sut.open() {
+                for try await _ in try await sut.open() {
                     didReceiveMessage.fulfill()
                 }
             } catch {
@@ -199,7 +199,7 @@ final class WebSocketTests: XCTestCase {
 
         // When
         do {
-            for try await message in try sut.open() {
+            for try await message in try await sut.open() {
                 if case let .data(data) = message {
                     receivedMessageData.append(data)
                 }

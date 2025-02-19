@@ -16,6 +16,7 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 import Foundation
+import WireAPI
 import WireDataModel
 import WireDomain
 import WireLogging
@@ -72,7 +73,7 @@ final class SyncAgent: NSObject {
             do {
                 delegate?.syncAgentDidStartInitialSync(self)
                 WireLogger.sync.debug("did start new initial sync")
-                try await initialSyncBuilder.build().perform(skipPullingLastUpdateEventID: false)
+                try await initialSyncBuilder.buildInitialSync().perform(skipPullingLastUpdateEventID: false)
                 WireLogger.sync.debug("did finish new initial sync")
                 delegate?.syncAgentDidFinishInitialSync(self)
             } catch {
@@ -94,7 +95,7 @@ final class SyncAgent: NSObject {
             do {
                 delegate?.syncAgentDidStartInitialSync(self)
                 WireLogger.sync.debug("did start new resource sync")
-                try await initialSyncBuilder.build().perform(skipPullingLastUpdateEventID: true)
+                try await initialSyncBuilder.buildInitialSync().perform(skipPullingLastUpdateEventID: true)
                 WireLogger.sync.debug("did finish new resource sync")
                 delegate?.syncAgentDidFinishInitialSync(self)
             } catch {
@@ -109,10 +110,26 @@ final class SyncAgent: NSObject {
         }
     }
 
+    private var incrementalSyncTask: Task<Void, any Error>?
+
     /// Perform an incremental sync.
 
     func performIncrementalSync() async throws {
-        await legacySyncStatus.performQuickSync()
+        if DeveloperFlag.newInitialSync.isOn {
+            do {
+                // TODO: guard task isn't already running
+                delegate?.syncAgentDidStartIncrementalSync(self)
+                WireLogger.sync.debug("did start new resource sync")
+                incrementalSyncTask = try await initialSyncBuilder.buildIncrementalSync().perform()
+                WireLogger.sync.debug("did finish new resource sync")
+                delegate?.syncAgentDidFinishIncrementalSync(self)
+            } catch {
+                WireLogger.sync.error("failed to perform new incremental sync: \(String(describing: error))")
+                throw error
+            }
+        } else {
+            await legacySyncStatus.performQuickSync()
+        }
     }
 
 }

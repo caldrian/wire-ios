@@ -59,4 +59,11 @@ public final class StoredUpdateEventEnvelope: NSManagedObject {
         return request
     }
 
+    public static func fetchRequest(sortIndex: Int64) -> NSFetchRequest<StoredUpdateEventEnvelope> {
+        let request = NSFetchRequest<StoredUpdateEventEnvelope>(entityName: entityName)
+        request.predicate = NSPredicate(format: "\(#keyPath(StoredUpdateEventEnvelope.sortIndex)) == \(sortIndex)")
+        request.fetchLimit = 1
+        return request
+    }
+
 }

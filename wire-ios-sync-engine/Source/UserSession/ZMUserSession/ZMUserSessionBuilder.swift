@@ -51,7 +51,9 @@ struct ZMUserSessionBuilder {
     private var sharedUserDefaults: UserDefaults?
     private var transportSession: (any TransportSessionType)?
     private var userId: UUID?
-    private var syncAgent: SyncAgent?
+    private var wireBackendEnvironment: WireAPI.BackendEnvironment?
+    private var minTLSVersion: WireAPI.TLSVersion?
+    private var apiVersion: WireAPI.APIVersion?
 
     // MARK: - Initialize
 
@@ -83,7 +85,9 @@ struct ZMUserSessionBuilder {
             let sharedUserDefaults,
             let transportSession,
             let userId,
-            let syncAgent
+            let wireBackendEnvironment,
+            let minTLSVersion,
+            let apiVersion
         else {
             fatalError("cannot build 'ZMUserSession' without required dependencies")
         }
@@ -111,7 +115,9 @@ struct ZMUserSessionBuilder {
             contextStorage: contextStorage,
             recurringActionService: recurringActionService,
             dependencies: dependencies,
-            syncAgent: syncAgent
+            backendEnvironment: wireBackendEnvironment,
+            minTLSVersion: minTLSVersion,
+            apiVersion: apiVersion
         )
     }
 
@@ -200,22 +206,15 @@ struct ZMUserSessionBuilder {
             syncStatus: applicationStatusDirectory.syncStatus,
             userID: coreDataStack.account.userIdentifier
         )
-        let initialSyncBuilder = InitialSyncBuilder(
-            selfUserID: userId,
-            selfClientID: selfUser.selfClient()?.remoteIdentifier,
-            syncContext: coreDataStack.syncContext,
-            mlsService: mlsService,
-            sharedUserDefaults: sharedUserDefaults,
-            backendEnvironment: wireAPIBackendEnvironment,
-            minTLSVersion: .minVersionFrom(minTLSVersion)
-        )
-        let syncAgent = SyncAgent(
-            lastUpdateEventIDRepository: lastEventIDRepository,
-            initialSyncBuilder: initialSyncBuilder,
-            legacySyncStatus: applicationStatusDirectory.syncStatus
-        )
-        applicationStatusDirectory.syncStatus.syncStateDelegate = syncAgent
-
+//        let initialSyncBuilder = InitialSyncBuilder(
+//            selfUserID: userId,
+//            selfClientID: selfUser.selfClient()?.remoteIdentifier,
+//            syncContext: coreDataStack.syncContext,
+//            mlsService: mlsService,
+//            sharedUserDefaults: sharedUserDefaults,
+//            backendEnvironment: wireAPIBackendEnvironment,
+//            minTLSVersion: .minVersionFrom(minTLSVersion)
+//        )
         let proteusToMLSMigrationCoordinator = proteusToMLSMigrationCoordinator ?? ProteusToMLSMigrationCoordinator(
             context: coreDataStack.syncContext,
             userID: userId
@@ -249,7 +248,9 @@ struct ZMUserSessionBuilder {
         self.sharedUserDefaults = sharedUserDefaults
         self.transportSession = transportSession
         self.userId = userId
-        self.syncAgent = syncAgent
+        self.wireBackendEnvironment = wireAPIBackendEnvironment
+        self.minTLSVersion = .minVersionFrom(minTLSVersion)
+        self.apiVersion = .v0
     }
 
     // MARK: UserSesssionDependencies
