@@ -37,7 +37,7 @@ class CompanyLoginURLActionProcessor: URLActionProcessor {
     func process(urlAction: URLAction, delegate presentationDelegate: PresentationDelegate?) {
         switch urlAction {
         case let .companyLoginSuccess(userInfo):
-            authenticationStatus.loginSucceeded(with: userInfo)
+            authenticationStatus.loginSucceeded(with: userInfo) // and here
         case let .startCompanyLogin(code):
             guard delegate?.isAllowedToCreateNewAccount == true else {
                 presentationDelegate?.failedToPerformAction(

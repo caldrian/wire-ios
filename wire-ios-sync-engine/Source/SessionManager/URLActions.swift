@@ -175,7 +175,7 @@ extension URLAction {
                 }
 
                 let userInfo = UserInfo(identifier: userID, cookieData: cookieData)
-                self = .companyLoginSuccess(userInfo: userInfo)
+                self = .companyLoginSuccess(userInfo: userInfo) //here we get the info
 
             case URL.Path.failure:
                 guard URLAction.validateURLSchemeRequest(with: components, in: defaults) else {

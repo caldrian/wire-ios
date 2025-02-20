@@ -104,7 +104,7 @@ final class AuthenticationCoordinator: NSObject, AuthenticationEventResponderCha
     var pendingModal: UIViewController?
 
     /// The user session to use before authentication has finished.
-    var unauthenticatedSession: UnauthenticatedSession {
+    var unauthenticatedSession: UnauthenticatedSession {// here
         sessionManager.activeUnauthenticatedSession
     }
 

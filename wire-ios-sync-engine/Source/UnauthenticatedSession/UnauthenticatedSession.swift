@@ -74,7 +74,7 @@ public class UnauthenticatedSession: NSObject {
             userInfoParser: self
         )
         self.urlActionProcessors = [
-            CompanyLoginURLActionProcessor(
+            CompanyLoginURLActionProcessor(//
                 delegate: self,
                 authenticationStatus: authenticationStatus
             ),
