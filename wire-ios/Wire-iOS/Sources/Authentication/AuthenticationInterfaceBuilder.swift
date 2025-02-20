@@ -60,7 +60,16 @@ final class AuthenticationInterfaceBuilder {
     /// - returns: The view controller to use for this step, or `nil` if the interface builder
     /// does not support this step.
 
-    func makeViewController(for step: AuthenticationFlowStep) -> AuthenticationStepViewController? {
+    func makeViewController(
+        for step: AuthenticationFlowStep,
+        authenticationCoordinator: AuthenticationCoordinator?
+    ) -> AuthenticationStepViewController? {
+        let bridgeAction: () -> Void = {
+            print("something")
+        }
+        authenticationCoordinator?.unauthenticatedSession.appendURLActionProcessors(action: {
+            bridgeAction()
+        })
         switch step {
         case .landingScreen:
             let landingViewController = LandingViewController(backendEnvironmentProvider: backendEnvironmentProvider)

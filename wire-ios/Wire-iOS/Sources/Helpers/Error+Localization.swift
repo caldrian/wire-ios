@@ -107,7 +107,7 @@ extension CompanyLoginError: LocalizedError {
     }
 
     public var failureReason: String? {
-        L10n.Localizable.Login.Sso.Error.Alert.message(displayCode)
+        L10n.Localizable.Login.Sso.Error.Alert.message(displayCode)//
     }
 
 }

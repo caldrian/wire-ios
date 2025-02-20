@@ -74,7 +74,7 @@ public class UnauthenticatedSession: NSObject {
             userInfoParser: self
         )
         self.urlActionProcessors = [
-            CompanyLoginURLActionProcessor(//
+            CompanyLoginURLActionProcessor(///
                 delegate: self,
                 authenticationStatus: authenticationStatus
             ),
@@ -106,6 +106,11 @@ public class UnauthenticatedSession: NSObject {
             let error = NSError(userSessionErrorCode: .networkError, userInfo: nil)
             authenticationStatus.notifyAuthenticationDidFail(error)
         }
+    }
+
+    public func appendURLActionProcessors(action: @escaping () -> Void) {
+        urlActionProcessors.append(CompanyLoginURLActionProcessor1(action: action))
+
     }
 }
 

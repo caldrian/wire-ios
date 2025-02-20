@@ -24,7 +24,7 @@ protocol UnauthenticatedSessionStatusDelegate: AnyObject {
 
 }
 
-class CompanyLoginURLActionProcessor: URLActionProcessor {
+class CompanyLoginURLActionProcessor: URLActionProcessor {//
 
     private weak var delegate: UnauthenticatedSessionStatusDelegate?
     private var authenticationStatus: ZMAuthenticationStatus
@@ -55,6 +55,27 @@ class CompanyLoginURLActionProcessor: URLActionProcessor {
         CompanyLoginVerificationToken.flush()
 
         presentationDelegate?.completedURLAction(urlAction)
+    }
+
+}
+
+class CompanyLoginURLActionProcessor1: URLActionProcessor {
+
+    let action: () -> Void
+
+    init(action: @escaping () -> Void) {
+        self.action = action
+    }
+
+    func process(urlAction: URLAction, delegate: (any PresentationDelegate)?) {
+        switch urlAction {
+        case let .companyLoginSuccess(userInfo):
+            action()
+            //authenticationStatus.loginSucceeded(with: userInfo)
+        default:
+            break
+        }
+
     }
 
 }
