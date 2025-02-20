@@ -38,14 +38,20 @@ public struct WireAuthenticationAssembly {
         defaultAPIVersion: APIVersion,
         accountsURL: URL,
         passwordValidator: any PasswordValidator
-    ) -> some View {
-        RootComponent(
+    ) -> (view: some View, bridge: WireAuthenticationBridge) {
+        let rootComponent = RootComponent(
             defaultBackendEnvironment: defaultBackendEnvironment,
             defaultAPIVersion: defaultAPIVersion,
             minTLSVersion: minTLSVersion,
             accountsURL: accountsURL, // this is temp
             passwordValidator: passwordValidator
-        ).rootView
+        )
+        let bridge = WireAuthenticationBridge {
+            rootComponent.router.navigate(to: DetermineAuthMethodView.Destination.noHistory)
+        }
+
+        return (view: rootComponent.rootView, bridge: bridge)
     }
 
 }
+
