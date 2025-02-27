@@ -26,7 +26,13 @@ public class ConversationPDFWithThumbnailPreviewViewModel: ConversationDocumentW
     private let pdfURL: URL
 
     init(pdfURL: URL) {
-        self.pdfURL = pdfURL
+        if let url = Bundle(for: ConversationPDFWithThumbnailPreviewViewModel.self).url(forResource: "Screenshot 2025-02-27 at 14.56.12", withExtension: "pdf") {
+            print("URL: \(url)")
+            self.pdfURL = url
+        } else {
+            print("URL: \(pdfURL)")
+            self.pdfURL = pdfURL
+        }
     }
 
     public func loadContent() {

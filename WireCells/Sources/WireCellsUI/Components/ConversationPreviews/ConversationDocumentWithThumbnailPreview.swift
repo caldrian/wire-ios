@@ -97,9 +97,15 @@ public struct ConversationDocumentWithThumbnailPreview<
                                     BaseColorPalette.Grays.gray40.color,
                                     lineWidth: 1
                                 )
+                                .overlay {
+                                    Text("Loading")
+                                }
                         } else {
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(ColorTheme.Backgrounds.background.color)
+                                .overlay {
+                                    Text("Loading")
+                                }
                         }
                     case .loadingFailed:
                         if #available(iOS 17.0, *) {
@@ -109,9 +115,15 @@ public struct ConversationDocumentWithThumbnailPreview<
                                     BaseColorPalette.Grays.gray40.color,
                                     lineWidth: 1
                                 )
+                                .overlay {
+                                    Text("Loading Failed")
+                                }
                         } else {
                             RoundedRectangle(cornerRadius: 10)
                                 .fill(ColorTheme.Backgrounds.background.color)
+                                .overlay {
+                                    Text("Loading Failed")
+                                }
                         }
                     }
                 }
