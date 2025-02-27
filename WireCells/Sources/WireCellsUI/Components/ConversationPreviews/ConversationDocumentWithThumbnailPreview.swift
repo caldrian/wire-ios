@@ -32,6 +32,8 @@ public protocol ConversationDocumentWithThumbnailPreviewViewModel<Content>: Obse
     associatedtype Content
 
     var state: ConversationDocumentWithThumbnailPreviewViewModelState<Content> { get }
+
+    func loadContent()
 }
 
 public struct ConversationDocumentWithThumbnailPreview<
@@ -124,6 +126,9 @@ public struct ConversationDocumentWithThumbnailPreview<
                 cornerRadius: 10,
                 padding: 0
             )
+            .onAppear() {
+                viewModel.loadContent()
+            }
             .gesture(LongPressGesture(minimumDuration: 0.5))
         }
     }
@@ -134,6 +139,8 @@ package class ImageViewModel: ConversationDocumentWithThumbnailPreviewViewModel 
         "square-placeholder",
         bundle: .module
     ))
+
+    package func loadContent() { }
 }
 
 package struct ConversationDocumentWithThumbnailPreview_Preview: View {

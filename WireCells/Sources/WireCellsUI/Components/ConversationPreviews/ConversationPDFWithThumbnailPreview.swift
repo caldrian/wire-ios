@@ -28,6 +28,15 @@ public class ConversationPDFWithThumbnailPreviewViewModel: ConversationDocumentW
     init(pdfURL: URL) {
         self.pdfURL = pdfURL
     }
+
+    public func loadContent() {
+        self.state = .loading
+        guard let pdfDocument = PDFDocument(url: self.pdfURL) else {
+            state = .loadingFailed
+            return
+        }
+        state = .loaded(pdfDocument)
+    }
 }
 
 @MainActor
@@ -35,8 +44,8 @@ public class ConversationPDFWithThumbnailPreviewViewModel: ConversationDocumentW
 public func conversationPDFWithThumbnailPreview(pdfURL: URL) -> some View {
     ConversationDocumentWithThumbnailPreview(
         headerIcon: Image("square-placeholder", bundle: .module),
-        headerText: "Document (336 KB)",
-        labelText: "Lorem ipsum",
+        headerText: "PDF (336 KB)",
+        labelText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ipsum purus, scelerisque molestie rutrum vitae, faucibus in velit. Sed eget consectetur elit, in tristique metus.",
         viewModel: ConversationPDFWithThumbnailPreviewViewModel(pdfURL: pdfURL)
     ) { (content: PDFDocument) in
         PDFViewer(pdfDocument: content)
