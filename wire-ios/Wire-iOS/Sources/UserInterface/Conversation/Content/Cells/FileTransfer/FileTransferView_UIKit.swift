@@ -16,12 +16,62 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
+import SwiftUI
 import UIKit
 import WireCommonComponents
 import WireDataModel
 import WireDesign
 
-final class FileTransferView: UIView, TransferView {
+final class FileTransferViewModel: ObservableObject {
+    var fileMessage: ZMConversationMessage?
+
+    @Published var fileName: String?
+    @Published var fileSize: String?
+    @Published var fileExtension: String?
+    @Published var mediaAsset: MediaAsset?
+    @Published var isActionButtonEnabled: Bool = false
+
+    @Published var transferState: AssetTransferState?
+
+    func configure(for message: ZMConversationMessage, isInitial: Bool) {
+        fileMessage = message
+        guard let fileMessageData = message.fileMessageData else {
+            return
+        }
+
+        let filepath = (fileMessageData.filename ?? "") as NSString
+        let filesize: UInt64 = fileMessageData.size
+        let ext = filepath.pathExtension
+
+        self.fileExtension = ext
+
+        let dot = " " + String.MessageToolbox.middleDot + " "
+
+        guard let filename = message.filename else { return }
+        self.fileName = filename
+
+        let fileSize = ByteCountFormatter.string(fromByteCount: Int64(filesize), countStyle: .binary)
+
+        fileMessageData.thumbnailImage.fetchImage { [weak self] image, _ in
+            self?.mediaAsset = image
+        }
+
+        isActionButtonEnabled = true
+
+        self.transferState = fileMessageData.transferState
+    }
+}
+
+struct FileTransferView_SwiftUI: View {
+    var body: some View {
+        EmptyView()
+    }
+
+    func configure(for message: ZMConversationMessage, isInitial: Bool) {
+    }
+}
+
+final class FileTransferView_UIKit: UIView, TransferView {
     var fileMessage: ZMConversationMessage?
 
     weak var delegate: TransferViewDelegate?
@@ -60,7 +110,7 @@ final class FileTransferView: UIView, TransferView {
 
         actionButton.contentMode = .scaleAspectFit
         actionButton.setIconColor(.white, for: .normal)
-        actionButton.addTarget(self, action: #selector(FileTransferView.onActionButtonPressed(_:)), for: .touchUpInside)
+        actionButton.addTarget(self, action: #selector(FileTransferView_UIKit.onActionButtonPressed(_:)), for: .touchUpInside)
         actionButton.accessibilityIdentifier = "FileTransferActionButton"
 
         progressView.accessibilityIdentifier = "FileTransferProgressView"

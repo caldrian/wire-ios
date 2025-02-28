@@ -30,7 +30,7 @@ final class ConversationFileMessageCell: RoundedView, ConversationMessageCell {
     }
 
     private var containerView = UIView()
-    private let fileTransferView = FileTransferView(frame: .zero)
+    private let fileTransferView = FileTransferView_UIKit(frame: .zero)
     private let obfuscationView = ObfuscationView(icon: .paperclip)
     private let restrictionView = FileMessageRestrictionView()
 

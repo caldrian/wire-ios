@@ -23,7 +23,7 @@ import WireDesign
 
 final class CollectionFileCell: CollectionCell {
     private var containerView = UIView()
-    private let fileTransferView = FileTransferView()
+    private let fileTransferView = FileTransferView_UIKit()
     private let restrictionView = FileMessageRestrictionView()
     private let headerView = CollectionCellHeader()
 
