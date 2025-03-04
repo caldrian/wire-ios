@@ -299,6 +299,10 @@ final class DeveloperToolsViewModel: ObservableObject {
             .destination(DestinationItem(
                 title: "Authentication",
                 makeView: { AnyView(WireAuthenticationUIDebugView()) }
+            )),
+            .destination(DestinationItem(
+                title: "WireCells",
+                makeView: { AnyView(WireCellsUIDebugView()) }
             ))
         ]
 

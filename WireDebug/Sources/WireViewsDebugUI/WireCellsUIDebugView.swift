@@ -25,6 +25,7 @@ public struct WireCellsUIDebugView: View {
     enum PresentationItem: String, Identifiable {
         var id: String { rawValue }
 
+        case conversationPDF
         case uploadImagePreview
         case uploadVideoPreview
     }
@@ -37,6 +38,10 @@ public struct WireCellsUIDebugView: View {
         List {
             Section(header: Text("Upload")) {
                 Button(
+                    action: { presentedItem = .conversationPDF },
+                    label: { Text("Conversation PDF") }
+                )
+                Button(
                     action: { presentedItem = .uploadImagePreview },
                     label: { Text("Image Upload Preview") }
                 )
@@ -46,8 +51,14 @@ public struct WireCellsUIDebugView: View {
                 )
             }
         }
-        .fullScreenCover(item: $presentedItem, content: { _ in
-            switch presentedItem {
+        .fullScreenCover(item: $presentedItem, content: { item in
+            switch item {
+            case .conversationPDF:
+                fullscreenCover(content: { Rectangle().fill(.gray).frame(maxWidth: .infinity, maxHeight: .infinity) })
+                    .overlay {
+                        conversationPDFWithThumbnailPreview()
+                            .padding()
+                    }
             case .uploadImagePreview:
                 fullscreenCover(content: { EmptyView() })
                     .overlay {
@@ -58,8 +69,6 @@ public struct WireCellsUIDebugView: View {
                     .overlay {
                         UploadVideoPreview_Preview(demoThumbnailName: "demo-image")
                     }
-            case nil:
-                EmptyView()
             }
         })
     }

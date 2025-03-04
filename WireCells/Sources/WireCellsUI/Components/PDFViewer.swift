@@ -21,17 +21,58 @@ import SwiftUI
 
 struct PDFViewer: UIViewRepresentable {
     let pdfDocument: PDFDocument
+    var areScrollingIndicatorsVisible: Bool = true
+    var isScrollEnabled: Bool = true
+    var isUserInteractionEnabled: Bool = true
 
     func makeUIView(context: Context) -> PDFView {
         let pdfView = PDFView()
         pdfView.document = pdfDocument
         pdfView.autoScales = true // Automatically scales the PDF to fit
+        pdfView.displaysPageBreaks = false // Removes the extra spacing (page breaks) between pages.
+        pdfView.displayBox = .cropBox // Tells PDFView to use the crop box (instead of, say, the media box) which often omits any built-in margins.
         pdfView.displayMode = .singlePageContinuous // Continuous scrolling
         pdfView.displayDirection = .vertical // Vertical scrolling
+        pdfView.isUserInteractionEnabled = isUserInteractionEnabled
+        pdfView.clipsToBounds = true
+        pdfView.layer.masksToBounds = true
+        pdfView.isUserInteractionEnabled = isUserInteractionEnabled
+        if let scrollView = pdfView.subviews.compactMap({ $0 as? UIScrollView }).first {
+            scrollView.showsHorizontalScrollIndicator = areScrollingIndicatorsVisible
+            scrollView.showsVerticalScrollIndicator = areScrollingIndicatorsVisible
+            scrollView.isScrollEnabled = isScrollEnabled
+        }
         return pdfView
     }
 
     func updateUIView(_ uiView: PDFView, context: Context) {
-        // No updates needed
+       // Nothing to do here
     }
+
+    func scrollEnabled(_ enabled: Bool) -> PDFViewer {
+        var copy = self
+        copy.isScrollEnabled = enabled
+        return copy
+    }
+
+    func scrollIndicatorsVisible(_ visible: Bool) -> PDFViewer {
+        var copy = self
+        copy.areScrollingIndicatorsVisible = visible
+        return copy
+    }
+
+    func userInteractionEnabled(_ enabled: Bool) -> PDFViewer {
+        var copy = self
+        copy.isUserInteractionEnabled = enabled
+        return copy
+    }
+}
+
+#Preview {
+    VStack {
+        PDFViewer(pdfDocument: PDFDocument(url: Bundle.module.url(forResource: "Screenshot", withExtension: "pdf")!)!)
+            .frame(width: 350, height: 500)
+    }
+    .padding()
+    .background(.black)
 }

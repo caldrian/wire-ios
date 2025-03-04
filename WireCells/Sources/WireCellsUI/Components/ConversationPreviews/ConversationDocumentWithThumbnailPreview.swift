@@ -41,7 +41,7 @@ public struct ConversationDocumentWithThumbnailPreview<
     ContentView: View,
     ViewModel: ConversationDocumentWithThumbnailPreviewViewModel<Content>
 >: View {
-    let contentView: (Content) -> ContentView
+    let contentView: (_ state: ConversationDocumentWithThumbnailPreviewViewModelState<Content>) -> ContentView
     let headerIcon: Image
     let headerText: String
     let labelText: String
@@ -53,7 +53,7 @@ public struct ConversationDocumentWithThumbnailPreview<
         headerText: String,
         labelText: String,
         viewModel: ViewModel,
-        contentView: @escaping (Content) -> ContentView
+        @ViewBuilder contentView: @escaping (_ state: ConversationDocumentWithThumbnailPreviewViewModelState<Content>) -> ContentView
     ) {
         self.contentView = contentView
         self.headerIcon = headerIcon
@@ -71,64 +71,9 @@ public struct ConversationDocumentWithThumbnailPreview<
                     labelText: labelText
                 )
                 .padding(8)
-                Group {
-                    switch viewModel.state {
-                    case .initial:
-                        if #available(iOS 17.0, *) {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(ColorTheme.Backgrounds.background.color)
-                                .stroke(
-                                    BaseColorPalette.Grays.gray40.color,
-                                    lineWidth: 1
-                                )
-                        } else {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(ColorTheme.Backgrounds.background.color)
-                        }
-                    case let .loaded(content):
-                        contentView(content)
-                            .frame(height: geometry.size.width / (4 / 3), alignment: .top)
-                            .clipped()
-                    case .loading:
-                        if #available(iOS 17.0, *) {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(ColorTheme.Backgrounds.background.color)
-                                .stroke(
-                                    BaseColorPalette.Grays.gray40.color,
-                                    lineWidth: 1
-                                )
-                                .overlay {
-                                    Text("Loading")
-                                }
-                        } else {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(ColorTheme.Backgrounds.background.color)
-                                .overlay {
-                                    Text("Loading")
-                                }
-                        }
-                    case .loadingFailed:
-                        if #available(iOS 17.0, *) {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(ColorTheme.Backgrounds.background.color)
-                                .stroke(
-                                    BaseColorPalette.Grays.gray40.color,
-                                    lineWidth: 1
-                                )
-                                .overlay {
-                                    Text("Loading Failed")
-                                }
-                        } else {
-                            RoundedRectangle(cornerRadius: 10)
-                                .fill(ColorTheme.Backgrounds.background.color)
-                                .overlay {
-                                    Text("Loading Failed")
-                                }
-                        }
-                    }
-                }
-                .frame(height: geometry.size.width / (4 / 3))
-                .clipped()
+                contentView(viewModel.state)
+                    .frame(height: geometry.size.width / (4 / 3), alignment: .top)
+                    .clipped()
             }
             .roundedBorderAndBackground(
                 backgroundColor: ColorTheme.Backgrounds.surfaceVariant
@@ -162,10 +107,22 @@ package struct ConversationDocumentWithThumbnailPreview_Preview: View {
             headerText: "Document (336 KB)",
             labelText: "Lorem ipsum",
             viewModel: ImageViewModel()
-        ) { (content: Image) in
-            content
-                .resizable()
-                .aspectRatio(contentMode: .fill)
+        ) { (state) in
+            switch state {
+            case .initial, .loading:
+                Rectangle()
+                    .fill(.gray)
+                    .overlay {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                    }
+            case .loaded(let content):
+                content
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+            case .loadingFailed:
+                Text("Loading failed")
+            }
         }
         .environment(\.wireTextStyleMapping, WireTextStyleMapping())
     }

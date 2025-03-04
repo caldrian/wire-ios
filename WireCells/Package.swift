@@ -56,7 +56,7 @@ let package = Package(
                 .product(name: "WireDesign", package: "WireUI"),
                 .product(name: "WireReusableUIComponents", package: "WireUI")
             ],
-            resources: [.copy("Resources/Screenshot 2025-02-27 at 14.56.12.pdf")],
+            resources: [.copy("Resources/Screenshot.pdf")],
             plugins: [.plugin(name: "SwiftGenPlugin", package: "WirePlugins")]
         ),
         .testTarget(

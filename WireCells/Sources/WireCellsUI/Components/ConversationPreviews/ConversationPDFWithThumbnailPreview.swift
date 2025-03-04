@@ -18,6 +18,7 @@
 
 public import PDFKit
 public import SwiftUI
+import WireFoundation
 
 public class ConversationPDFWithThumbnailPreviewViewModel: ConversationDocumentWithThumbnailPreviewViewModel {
 
@@ -26,7 +27,7 @@ public class ConversationPDFWithThumbnailPreviewViewModel: ConversationDocumentW
     private let pdfURL: URL
 
     init(pdfURL: URL) {
-        if let url = Bundle(for: ConversationPDFWithThumbnailPreviewViewModel.self).url(forResource: "Screenshot 2025-02-27 at 14.56.12", withExtension: "pdf") {
+        if let url = Bundle.module.url(forResource: "Screenshot", withExtension: "pdf") {
             print("URL: \(url)")
             self.pdfURL = url
         } else {
@@ -46,21 +47,46 @@ public class ConversationPDFWithThumbnailPreviewViewModel: ConversationDocumentW
 }
 
 @MainActor
-@ViewBuilder
-public func conversationPDFWithThumbnailPreview(pdfURL: URL) -> some View {
+public func conversationPDFWithThumbnailPreview(
+    fileSizeInKilobytes: Int,
+    fileTitle: String,
+    pdfURL: URL
+) -> some View {
     ConversationDocumentWithThumbnailPreview(
         headerIcon: Image("square-placeholder", bundle: .module),
-        headerText: "PDF (336 KB)",
-        labelText: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ipsum purus, scelerisque molestie rutrum vitae, faucibus in velit. Sed eget consectetur elit, in tristique metus.",
+        headerText: "PDF (\(fileSizeInKilobytes) KB)",
+        labelText: fileTitle,
         viewModel: ConversationPDFWithThumbnailPreviewViewModel(pdfURL: pdfURL)
-    ) { (content: PDFDocument) in
-        PDFViewer(pdfDocument: content)
+    ) { state in
+        switch state {
+        case .initial:
+            ProgressView()
+        case .loaded(let pdfDocument):
+            PDFViewer(pdfDocument: pdfDocument)
+                .scrollEnabled(false)
+                .scrollIndicatorsVisible(false)
+                .userInteractionEnabled(false)
+        case .loading:
+            ProgressView()
+        case .loadingFailed:
+            Text("Loading Failed")
+        }
     }
+}
+
+@MainActor
+package func conversationPDFWithThumbnailPreview_Preview() -> some View {
+    conversationPDFWithThumbnailPreview(
+        fileSizeInKilobytes: 336,
+        fileTitle: "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ipsum purus, scelerisque molestie rutrum vitae, faucibus in velit. Sed eget consectetur elit, in tristique metus.",
+        pdfURL: Bundle.module.url(forResource: "Screenshot", withExtension: "pdf")!
+    )
+    .environment(\.wireTextStyleMapping, WireTextStyleMapping())
 }
 
 #Preview("ConversationPDFPreview") {
     VStack {
-        conversationPDFWithThumbnailPreview(pdfURL: URL(string: "https://example.com")!)
+        conversationPDFWithThumbnailPreview_Preview()
             .frame(width: 350, height: 500)
     }
     .padding()
