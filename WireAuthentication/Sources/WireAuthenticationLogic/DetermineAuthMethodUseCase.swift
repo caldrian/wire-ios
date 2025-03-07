@@ -67,43 +67,41 @@ package struct DetermineAuthMethodUseCase: DetermineAuthMethodUseCaseProtocol {
 
     @MainActor
     private func determineAuthMethod(email: String, domain: String) async throws -> AuthenticationMethod {
-        let configuration: DomainRegistrationConfiguration
         do {
-            configuration = try await authenticationAPI.getDomainRegistration(forEmail: email)
-        } catch AuthenticationAPIError.unsupportedEndpointForAPIVersion {
-            // Fallback if the API doesn't support the getDomainRegistration endpoint
+            let configuration = try await authenticationAPI.getDomainRegistration(forEmail: email)
 
+            switch configuration.domainRedirect {
+            case .none where configuration.isCloudAccountAlreadyRegistered == true:
+                return .loginViaEmail(email: email, didDetectDomainConflict: true)
+
+            case .none, .locked, .preAuthorized:
+                return .loginOrRegisterViaEmail(email: email)
+
+            case .noRegistration:
+                return .loginViaEmail(email: email, didDetectDomainConflict: false)
+
+            case .sso:
+                guard let ssoCode = configuration.ssoCode else {
+                    throw DetermineAuthMethodUseCaseFailure.invalidResponse
+                }
+                return .loginViaSSO(code: ssoCode)
+
+            case .backend:
+                guard let backendURL = configuration.backendURL else {
+                    throw DetermineAuthMethodUseCaseFailure.invalidResponse
+                }
+                return .onPremLogin(email: email, backendConfig: backendURL)
+            }
+        } catch AuthenticationAPIError.unsupportedEndpointForAPIVersion {
+            // Handle unsupported API version by falling back to on-prem config retrieval
             do {
                 let onPremConfig = try await authenticationAPI.getOnPremConfigURL(forDomain: domain)
                 return .onPremLogin(email: email, backendConfig: onPremConfig.configurationURL)
             } catch AuthenticationAPIError.configNotFound, AuthenticationAPIError.domainNotFound {
                 return .loginOrRegisterViaEmail(email: email)
             }
-        }
-
-        switch configuration.domainRedirect {
-        case .none where configuration.isCloudAccountAlreadyRegistered == true:
-            // The email domain has been claimed by an on-prem backend,
-            // but there's already an existing cloud account registered.
-            return .loginViaEmail(email: email, didDetectDomainConflict: true)
-
-        case .none, .locked, .preAuthorized:
-            return .loginOrRegisterViaEmail(email: email)
-
-        case .noRegistration:
-            return .loginViaEmail(email: email, didDetectDomainConflict: false)
-
-        case .sso:
-            guard let ssoCode = configuration.ssoCode else {
-                throw DetermineAuthMethodUseCaseFailure.invalidResponse
-            }
-            return .loginViaSSO(code: ssoCode)
-
-        case .backend:
-            guard let backendURL = configuration.backendURL else {
-                throw DetermineAuthMethodUseCaseFailure.invalidResponse
-            }
-            return .onPremLogin(email: email, backendConfig: backendURL)
+        } catch {
+            throw DetermineAuthMethodUseCaseFailure.unknown
         }
     }
 
