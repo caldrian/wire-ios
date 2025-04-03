@@ -20,22 +20,9 @@ import Foundation
 import WireAuthenticationAPI
 import WireReusableUIComponents
 
-struct FakeLoginViaEmailFactory: LoginViaEmailFactory, CreateAuthenticationResultUseCaseFactory,
-    LoginViaEmailUseCaseFactory, SubmitProxyCredentialsUseCaseFactory, ValidateEmailUseCaseFactory {
+struct FakeLoginViaEmailFactory: LoginViaEmailFactory {
 
     var mockDependencies = MockDependencies()
-
-    func verificationCodeFactory(
-        email: String,
-        password: String,
-        proxyCredentials: WireAuthenticationAPI.ProxyCredentials?
-    ) -> any VerificationCodeFactory {
-        fatalError()
-    }
-
-    func noHistoryFactory(authenticationResult: WireAuthenticationAPI.AuthenticationResult) -> any NoHistoryFactory {
-        fatalError()
-    }
 
     var email: String?
     var backendInfo: BackendInfo
@@ -43,34 +30,27 @@ struct FakeLoginViaEmailFactory: LoginViaEmailFactory, CreateAuthenticationResul
     var didDetectDomainConflict: Bool
 
     var viewModel: LoginViaEmailViewModel {
-        .init(
+        LoginViaEmailViewModel(
             factory: self,
+            interactor: mockDependencies.loginViaEmailInteractor,
             router: FakeRootFactory().viewModel,
             email: email,
             backendInfo: backendInfo,
             canCreateAccount: canCreateAccount,
-            didDetectDomainConflict: didDetectDomainConflict,
-            onCreateAccount: {}
+            didDetectDomainConflict: didDetectDomainConflict
         )
     }
 
-    @MainActor
-    func createAuthenticationResultUseCase() -> any WireAuthenticationAPI
-        .CreateAuthenticationResultUseCaseProtocol {
-        mockDependencies.createAuthenticationResultUseCase()
+    func verificationCodeFactory(
+        email: String,
+        password: String,
+        proxyCredentials: ProxyCredentials?
+    ) -> any VerificationCodeFactory {
+        fatalError()
     }
 
-    func loginViaEmailUseCase() async throws -> any WireAuthenticationAPI.LoginViaEmailUseCaseProtocol {
-        try await mockDependencies.loginViaEmailUseCase()
-    }
-
-    @MainActor
-    func submitProxyCredentialsUseCase() -> any WireAuthenticationAPI.SubmitProxyCredentialsUseCaseProtocol {
-        mockDependencies.submitProxyCredentialsUseCase()
-    }
-
-    func validateEmailUseCase() -> any WireAuthenticationAPI.ValidateEmailUseCaseProtocol {
-        mockDependencies.validateEmailUseCase()
+    func noHistoryFactory(authenticationResult: AuthenticationResult) -> any NoHistoryFactory {
+        fatalError()
     }
 
 }

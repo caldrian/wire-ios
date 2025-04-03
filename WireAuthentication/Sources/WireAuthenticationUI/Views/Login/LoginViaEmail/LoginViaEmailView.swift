@@ -181,7 +181,9 @@ package struct LoginViaEmailView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             Button(action: {
-                viewModel.createAccount()
+                Task {
+                    await viewModel.createAccount()
+                }
             }, label: {
                 Text(L10n.CreatePersonalAccount.button)
                     .multilineTextAlignment(.center)

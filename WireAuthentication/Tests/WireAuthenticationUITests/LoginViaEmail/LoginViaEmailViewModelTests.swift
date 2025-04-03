@@ -19,100 +19,61 @@
 import Combine
 import SwiftUI
 import WireAuthenticationAPI
-import WireAuthenticationAPISupport
 import WireFoundation
 import WireReusableUIComponentsSupport
 import WireTestingPackage
 import XCTest
 
+@testable import WireAuthenticationAPISupport
 @testable import WireAuthenticationUI
 
-class LoginViaEmailViewModelTests: XCTestCase, LoginViaEmailViewModel.Factory {
+class LoginViaEmailViewModelTests: XCTestCase {
 
     private var router: MockRouter!
     private var sut: LoginViaEmailViewModel!
-    private var factory: LoginViaEmailViewModel.Factory!
     private var onCreateAccountCalled = false
     private var isLoadingCalls: [Bool] = []
     private var cancellables: Set<AnyCancellable> = []
 
-    private var mockSubmitProxyCredentialsUseCase: MockSubmitProxyCredentialsUseCaseProtocol!
-    private var mockLoginViaEmailUseCase: MockLoginViaEmailUseCaseProtocol!
-    private var mockCreateAuthenticationResultUseCase: MockCreateAuthenticationResultUseCaseProtocol!
-    private var mockValidateEmailUseCase: MockValidateEmailUseCaseProtocol!
+    private var mockInteractor: MockLoginViaEmailInteractorProtocol!
 
     @MainActor
     override func setUp() async throws {
+        let mockDependencies = MockDependencies()
+        let backendInfo = mockDependencies.backendInfo
+        let factory = FakeLoginViaEmailFactory(
+            backendInfo: backendInfo,
+            canCreateAccount: true,
+            didDetectDomainConflict: false
+        )
+        
+        mockInteractor = MockLoginViaEmailInteractorProtocol()
         router = MockRouter()
-        mockSubmitProxyCredentialsUseCase = MockSubmitProxyCredentialsUseCaseProtocol()
-        mockLoginViaEmailUseCase = MockLoginViaEmailUseCaseProtocol()
-        mockCreateAuthenticationResultUseCase = MockCreateAuthenticationResultUseCaseProtocol()
-        mockValidateEmailUseCase = MockValidateEmailUseCaseProtocol()
-
         sut = LoginViaEmailViewModel(
-            factory: self,
+            factory: factory,
+            interactor: mockInteractor,
             router: router,
             email: "mika@example.com",
-            backendInfo: MockDependencies().backendInfo,
+            backendInfo: backendInfo,
             canCreateAccount: true,
-            didDetectDomainConflict: false,
-            onCreateAccount: { [self] in onCreateAccountCalled = true }
+            didDetectDomainConflict: false
         )
 
         sut.$isLoading.dropFirst().sink { [self] in isLoadingCalls.append($0) }.store(in: &cancellables)
     }
 
     override func tearDown() {
-        factory = nil
+        mockInteractor = nil
         router = nil
         sut = nil
         onCreateAccountCalled = false
         isLoadingCalls = []
-        mockSubmitProxyCredentialsUseCase = nil
-        mockLoginViaEmailUseCase = nil
-        mockCreateAuthenticationResultUseCase = nil
-        mockValidateEmailUseCase = nil
-    }
-
-    // MARK: - Factory
-
-    func submitProxyCredentialsUseCase() -> any SubmitProxyCredentialsUseCaseProtocol {
-        mockSubmitProxyCredentialsUseCase
-    }
-
-    func loginViaEmailUseCase() async throws -> any LoginViaEmailUseCaseProtocol {
-        mockLoginViaEmailUseCase
-    }
-
-    func createAuthenticationResultUseCase() -> any CreateAuthenticationResultUseCaseProtocol {
-        mockCreateAuthenticationResultUseCase
-    }
-
-    func validateEmailUseCase() -> any ValidateEmailUseCaseProtocol {
-        mockValidateEmailUseCase
-    }
-
-    var viewModel: WireAuthenticationUI.LoginViaEmailViewModel {
-        fatalError("not needed here")
-    }
-
-    func verificationCodeFactory(
-        email: String,
-        password: String,
-        proxyCredentials: WireAuthenticationAPI.ProxyCredentials?
-    ) -> any WireAuthenticationUI.VerificationCodeFactory {
-        fatalError("not needed here")
-    }
-
-    func noHistoryFactory(authenticationResult: WireAuthenticationAPI.AuthenticationResult) -> any WireAuthenticationUI
-        .NoHistoryFactory {
-        fatalError("not needed here")
     }
 
     // MARK: - submitPassword tests
 
     @MainActor
-    func testSubmitPassword_passesCorrectCredentials() async {
+    func testSubmitPassword_passesCorrectCredentials() async throws {
         // given
         sut.email = " mika@example.com "
         sut.password = " password  "
@@ -130,21 +91,16 @@ class LoginViaEmailViewModelTests: XCTestCase, LoginViaEmailViewModel.Factory {
         )
 
         // mock
-        mockLoginViaEmailUseCase.invokeEmailPasswordVerificationCode_MockValue = (
-            [Fixture.someCookie],
-            Fixture.someAccessToken
-        )
-        mockCreateAuthenticationResultUseCase
-            .invokeUserIDCookiesAccessTokenEmailCredentials_MockValue = authenticationResult
+        mockInteractor.loginEmailPassword_MockValue = authenticationResult
 
         // when
         await sut.submitCredentials()
 
         // then
-        let invocations = mockLoginViaEmailUseCase.invokeEmailPasswordVerificationCode_Invocations
-        XCTAssertEqual(invocations.count, 1)
-        XCTAssertEqual(invocations.first?.email, "mika@example.com")
-        XCTAssertEqual(invocations.first?.password, "password")
+        let invocations = mockInteractor.loginEmailPassword_Invocations
+        try XCTAssertCount(invocations, count: 1)
+        XCTAssertEqual(invocations[0].email, "mika@example.com")
+        XCTAssertEqual(invocations[0].password, "password")
     }
 
     @MainActor
@@ -166,12 +122,7 @@ class LoginViaEmailViewModelTests: XCTestCase, LoginViaEmailViewModel.Factory {
         )
 
         // mock
-        mockLoginViaEmailUseCase.invokeEmailPasswordVerificationCode_MockValue = (
-            [Fixture.someCookie],
-            Fixture.someAccessToken
-        )
-        mockCreateAuthenticationResultUseCase
-            .invokeUserIDCookiesAccessTokenEmailCredentials_MockValue = authenticationResult
+        mockInteractor.loginEmailPassword_MockValue = authenticationResult
 
         // when
         await sut.submitCredentials()
@@ -192,8 +143,7 @@ class LoginViaEmailViewModelTests: XCTestCase, LoginViaEmailViewModel.Factory {
         sut.password = " bad password  "
 
         // mock
-        mockLoginViaEmailUseCase.invokeEmailPasswordVerificationCode_MockError = LoginViaEmailUseCaseFailure
-            .invalidCredentials
+        mockInteractor.loginEmailPassword_MockError = LoginViaEmailUseCaseFailure.invalidCredentials
 
         // when
         await sut.submitCredentials()
@@ -208,9 +158,9 @@ class LoginViaEmailViewModelTests: XCTestCase, LoginViaEmailViewModel.Factory {
         // given
         sut.email = " mika@example.com "
         sut.password = " password  "
+
         // mock
-        mockLoginViaEmailUseCase.invokeEmailPasswordVerificationCode_MockError = LoginViaEmailUseCaseFailure
-            .twoFactorAuthenticationRequired
+        mockInteractor.loginEmailPassword_MockError = LoginViaEmailUseCaseFailure.twoFactorAuthenticationRequired
 
         // when
         await sut.submitCredentials()
@@ -238,8 +188,7 @@ class LoginViaEmailViewModelTests: XCTestCase, LoginViaEmailViewModel.Factory {
         sut.password = " password  "
 
         // mock
-        mockLoginViaEmailUseCase.invokeEmailPasswordVerificationCode_MockError = LoginViaEmailUseCaseFailure
-            .accountPendingActivation
+        mockInteractor.loginEmailPassword_MockError = LoginViaEmailUseCaseFailure.accountPendingActivation
 
         // when
         await sut.submitCredentials()
@@ -256,8 +205,7 @@ class LoginViaEmailViewModelTests: XCTestCase, LoginViaEmailViewModel.Factory {
         sut.password = " password  "
 
         // mock
-        mockLoginViaEmailUseCase.invokeEmailPasswordVerificationCode_MockError = LoginViaEmailUseCaseFailure
-            .accountSuspended
+        mockInteractor.loginEmailPassword_MockError = LoginViaEmailUseCaseFailure.accountSuspended
 
         // when
         await sut.submitCredentials()
@@ -274,10 +222,11 @@ class LoginViaEmailViewModelTests: XCTestCase, LoginViaEmailViewModel.Factory {
         sut.password = " password  "
 
         // mock
-        mockLoginViaEmailUseCase.invokeEmailPasswordVerificationCode_MockError = URLError(.badURL)
+        mockInteractor.loginEmailPassword_MockError = URLError(.badURL)
 
         // when
         await sut.submitCredentials()
+
         // then
         XCTAssertEqual(router.alert_Invocations, [.unknownError])
         XCTAssertEqual(isLoadingCalls, [true, false])

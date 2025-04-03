@@ -82,41 +82,27 @@ class LoginViaEmailComponent: Component<LoginViaEmailComponentDependency> {
 
 }
 
-extension LoginViaEmailComponent: LoginViaEmailViewModel.Factory {
+extension LoginViaEmailComponent: LoginViaEmailFactory {
 
     // MARK: - Factory
 
     @MainActor var viewModel: LoginViaEmailViewModel {
         LoginViaEmailViewModel(
             factory: self,
+            interactor: interactor,
             router: dependency.router,
             email: email,
             backendInfo: networkStack.backendInfo,
             canCreateAccount: canCreateAccount,
-            didDetectDomainConflict: didDetectDomainConflict,
-            onCreateAccount: { [dependency, networkStack, email] in
-                guard let dependency else { return }
-                Task.detached {
-                    do {
-                        let backendEnvironment = try await networkStack.makeBackendEnvironment()
-                        await MainActor.run {
-                            dependency.router.dismissSheet()
-                            dependency.bridge.sendOutboundEvent(
-                                .accountRegistrationRequested(
-                                    email: email,
-                                    backendEnvironment
-                                )
-                            )
-                        }
-                    } catch {
-                        await MainActor.run {
-                            dependency.router.presentAlert(for: error)
-                        }
-                    }
+            didDetectDomainConflict: didDetectDomainConflict
+        )
+    }
 
-                }
-
-            }
+    @MainActor
+    private var interactor: LoginViaEmailInteractor {
+        LoginViaEmailInteractor(
+            networkStack: networkStack,
+            bridge: dependency.bridge
         )
     }
 
@@ -138,25 +124,6 @@ extension LoginViaEmailComponent: LoginViaEmailViewModel.Factory {
         noHistoryComponent(
             authenticationResult: authenticationResult
         )
-    }
-
-    // MARK: - Use cases
-
-    func submitProxyCredentialsUseCase() -> any SubmitProxyCredentialsUseCaseProtocol {
-        SubmitProxyCredentialsUseCase(networkStack: networkStack)
-    }
-
-    func loginViaEmailUseCase() async throws -> any LoginViaEmailUseCaseProtocol {
-        let authenticationAPI = try await networkStack.makeAuthenticationAPI()
-        return LoginViaEmailUseCase(authenticationAPI: authenticationAPI)
-    }
-
-    func createAuthenticationResultUseCase() -> any CreateAuthenticationResultUseCaseProtocol {
-        CreateAuthenticationResultUseCase(networkStack: networkStack)
-    }
-
-    func validateEmailUseCase() -> any ValidateEmailUseCaseProtocol {
-        ValidateEmailUseCase()
     }
 
 }
