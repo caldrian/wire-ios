@@ -25,11 +25,11 @@ final class WireAuthenticationTests: XCTestCase {
     override func setUpWithError() throws {
         app = XCUIApplication()
         app.launchArguments = [
-            "-BackendEnvironmentTypeOverrideKey staging",
+            "--BackendEnvironmentTypeOverrideKey=anta",
+            "--persist-backend-type",
             "--preferred-api-version=8"
         ]
         app.useWireAuthentication()
-
         app.launch()
 
         // In UI tests it is usually best to stop immediately when a failure occurs.
@@ -53,17 +53,35 @@ final class WireAuthenticationTests: XCTestCase {
 
     @MainActor // note: comment @MainActor to use recorder
     func test_Login_withEmail() throws {
-        throw XCTSkip("This should be fixed once SSO is merged")
+        let app = XCUIApplication()
+        app.activate()
+        
+        let emailOrSSOTextField = app.textFields["Email or SSO code"]
+        emailOrSSOTextField.tap()
+        emailOrSSOTextField.typeText("goyette61412447@wire.engineering")
 
-        let textField = emailTextField()
-        textField.tap()
-        textField.typeText(LoginCredentials.email)
-
-        let nextButton = nextButton()
+        let nextButton = app.buttons["Next"]
         nextButton.tap()
+        
+        let enterPasswordSecureTextField = app.secureTextFields["Enter password"]
+        enterPasswordSecureTextField.tap()
+        enterPasswordSecureTextField.typeText("u$6#x!Lm")
+        
+        
+        nextButton.tap()
+        
+        // No history
+        app.buttons["OK"].tap()
+        
+        // Accept notifications
+        let springboardApp = XCUIApplication(bundleIdentifier: "com.apple.springboard")
+        springboardApp/*@START_MENU_TOKEN@*/.buttons["Allow"]/*[[".otherElements.buttons[\"Allow\"]",".buttons[\"Allow\"]"],[[[-1,1],[-1,0]]],[0]]@END_MENU_TOKEN@*/.tap()
+        
+        app.activate()
+        
+        // Check if conversation list is present
+        //app.staticTexts["Conversations"].tap()
 
-        let errorAlert = app.alerts["Error"]
-        XCTAssertFalse(errorAlert.exists)
     }
 
     // MARK: - Helpers

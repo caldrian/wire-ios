@@ -48,6 +48,8 @@ public final class AutomationHelper: NSObject {
     public var skipFirstLoginAlerts: Bool {
         automationEmailCredentials != nil
     }
+    
+    var backendType: String?
 
     /// The login credentials provides by command line
     public let automationEmailCredentials: AutomationEmailCredentials?
@@ -106,6 +108,10 @@ public final class AutomationHelper: NSObject {
            let apiVersion = Int32(value) {
             self.preferredAPIVersion = APIVersion(rawValue: apiVersion)
         }
+        
+        if let backendType = arguments.flagValueIfPresent(AutomationKey.backendType.rawValue) {
+            self.backendType = backendType
+        }
 
         if let flags = arguments.flagValueIfPresent(AutomationKey.developerFlag.rawValue) {
             self.developerFlagArguments = flags.split(separator: " ").map { "\($0)" }
@@ -116,6 +122,8 @@ public final class AutomationHelper: NSObject {
         self.allowMLSGroupCreation = arguments.hasFlag(AutomationKey.allowMLSGroupCreation.rawValue)
 
         super.init()
+        
+        persistBackendTypeOverrideIfNeeded(with: backendType)
     }
 
     private enum AutomationKey: String {
@@ -129,6 +137,7 @@ public final class AutomationHelper: NSObject {
         case debugDataToInstall = "debug-data-to-install"
         case disableCallQualitySurvey = "disable-call-quality-survey"
         case persistBackendType = "persist-backend-type"
+        case backendType = "BackendEnvironmentTypeOverrideKey"
         case disableInteractiveKeyboardDismissal = "disable-interactive-keyboard-dismissal"
         case keepCallingOverlayVisible = "keep-calling-overlay-visible"
         case preferredAPIVersion = "preferred-api-version"

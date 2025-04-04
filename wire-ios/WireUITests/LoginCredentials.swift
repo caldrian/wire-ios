@@ -18,6 +18,6 @@
 
 // Generated file - DO NOT EDIT
 enum LoginCredentials {
-    static let email: String = "test@example.com"
-    static let password: String = "password123"
+    static let email: String = "jullian.mercier+staging1@wire.com"
+    static let password: String = "Aqa123456!"
 }
