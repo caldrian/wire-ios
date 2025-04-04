@@ -150,7 +150,7 @@ public final class WireConversationChannelCreationFormViewModel: ObservableObjec
     }
 
     public func getChannelCreationSettings() -> WireConversationChannelCreationSettings? {
-        channelName
+        try? channelName
             .map { value in
                 WireConversationChannelCreationSettings(
                     channelName: value,
@@ -161,8 +161,7 @@ public final class WireConversationChannelCreationFormViewModel: ObservableObjec
                     guestsAllowed: guestsAllowed,
                     readReceiptsEnabled: readReceiptsEnabled
                 )
-            }
-            .mapError { _ in nil }
+            }.get()
     }
 }
 
