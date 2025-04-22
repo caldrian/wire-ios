@@ -1,0 +1,106 @@
+//
+// Wire
+// Copyright (C) 2025 Wire Swiss GmbH
+//
+// This program is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program. If not, see http://www.gnu.org/licenses/.
+//
+
+import Foundation
+
+/// An event where a user's metadata was updated.
+
+struct UserUpdateEvent: Equatable, Codable, Sendable {
+
+    /// The updated user's id.
+
+    let userID: UUID
+
+    /// The new accent color id.
+
+    let accentColorID: Int?
+
+    /// The new user name.
+
+    let name: String?
+
+    /// The new user handle.
+
+    let handle: String?
+
+    /// The new email address.
+
+    let email: String?
+
+    /// Whether the user's sso id was deleted.
+
+    let isSSOIDDeleted: Bool?
+
+    /// The new user assets.
+
+    let assets: [UserAsset]?
+
+    /// The new supported protocols.
+
+    let supportedProtocols: [MessageProtocol]?
+
+}
+
+enum MessageProtocol: String, Codable, Sendable {
+
+    /// The Proteus messaging protocol.
+
+    case proteus
+
+    /// The Messaging Layer Security protocol.
+
+    case mls
+
+}
+
+enum UserAssetSize: String, Codable, Equatable, Sendable {
+
+    /// Smaller version of the asset optimised for size
+
+    case preview
+
+    /// Complete version of the asset
+
+    case complete
+}
+
+/// Describes the purpose of the user asset.
+
+enum UserAssetType: String, Codable, Equatable, Sendable {
+
+    /// User profile image
+
+    case image
+}
+
+/// An asset associated with a user, typically a profile picture.
+
+struct UserAsset: Codable, Equatable, Sendable {
+
+    /// Unique key for this asset, if the asset is updated it will be assigned new key.
+
+    let key: String
+
+    /// Asset size
+
+    let size: UserAssetSize
+
+    /// Asset type
+
+    let type: UserAssetType
+}

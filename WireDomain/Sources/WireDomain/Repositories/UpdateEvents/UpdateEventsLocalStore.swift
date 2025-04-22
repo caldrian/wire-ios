@@ -20,6 +20,7 @@ import WireAPI
 import WireDataModel
 import WireFoundation
 import WireLogging
+import WireUpdateEventCoding
 
 final class UpdateEventsLocalStore: UpdateEventsLocalStoreProtocol {
 
@@ -81,8 +82,9 @@ final class UpdateEventsLocalStore: UpdateEventsLocalStoreProtocol {
         index: Int64
     ) async throws {
         try await context.perform { [context, encoder] in
+            let coder = UpdateEventCoder()
             let storedEventEnvelope = StoredUpdateEventEnvelope(context: context)
-            storedEventEnvelope.data = try encoder.encode(eventEnvelope)
+            storedEventEnvelope.data = try coder.encode(eventEnvelope)
             storedEventEnvelope.sortIndex = index
             try context.save()
         }
