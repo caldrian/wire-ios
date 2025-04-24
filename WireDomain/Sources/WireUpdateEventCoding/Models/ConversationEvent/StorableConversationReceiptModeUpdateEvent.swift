@@ -16,23 +16,18 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
+import WireAPI
 
-/// An event where the receipt mode of a conversation was updated.
+struct StorableConversationReceiptModeUpdateEvent: Equatable, Codable, Sendable {
 
-struct ConversationReceiptModeUpdateEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let newReceiptMode: Int
 
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who updated the receipt mode.
-
-    let senderID: StorableQualifiedID
-
-    /// The receipt mode.
-    ///
-    /// A value of `1` indicates read reciepts are enabled
-    /// and any other value indicates receipts are disabled.
-
-    let newReceiptMode: Int
+    init(_ value: WireAPI.ConversationReceiptModeUpdateEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.newReceiptMode = value.newReceiptMode
+    }
 
 }
