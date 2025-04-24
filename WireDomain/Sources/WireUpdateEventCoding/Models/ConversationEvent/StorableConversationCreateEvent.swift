@@ -22,14 +22,14 @@ import Foundation
 
 struct ConversationCreateEvent: Equatable, Codable, Sendable {
 
-    let conversationID: StorableQualifiedID
-    let senderID: StorableQualifiedID
-    let timestamp: Date
-    let conversation: Conversation
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let timestamp: Date
+    private let conversation: Conversation
 
 }
 
-struct Conversation: Equatable, Codable, Sendable {
+private struct Conversation: Equatable, Codable, Sendable {
 
     /// The unqualified conversation id.
 
@@ -127,38 +127,10 @@ enum ConversationGroupType: String, Codable, Sendable {
 }
 
 extension Conversation {
-    struct Member: Equatable, Codable, Sendable {
-
-        let StorableQualifiedID: StorableQualifiedID?
-        let id: UUID?
-        let qualifiedTarget: StorableQualifiedID?
-        let target: UUID?
-        let conversationRole: String?
-        let service: Service?
-        let archived: Bool?
-        let archivedReference: Date?
-        let hidden: Bool?
-        let hiddenReference: String?
-        let mutedStatus: Int?
-        let mutedReference: Date?
-
-    }
-}
-
-
-
-struct Service: Equatable, Codable, Sendable {
-
-    let id: UUID
-    let provider: UUID
-
-}
-
-extension Conversation {
 
     struct Members: Equatable, Codable, Sendable {
-        public let others: [Member]
-        public let selfMember: Member
+        public let others: [StorableConversationMember]
+        public let selfMember: StorableConversationMember
 
     }
 

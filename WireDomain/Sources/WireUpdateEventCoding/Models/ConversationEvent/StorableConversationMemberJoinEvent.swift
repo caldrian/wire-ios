@@ -36,6 +36,6 @@ struct ConversationMemberJoinEvent: Equatable, Codable, Sendable {
 
     /// The members who were added.
 
-    let members: [Conversation.Member]
+    let members: [StorableConversationMember]
 
 }
