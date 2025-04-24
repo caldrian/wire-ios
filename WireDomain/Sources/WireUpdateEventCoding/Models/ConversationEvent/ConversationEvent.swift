@@ -36,7 +36,7 @@ enum ConversationEvent: Equatable, Codable, Sendable {
 
     /// An existing conversation was deleted.
 
-    case delete(ConversationDeleteEvent)
+    case delete(StorableConversationDeleteEvent)
 
     /// One or more users were added to a conversation.
 
