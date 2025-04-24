@@ -17,53 +17,36 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where an mls message was received in a conversation.
+struct StorableConversationMLSMessageAddEvent: Equatable, Codable, Sendable {
 
-struct ConversationMLSMessageAddEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let subconversation: String?
+    private let message: String
+    private let timestamp: Date?
+    private let decryptedMessages: [StorableDecryptedMessage]
 
-    struct DecryptedMessage: Equatable, Codable, Sendable {
-
-        let message: String
-
-        let senderClientID: String?
-
-        init(
-            message: String,
-            senderClientID: String?
-        ) {
-            self.message = message
-            self.senderClientID = senderClientID
-        }
+    init(_ value: WireAPI.ConversationMLSMessageAddEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.subconversation = value.subconversation
+        self.message = value.message
+        self.timestamp = value.timestamp
+        self.decryptedMessages = value.decryptedMessages.map(StorableDecryptedMessage.init)
     }
 
-    /// The id of the conversation.
+}
 
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who sent the message.
-
-    let senderID: StorableQualifiedID
-
-    /// The subconversation that received the message.
-    ///
-    /// If a value is present, then the message belongs to
-    /// the subconversation with that name. If `nil`, the
-    /// message belongs to the parent conversation.
-
-    let subconversation: String?
-
-    /// The base 64 encoded message.
+private struct StorableDecryptedMessage: Equatable, Codable, Sendable {
 
     let message: String
+    let senderClientID: String?
 
-    /// The date the message was received.
-
-    let timestamp: Date?
-
-    /// The decrypted current message + decrypted buffered messages
-    /// along with the related sender client ID for each message.
-
-    var decryptedMessages: [DecryptedMessage] = []
+    init(_ value: WireAPI.ConversationMLSMessageAddEvent.DecryptedMessage) {
+        self.message = value.message
+        self.senderClientID = value.senderClientID
+    }
 
 }

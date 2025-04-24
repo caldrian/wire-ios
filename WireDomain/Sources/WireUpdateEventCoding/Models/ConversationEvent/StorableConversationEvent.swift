@@ -18,8 +18,6 @@
 
 import Foundation
 
-/// An event concerning conversations.
-
 enum StorableConversationEvent: Equatable, Codable, Sendable {
 
     /// A conversation's access settings were updated.
@@ -52,15 +50,15 @@ enum StorableConversationEvent: Equatable, Codable, Sendable {
 
     /// A conversation's self-deleting-message timer was updated.
 
-    case messageTimerUpdate(ConversationMessageTimerUpdateEvent)
+    case messageTimerUpdate(StorableConversationMessageTimerUpdateEvent)
 
     /// An MLS message was added to a conversation.
 
-    case mlsMessageAdd(ConversationMLSMessageAddEvent)
+    case mlsMessageAdd(StorableConversationMLSMessageAddEvent)
 
     /// The self user has been added to an MLS group.
 
-    case mlsWelcome(ConversationMLSWelcomeEvent)
+    case mlsWelcome(StorableConversationMLSWelcomeEvent)
 
     /// An encrypted Proteus message was added to a conversation.
 
