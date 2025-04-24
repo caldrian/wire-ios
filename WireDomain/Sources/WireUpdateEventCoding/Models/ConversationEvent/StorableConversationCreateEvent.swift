@@ -19,7 +19,7 @@
 import Foundation
 import WireAPI
 
-struct ConversationCreateEvent: Equatable, Codable, Sendable {
+struct StorableConversationCreateEvent: Equatable, Codable, Sendable {
 
     private let conversationID: StorableQualifiedID
     private let senderID: StorableQualifiedID

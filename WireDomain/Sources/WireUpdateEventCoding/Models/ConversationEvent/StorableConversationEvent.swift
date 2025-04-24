@@ -32,7 +32,7 @@ enum ConversationEvent: Equatable, Codable, Sendable {
 
     /// A new conversation was created.
 
-    case create(ConversationCreateEvent)
+    case create(StorableConversationCreateEvent)
 
     /// An existing conversation was deleted.
 
