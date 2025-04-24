@@ -17,25 +17,20 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where some participants were added to a conversation.
+struct StorableConversationMemberJoinEvent: Equatable, Codable, Sendable {
 
-struct ConversationMemberJoinEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let timestamp: Date
+    private let members: [StorableConversationMember]
 
-    /// The id of the conversation.
-
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who added the members.
-
-    let senderID: StorableQualifiedID
-
-    /// When the members were added.
-
-    let timestamp: Date
-
-    /// The members who were added.
-
-    let members: [StorableConversationMember]
+    init(_ value: WireAPI.ConversationMemberJoinEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.timestamp = value.timestamp
+        self.members = value.members.map(StorableConversationMember.init)
+    }
 
 }

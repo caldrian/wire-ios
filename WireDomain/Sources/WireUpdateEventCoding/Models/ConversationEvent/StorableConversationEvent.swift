@@ -40,7 +40,7 @@ enum ConversationEvent: Equatable, Codable, Sendable {
 
     /// One or more users were added to a conversation.
 
-    case memberJoin(ConversationMemberJoinEvent)
+    case memberJoin(StorableConversationMemberJoinEvent)
 
     /// One or more users were removed from a conversation.
 
