@@ -81,8 +81,8 @@ struct FeatureConfigUpdateEvent: Equatable, Codable, Sendable {
                         status: Stored.FeatureConfigStatus(config.status),
                         protocolToggleUsers: Array(config.protocolToggleUsers),
                         defaultProtocol: Stored.MessageProtocol(config.defaultProtocol),
-                        allowedCipherSuites: config.allowedCipherSuites.map { Stored.MLSCipherSuite($0) },
-                        defaultCipherSuite: Stored.MLSCipherSuite(config.defaultCipherSuite),
+                        allowedCipherSuites: config.allowedCipherSuites.map { StorableMLSCipherSuite($0) },
+                        defaultCipherSuite: StorableMLSCipherSuite(config.defaultCipherSuite),
                         supportedProtocols: config.supportedProtocols.map { Stored.MessageProtocol($0) }
                     )
                 )
@@ -202,8 +202,8 @@ private extension Stored {
         let status: Stored.FeatureConfigStatus
         let protocolToggleUsers: [UUID]
         let defaultProtocol: Stored.MessageProtocol
-        let allowedCipherSuites: [Stored.MLSCipherSuite]
-        let defaultCipherSuite: Stored.MLSCipherSuite
+        let allowedCipherSuites: [StorableMLSCipherSuite]
+        let defaultCipherSuite: StorableMLSCipherSuite
         let supportedProtocols: [Stored.MessageProtocol]
 
     }

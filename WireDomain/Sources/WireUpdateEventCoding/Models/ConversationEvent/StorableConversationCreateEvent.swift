@@ -17,121 +17,119 @@
 //
 
 import Foundation
-
-/// An event where a new conversation was created.
+import WireAPI
 
 struct ConversationCreateEvent: Equatable, Codable, Sendable {
 
     private let conversationID: StorableQualifiedID
     private let senderID: StorableQualifiedID
     private let timestamp: Date
-    private let conversation: Conversation
+    private let conversation: StorableConversation
+
+    init(_ value: WireAPI.ConversationCreateEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.timestamp = value.timestamp
+        self.conversation = StorableConversation(
+            id: value.conversation.id,
+            qualifiedID: value.conversation.qualifiedID.map {  StorableQualifiedID($0) },
+            teamID: value.conversation.teamID,
+            type: value.conversation.type.map { StorableConversationType($0) },
+            messageProtocol: value.conversation.messageProtocol.map { StorableConversationMessageProtocol($0) },
+            mlsGroupID: value.conversation.mlsGroupID,
+            cipherSuite: value.conversation.cipherSuite.map { StorableMLSCipherSuite($0) },
+            epoch: value.conversation.epoch,
+            epochTimestamp: value.conversation.epochTimestamp,
+            creator: value.conversation.creator,
+            members: value.conversation.members.map { StorableConversationMembers($0) },
+            name: value.conversation.name,
+            messageTimer: value.conversation.messageTimer,
+            readReceiptMode: value.conversation.readReceiptMode,
+            access: value.conversation.access?.map { StorableConversationAccessMode($0) },
+            accessRoles: value.conversation.accessRoles?.map { StorableConversationAccessRole($0) },
+            legacyAccessRole: value.conversation.legacyAccessRole.map { StorableConversationAccessRoleLegacy($0) },
+            lastEvent: value.conversation.lastEvent,
+            lastEventTime: value.conversation.lastEventTime,
+            groupType: value.conversation.groupType.map { StorableConversationGroupType($0) },
+            addPermission: value.conversation.addPermission.map { StorableChannelPermission($0) }
+        )
+    }
 
 }
 
-private struct Conversation: Equatable, Codable, Sendable {
+private struct StorableConversation: Equatable, Codable, Sendable {
 
-    /// The unqualified conversation id.
-
-    var id: UUID?
-
-    /// The qualified conversation id.
-
-    var StorableQualifiedID: StorableQualifiedID?
-
-    /// The owning team id.
-
-    var teamID: UUID?
-
-    /// The conversation's type.
-
-    var type: ConversationType?
-
-    /// The conversation's message protocol.
-
-    var messageProtocol: StorableConversationMessageProtocol?
-
-    /// The id of the associated mls group.
-
-    var mlsGroupID: String?
-
-    /// The mls ciphersuite used for E2EE communcation.
-
-    var cipherSuite: Stored.MLSCipherSuite?
-
-    /// The current mls group epoch.
-
-    var epoch: UInt?
-
-    /// When the mls epoch changed.
-
-    var epochTimestamp: Date?
-
-    /// The user id of the conversation's creator.
-
-    var creator: UUID?
-
-    /// The conversation's participants.
-
-    var members: Members?
-
-    /// The conversation's name.
-
-    var name: String?
-
-    /// The number of seconds after which messages will self delete.
-
-    var messageTimer: TimeInterval?
-
-    /// The conversation's read receipt setting.
-
-    var readReceiptMode: Int?
-
-    /// How users can join a conversation.
-
-    var access: Set<StorableConversationAccessMode>?
-
-    /// Which users are allowed to be participants.
-
-    var accessRoles: Set<StorableConversationAccessRole>?
-
-    /// LEGACY: Which users are allowed to be participants.
-    ///
-    /// This can be removed when api v3 is the minimum supported version.
-
-    var legacyAccessRole: StorableConversationAccessRoleLegacy?
-
-    var lastEvent: String?
-
-    var lastEventTime: Date?
-
-    var groupType: ConversationGroupType?
-
-    var addPermission: StorableChannelPermission?
+    let id: UUID?
+    let qualifiedID: StorableQualifiedID?
+    let teamID: UUID?
+    let type: StorableConversationType?
+    let messageProtocol: StorableConversationMessageProtocol?
+    let mlsGroupID: String?
+    let cipherSuite: StorableMLSCipherSuite?
+    let epoch: UInt?
+    let epochTimestamp: Date?
+    let creator: UUID?
+    let members: StorableConversationMembers?
+    let name: String?
+    let messageTimer: TimeInterval?
+    let readReceiptMode: Int?
+    let access: [StorableConversationAccessMode]?
+    let accessRoles: [StorableConversationAccessRole]?
+    let legacyAccessRole: StorableConversationAccessRoleLegacy?
+    let lastEvent: String?
+    let lastEventTime: Date?
+    let groupType: StorableConversationGroupType?
+    let addPermission: StorableChannelPermission?
 
 }
 
 
-enum ConversationType: Int, Codable, Sendable {
+private enum StorableConversationType: String, Codable, Sendable {
 
-    case group = 0
-    case `self` = 1
-    case oneOnOne = 2
-    case connection = 3
+    case group
+    case `self`
+    case oneOnOne
+    case connection
+
+    init(_ value: WireAPI.ConversationType) {
+        switch value {
+        case .group:
+            self = .group
+        case .self:
+            self = .self
+        case .oneOnOne:
+            self = .oneOnOne
+        case .connection:
+            self = .connection
+        }
+    }
 
 }
 
-enum ConversationGroupType: String, Codable, Sendable {
-    case group = "group_conversation"
+private enum StorableConversationGroupType: String, Codable, Sendable {
+
+    case group
     case channel
+
+    init(_ value: WireAPI.ConversationGroupType) {
+        switch value {
+        case .group:
+            self = .group
+        case .channel:
+            self = .channel
+        }
+    }
+
 }
 
-extension Conversation {
+private struct StorableConversationMembers: Equatable, Codable, Sendable {
 
-    struct Members: Equatable, Codable, Sendable {
-        public let others: [StorableConversationMember]
-        public let selfMember: StorableConversationMember
+    let others: [StorableConversationMember]
+    let selfMember: StorableConversationMember
 
+    init(_ value: WireAPI.Conversation.Members) {
+        self.others = value.others.map { StorableConversationMember($0) }
+        self.selfMember = StorableConversationMember(value.selfMember)
     }
 
 }
