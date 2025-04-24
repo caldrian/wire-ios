@@ -44,7 +44,7 @@ enum ConversationEvent: Equatable, Codable, Sendable {
 
     /// One or more users were removed from a conversation.
 
-    case memberLeave(ConversationMemberLeaveEvent)
+    case memberLeave(StorableConversationMemberLeaveEvent)
 
     /// One or more users have updated metadata in a conversation.
 

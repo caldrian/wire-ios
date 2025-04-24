@@ -17,30 +17,41 @@
 //
 
 import Foundation
+import WireAPI
 
-struct ConversationMemberLeaveEvent: Equatable, Codable, Sendable {
+struct StorableConversationMemberLeaveEvent: Equatable, Codable, Sendable {
 
-    let conversationID: StorableQualifiedID
-    let senderID: StorableQualifiedID
-    let timestamp: Date
-    let removedUserIDs: [StorableQualifiedID]
-    let reason: ConversationMemberLeaveReason
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let timestamp: Date
+    private let removedUserIDs: [StorableQualifiedID]
+    private let reason: StorableConversationMemberLeaveReason
+
+    init(_ value: WireAPI.ConversationMemberLeaveEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.timestamp = value.timestamp
+        self.removedUserIDs = value.removedUserIDs.map(StorableQualifiedID.init)
+        self.reason = StorableConversationMemberLeaveReason(value.reason)
+    }
 
 }
 
-enum ConversationMemberLeaveReason: String, Codable, Sendable {
+private enum StorableConversationMemberLeaveReason: String, Codable, Sendable {
 
-    /// The user has been removed from the team and therefore removed
-    /// from all conversations.
+    case userDeleted
+    case userLeft
+    case userRemoved
 
-    case userDeleted = "user-deleted"
-
-    /// The user left the conversation by themselves.
-
-    case userLeft = "left"
-
-    /// The user was removed from the conversation by an admin.
-
-    case userRemoved = "removed"
+    init(_ value: WireAPI.ConversationMemberLeaveReason) {
+        switch value {
+        case .userDeleted:
+            self = .userDeleted
+        case .userLeft:
+            self = .userLeft
+        case .userRemoved:
+            self = .userRemoved
+        }
+    }
 
 }
