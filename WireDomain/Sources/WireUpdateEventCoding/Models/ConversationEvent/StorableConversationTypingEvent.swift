@@ -16,22 +16,18 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
+import WireAPI
 
-/// An event where a user is typing in a conversation.
+struct StorableConversationTypingEvent: Equatable, Codable, Sendable {
 
-struct ConversationTypingEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let isTyping: Bool
 
-    /// The id of the conversation.
-
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who is typing in the conversation.
-
-    let senderID: StorableQualifiedID
-
-    /// Whether the user is typing.
-
-    let isTyping: Bool
+    init(_ value: WireAPI.ConversationTypingEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.isTyping = value.isTyping
+    }
 
 }
