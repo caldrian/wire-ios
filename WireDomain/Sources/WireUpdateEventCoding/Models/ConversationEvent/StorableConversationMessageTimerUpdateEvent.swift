@@ -17,27 +17,20 @@
 //
 
 import Foundation
-
-/// An event where the message timer of a conversation was updated.
+import WireAPI
 
 struct ConversationMessageTimerUpdateEvent: Equatable, Codable, Sendable {
 
-    /// The id of the conversation.
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let timestamp: Date
+    private let newTimer: Int64?
 
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who updated the message timer.
-
-    let senderID: StorableQualifiedID
-
-    /// When the message timer was changed.
-
-    let timestamp: Date
-
-    /// The new timer.
-    ///
-    /// A `nil` value means the timer is off.
-
-    let newTimer: Int64?
+    init(_ value: WireAPI.ConversationMessageTimerUpdateEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.timestamp = value.timestamp
+        self.newTimer = value.newTimer
+    }
 
 }
