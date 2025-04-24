@@ -17,25 +17,20 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where the conversation's name was changed.
+struct StorableConversationRenameEvent: Equatable, Codable, Sendable {
 
-struct ConversationRenameEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let timestamp: Date
+    private let newName: String
 
-    /// The id of the conversation.
-
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who renamed the conversation.
-
-    let senderID: StorableQualifiedID
-
-    /// When the conversation was renamed.
-
-    let timestamp: Date
-
-    /// The new name of the conversation.
-
-    let newName: String
+    init(_ value: WireAPI.ConversationRenameEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.timestamp = value.timestamp
+        self.newName = value.newName
+    }
 
 }

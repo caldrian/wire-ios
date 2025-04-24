@@ -76,7 +76,7 @@ enum ConversationEvent: Equatable, Codable, Sendable {
 
     /// A conversation's name was updated.
 
-    case rename(ConversationRenameEvent)
+    case rename(StorableConversationRenameEvent)
 
     /// One or more users are typing in a conversation.
 
