@@ -49,7 +49,7 @@ struct Conversation: Equatable, Codable, Sendable {
 
     /// The conversation's message protocol.
 
-    var messageProtocol: ConversationMessageProtocol?
+    var messageProtocol: StorableConversationMessageProtocol?
 
     /// The id of the associated mls group.
 
@@ -124,14 +124,6 @@ enum ConversationType: Int, Codable, Sendable {
 enum ConversationGroupType: String, Codable, Sendable {
     case group = "group_conversation"
     case channel
-}
-
-enum ConversationMessageProtocol: String, Codable, Sendable {
-
-    case proteus
-    case mixed
-    case mls
-
 }
 
 extension Conversation {

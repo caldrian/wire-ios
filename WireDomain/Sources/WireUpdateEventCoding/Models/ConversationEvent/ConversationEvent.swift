@@ -68,7 +68,7 @@ enum ConversationEvent: Equatable, Codable, Sendable {
 
     /// A conversation's message protocol was updated.
 
-    case protocolUpdate(ConversationProtocolUpdateEvent)
+    case protocolUpdate(StorableConversationProtocolUpdateEvent)
 
     /// A conversation's read receipt mode was updated.
 

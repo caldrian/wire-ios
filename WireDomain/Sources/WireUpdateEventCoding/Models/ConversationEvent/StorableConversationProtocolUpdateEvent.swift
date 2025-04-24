@@ -16,22 +16,18 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
+import WireAPI
 
-/// An event where the message protocol was updated in a conversation.
+struct StorableConversationProtocolUpdateEvent: Equatable, Codable, Sendable {
 
-struct ConversationProtocolUpdateEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let newProtocol: StorableConversationMessageProtocol
 
-    /// The id of the conversation.
-
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who updated the protocol.
-
-    let senderID: StorableQualifiedID
-
-    /// The new conversation message protocol.
-
-    let newProtocol: ConversationMessageProtocol
+    init(_ value: WireAPI.ConversationProtocolUpdateEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.newProtocol = StorableConversationMessageProtocol(value.newProtocol)
+    }
 
 }
