@@ -87,13 +87,15 @@ struct FeatureConfigUpdateEvent: Equatable, Codable, Sendable {
                     )
                 )
         case let .mlsMigration(config):
-                .mlsMigration(
-                    Stored.MLSMigrationFeatureConfig(
-                        status: Stored.FeatureConfigStatus(config.status),
-                        startTime: config.startTime,
-                        finaliseRegardlessAfter: config.finaliseRegardlessAfter
-                    )
-                )
+            // FIXME: There is a compiler crash :(
+            fatalError()
+//                .mlsMigration(
+//                    Stored.MLSMigrationFeatureConfig(
+//                        status: Stored.FeatureConfigStatus(config.status),
+//                        startTime: config.startTime,
+//                        finaliseRegardlessAfter: config.finaliseRegardlessAfter
+//                    )
+//                )
         case let .selfDeletingMessages(config):
                 .selfDeletingMessages(
                     Stored.SelfDeletingMessagesFeatureConfig(
@@ -209,8 +211,8 @@ private extension Stored {
     struct MLSMigrationFeatureConfig: Equatable, Codable, Sendable {
 
         let status: Stored.FeatureConfigStatus
-        let startTime: Date?
-        let finaliseRegardlessAfter: Date?
+//        let startTime: Date? FIXME: Uncomment
+//        let finaliseRegardlessAfter: Date? FIXME: Uncomment
 
     }
 
