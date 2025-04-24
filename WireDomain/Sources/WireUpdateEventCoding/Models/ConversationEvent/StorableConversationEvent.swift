@@ -17,71 +17,62 @@
 //
 
 import Foundation
+import WireAPI
 
 enum StorableConversationEvent: Equatable, Codable, Sendable {
 
-    /// A conversation's access settings were updated.
-
     case accessUpdate(StorableConversationAccessUpdateEvent)
-
-    /// A conversation's guest link code was updated.
-
     case codeUpdate(StorableConversationCodeUpdateEvent)
-
-    /// A new conversation was created.
-
     case create(StorableConversationCreateEvent)
-
-    /// An existing conversation was deleted.
-
     case delete(StorableConversationDeleteEvent)
-
-    /// One or more users were added to a conversation.
-
     case memberJoin(StorableConversationMemberJoinEvent)
-
-    /// One or more users were removed from a conversation.
-
     case memberLeave(StorableConversationMemberLeaveEvent)
-
-    /// One or more users have updated metadata in a conversation.
-
     case memberUpdate(StorableConversationMemberUpdateEvent)
-
-    /// A conversation's self-deleting-message timer was updated.
-
     case messageTimerUpdate(StorableConversationMessageTimerUpdateEvent)
-
-    /// An MLS message was added to a conversation.
-
     case mlsMessageAdd(StorableConversationMLSMessageAddEvent)
-
-    /// The self user has been added to an MLS group.
-
     case mlsWelcome(StorableConversationMLSWelcomeEvent)
-
-    /// An encrypted Proteus message was added to a conversation.
-
     case proteusMessageAdd(StorableConversationProteusMessageAddEvent)
-
-    /// A conversation's message protocol was updated.
-
     case protocolUpdate(StorableConversationProtocolUpdateEvent)
-
-    /// A conversation's read receipt mode was updated.
-
     case receiptModeUpdate(StorableConversationReceiptModeUpdateEvent)
-
-    /// A conversation's name was updated.
-
     case rename(StorableConversationRenameEvent)
-
-    /// One or more users are typing in a conversation.
-
     case typing(StorableConversationTypingEvent)
-
-    /// A permission for a private conversation (aka channel) was updated.
-
     case permissionUpdate(StorableConversationAddPermissionEvent)
+
+    init(_ value: WireAPI.ConversationEvent) {
+        switch value {
+        case let .accessUpdate(event):
+            self = .accessUpdate(StorableConversationAccessUpdateEvent(event))
+        case let .codeUpdate(event):
+            self = .codeUpdate(StorableConversationCodeUpdateEvent(event))
+        case let .create(event):
+            self = .create(StorableConversationCreateEvent(event))
+        case let .delete(event):
+            self = .delete(StorableConversationDeleteEvent(event))
+        case let .memberJoin(event):
+            self = .memberJoin(StorableConversationMemberJoinEvent(event))
+        case let .memberLeave(event):
+            self = .memberLeave(StorableConversationMemberLeaveEvent(event))
+        case let .memberUpdate(event):
+            self = .memberUpdate(StorableConversationMemberUpdateEvent(event))
+        case let .messageTimerUpdate(event):
+            self = .messageTimerUpdate(StorableConversationMessageTimerUpdateEvent(event))
+        case let .mlsMessageAdd(event):
+            self = .mlsMessageAdd(StorableConversationMLSMessageAddEvent(event))
+        case let .mlsWelcome(event):
+            self = .mlsWelcome(StorableConversationMLSWelcomeEvent(event))
+        case let .proteusMessageAdd(event):
+            self = .proteusMessageAdd(StorableConversationProteusMessageAddEvent(event))
+        case let .protocolUpdate(event):
+            self = .protocolUpdate(StorableConversationProtocolUpdateEvent(event))
+        case let .receiptModeUpdate(event):
+            self = .receiptModeUpdate(StorableConversationReceiptModeUpdateEvent(event))
+        case let .rename(event):
+            self = .rename(StorableConversationRenameEvent(event))
+        case let .typing(event):
+            self = .typing(StorableConversationTypingEvent(event))
+        case let .permissionUpdate(event):
+            self = .permissionUpdate(StorableConversationAddPermissionEvent(event))
+        }
+    }
 
 }
