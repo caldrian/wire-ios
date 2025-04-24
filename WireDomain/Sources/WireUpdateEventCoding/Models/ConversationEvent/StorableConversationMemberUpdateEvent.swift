@@ -17,61 +17,38 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where some metadata changed for a member in a conversation.
+struct StorableConversationMemberUpdateEvent: Equatable, Codable, Sendable {
 
-struct ConversationMemberUpdateEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let timestamp: Date
+    private let memberChange: StorableConversationMemberChange
 
-    /// The id of the conversation.
-
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who changed the member.
-
-    let senderID: StorableQualifiedID
-
-    /// When the member was changed.
-
-    let timestamp: Date
-
-    /// The changed metadata of the member.
-
-    let memberChange: ConversationMemberChange
+    init(_ value: WireAPI.ConversationMemberUpdateEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.timestamp = value.timestamp
+        self.memberChange = StorableConversationMemberChange(
+            id: StorableQualifiedID(value.memberChange.id),
+            newRoleName: value.memberChange.newRoleName,
+            newMuteStatus: value.memberChange.newMuteStatus,
+            muteStatusReferenceDate: value.memberChange.muteStatusReferenceDate,
+            newArchivedStatus: value.memberChange.newArchivedStatus,
+            archivedStatusReferenceDate: value.memberChange.archivedStatusReferenceDate
+        )
+    }
 
 }
 
-struct ConversationMemberChange: Equatable, Codable, Sendable {
+private struct StorableConversationMemberChange: Equatable, Codable, Sendable {
 
-    /// The id of the member.
-
-    public let id: StorableQualifiedID
-
-    /// The member's new role.
-
-    public let newRoleName: String?
-
-    /// The member's new mute status.
-    ///
-    /// This is only relevant for the self user.
-
-    public let newMuteStatus: Int?
-
-    /// The reference date of the new mute status.
-    ///
-    /// This is only relevant for the self user.
-
-    public let muteStatusReferenceDate: Date?
-
-    /// The member's new archived status.
-    ///
-    /// This is only relevant for the self user.
-
-    public let newArchivedStatus: Bool?
-
-    /// The reference date of the new archived status.
-    ///
-    /// This is only relevant for the self user.
-
-    public let archivedStatusReferenceDate: Date?
+    let id: StorableQualifiedID
+    let newRoleName: String?
+    let newMuteStatus: Int?
+    let muteStatusReferenceDate: Date?
+    let newArchivedStatus: Bool?
+    let archivedStatusReferenceDate: Date?
 
 }

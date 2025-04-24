@@ -20,7 +20,7 @@ import Foundation
 
 /// An event concerning conversations.
 
-enum ConversationEvent: Equatable, Codable, Sendable {
+enum StorableConversationEvent: Equatable, Codable, Sendable {
 
     /// A conversation's access settings were updated.
 
@@ -48,7 +48,7 @@ enum ConversationEvent: Equatable, Codable, Sendable {
 
     /// One or more users have updated metadata in a conversation.
 
-    case memberUpdate(ConversationMemberUpdateEvent)
+    case memberUpdate(StorableConversationMemberUpdateEvent)
 
     /// A conversation's self-deleting-message timer was updated.
 

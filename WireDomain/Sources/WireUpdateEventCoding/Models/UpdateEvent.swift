@@ -26,7 +26,7 @@ enum UpdateEvent: Equatable, Codable, Sendable {
 
     /// A conversation event.
 
-    case conversation(ConversationEvent)
+    case conversation(StorableConversationEvent)
 
     /// A feature config event.
 
