@@ -16,34 +16,17 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
+import WireAPI
 
-/// An event where the conversation's guest link code was updated.
+struct StorableConversationAddPermissionEvent: Equatable, Codable, Sendable {
 
-struct ConversationCodeUpdateEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let addPermission: StorableChannelPermission
 
-    /// The id of the conversation.
-
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who updated the code.
-
-    let senderID: StorableQualifiedID
-
-    /// The uri to the join the conversation.
-
-    let uri: String?
-
-    /// The conversation's access key.
-
-    let key: String
-
-    /// The conversation's access code.
-
-    let code: String
-
-    /// Whether a password is required to accss the conversation.
-
-    let isPasswordProtected: Bool
-
+    init(_ value: WireAPI.ConversationAddPermissionEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.addPermission = StorableChannelPermission(value.addPermission)
+    }
 }

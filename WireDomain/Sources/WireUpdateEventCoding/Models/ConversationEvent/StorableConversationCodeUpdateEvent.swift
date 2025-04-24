@@ -18,15 +18,22 @@
 
 import WireAPI
 
-struct StorableConversationAddPermissionEvent: Equatable, Codable, Sendable {
+struct StorableConversationCodeUpdateEvent: Equatable, Codable, Sendable {
 
-    let conversationID: StorableQualifiedID
-    let senderID: StorableQualifiedID
-    let addPermission: StorableChannelPermission
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let uri: String?
+    private let key: String
+    private let code: String
+    private let isPasswordProtected: Bool
 
-    init(_ value: WireAPI.ConversationAddPermissionEvent) {
+    init(_ value: WireAPI.ConversationCodeUpdateEvent) {
         self.conversationID = StorableQualifiedID(value.conversationID)
         self.senderID = StorableQualifiedID(value.senderID)
-        self.addPermission = StorableChannelPermission(value.addPermission)
+        self.uri = value.uri
+        self.key = value.key
+        self.code = value.code
+        self.isPasswordProtected = value.isPasswordProtected
     }
+
 }
