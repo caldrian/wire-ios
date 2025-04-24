@@ -18,15 +18,17 @@
 
 import WireAPI
 
-struct StorableConversationAddPermissionEvent: Equatable, Codable, Sendable {
+enum StorableChannelPermission: String, Equatable, Codable, Sendable {
 
-    let conversationID: StorableQualifiedID
-    let senderID: StorableQualifiedID
-    let addPermission: StorableChannelPermission
+    case everyone
+    case admins
 
-    init(_ value: WireAPI.ConversationAddPermissionEvent) {
-        self.conversationID = StorableQualifiedID(value.conversationID)
-        self.senderID = StorableQualifiedID(value.senderID)
-        self.addPermission = StorableChannelPermission(value.addPermission)
+    init(_ value: WireAPI.ChannelPermission) {
+        switch value {
+        case .everyone:
+            self = .everyone
+        case .admins:
+            self = .admins
+        }
     }
 }

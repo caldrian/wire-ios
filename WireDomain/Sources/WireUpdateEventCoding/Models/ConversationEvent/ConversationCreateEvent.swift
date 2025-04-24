@@ -107,7 +107,7 @@ struct Conversation: Equatable, Codable, Sendable {
 
     var groupType: ConversationGroupType?
 
-    var addPermission: ChannelPermission?
+    var addPermission: StorableChannelPermission?
 
 }
 
