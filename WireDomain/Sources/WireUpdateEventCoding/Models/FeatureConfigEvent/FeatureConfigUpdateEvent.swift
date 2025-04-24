@@ -21,13 +21,13 @@ import WireAPI
 
 struct FeatureConfigUpdateEvent: Equatable, Codable, Sendable {
 
-    let featureConfig: StoredFeatureConfig
+    private let featureConfig: Stored.FeatureConfig
 
     init(_ value: WireAPI.FeatureConfigUpdateEvent) {
         self.featureConfig = switch value.featureConfig {
         case let .appLock(config):
                 .appLock(
-                    StoredAppLockFeatureConfig(
+                    Stored.AppLockFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status),
                         isMandatory: config.isMandatory,
                         inactivityTimeoutInSeconds: config.inactivityTimeoutInSeconds
@@ -35,33 +35,33 @@ struct FeatureConfigUpdateEvent: Equatable, Codable, Sendable {
                 )
         case let .classifiedDomains(config):
                 .classifiedDomains(
-                    StoredClassifiedDomainsFeatureConfig(
+                    Stored.ClassifiedDomainsFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status),
                         domains: Array(config.domains)
                     )
                 )
         case let .conferenceCalling(config):
                 .conferenceCalling(
-                    StoredConferenceCallingFeatureConfig(
+                    Stored.ConferenceCallingFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status),
                         useSFTForOneToOneCalls: config.useSFTForOneToOneCalls
                     )
                 )
         case let .conversationGuestLinks(config):
                 .conversationGuestLinks(
-                    StoredBasicFeatureConfig(
+                    Stored.BasicFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status)
                     )
                 )
         case let .digitalSignature(config):
                 .digitalSignature(
-                    StoredBasicFeatureConfig(
+                    Stored.BasicFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status)
                     )
                 )
         case let .endToEndIdentity(config):
                 .endToEndIdentity(
-                    StoredEndToEndIdentityFeatureConfig(
+                    Stored.EndToEndIdentityFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status),
                         acmeDiscoveryURL: config.acmeDiscoveryURL,
                         verificationExpiration: config.verificationExpiration,
@@ -71,13 +71,13 @@ struct FeatureConfigUpdateEvent: Equatable, Codable, Sendable {
                 )
         case let .fileSharing(config):
                 .fileSharing(
-                    StoredBasicFeatureConfig(
+                    Stored.BasicFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status)
                     )
                 )
         case let .mls(config):
                 .mls(
-                    StoredMLSFeatureConfig(
+                    Stored.MLSFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status),
                         protocolToggleUsers: Array(config.protocolToggleUsers),
                         defaultProtocol: Stored.MessageProtocol(config.defaultProtocol),
@@ -88,7 +88,7 @@ struct FeatureConfigUpdateEvent: Equatable, Codable, Sendable {
                 )
         case let .mlsMigration(config):
                 .mlsMigration(
-                    StoredMLSMigrationFeatureConfig(
+                    Stored.MLSMigrationFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status),
                         startTime: config.startTime,
                         finaliseRegardlessAfter: config.finaliseRegardlessAfter
@@ -96,17 +96,17 @@ struct FeatureConfigUpdateEvent: Equatable, Codable, Sendable {
                 )
         case let .selfDeletingMessages(config):
                 .selfDeletingMessages(
-                    StoredSelfDeletingMessagesFeatureConfig(
+                    Stored.SelfDeletingMessagesFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status),
                         enforcedTimeoutSeconds: config.enforcedTimeoutSeconds
                     )
                 )
         case let .channels(config):
                 .channels(
-                    StoredChannelsFeatureConfig(
+                    Stored.ChannelsFeatureConfig(
                         status: Stored.FeatureConfigStatus(config.status),
-                        allowedToCreateChannels: StoredChannelsFeatureConfig.Permission(config.allowedToCreateChannels),
-                        allowedToOpenChannels: StoredChannelsFeatureConfig.Permission(config.allowedToOpenChannels)
+                        allowedToCreateChannels: Stored.ChannelsFeatureConfig.Permission(config.allowedToCreateChannels),
+                        allowedToOpenChannels: Stored.ChannelsFeatureConfig.Permission(config.allowedToOpenChannels)
                     )
                 )
         case let .unknown(featureName):
@@ -116,133 +116,28 @@ struct FeatureConfigUpdateEvent: Equatable, Codable, Sendable {
 
 }
 
+// MARK: Private Models
 
+private extension Stored {
 
-extension MessageProtocol {
+    enum FeatureConfig: Equatable, Codable, Sendable {
 
-    init(_ value: WireAPI.MessageProtocol) {
-        switch value {
-        case .proteus:
-            self = .proteus
-        case .mls:
-            self = .mls
-        }
-    }
-
-}
-
-
-enum StoredFeatureConfig: Equatable, Codable, Sendable {
-
-    case appLock(StoredAppLockFeatureConfig)
-    case classifiedDomains(StoredClassifiedDomainsFeatureConfig)
-    case conferenceCalling(StoredConferenceCallingFeatureConfig)
-    case conversationGuestLinks(StoredBasicFeatureConfig)
-    case digitalSignature(StoredBasicFeatureConfig)
-    case endToEndIdentity(StoredEndToEndIdentityFeatureConfig)
-    case fileSharing(StoredBasicFeatureConfig)
-    case mls(StoredMLSFeatureConfig)
-    case mlsMigration(StoredMLSMigrationFeatureConfig)
-    case selfDeletingMessages(StoredSelfDeletingMessagesFeatureConfig)
-    case channels(StoredChannelsFeatureConfig)
-    case unknown(featureName: String)
-
-}
-
-struct StoredAppLockFeatureConfig: Codable, Equatable, Sendable {
-
-    let status: Stored.FeatureConfigStatus
-    let isMandatory: Bool
-    let inactivityTimeoutInSeconds: UInt
-
-}
-
-struct StoredClassifiedDomainsFeatureConfig: Equatable, Codable, Sendable {
-
-    let status: Stored.FeatureConfigStatus
-    let domains: [String]
-
-}
-
-struct StoredConferenceCallingFeatureConfig: Codable, Equatable, Sendable {
-
-    let status: Stored.FeatureConfigStatus
-    let useSFTForOneToOneCalls: Bool
-
-}
-
-struct StoredBasicFeatureConfig: Codable, Equatable, Sendable {
-
-    let status: Stored.FeatureConfigStatus
-
-}
-
-struct StoredEndToEndIdentityFeatureConfig: Equatable, Codable, Sendable {
-
-    let status: Stored.FeatureConfigStatus
-    let acmeDiscoveryURL: String?
-    let verificationExpiration: UInt
-    let crlProxy: String?
-    let useProxyOnMobile: Bool
-
-}
-
-struct StoredMLSFeatureConfig: Equatable, Codable, Sendable {
-
-    let status: Stored.FeatureConfigStatus
-    let protocolToggleUsers: [UUID]
-    let defaultProtocol: Stored.MessageProtocol
-    let allowedCipherSuites: [Stored.MLSCipherSuite]
-    let defaultCipherSuite: Stored.MLSCipherSuite
-    let supportedProtocols: [Stored.MessageProtocol]
-
-}
-
-struct StoredMLSMigrationFeatureConfig: Equatable, Codable, Sendable {
-
-    let status: Stored.FeatureConfigStatus
-    let startTime: Date?
-    let finaliseRegardlessAfter: Date?
-
-}
-
-struct StoredSelfDeletingMessagesFeatureConfig: Equatable, Codable, Sendable {
-
-    let status: Stored.FeatureConfigStatus
-    let enforcedTimeoutSeconds: UInt
-
-}
-
-struct StoredChannelsFeatureConfig: Codable, Equatable, Sendable {
-
-    enum Permission: String, Codable, Sendable {
-
-        case teamMembers
-        case everyone
-        case admins
-
-        init(_ value: WireAPI.ChannelsPermision) {
-            switch value {
-            case .teamMembers:
-                self = .teamMembers
-            case .everyone:
-                self = .everyone
-            case .admins:
-                self = .admins
-            }
-        }
+        case appLock(Stored.AppLockFeatureConfig)
+        case classifiedDomains(Stored.ClassifiedDomainsFeatureConfig)
+        case conferenceCalling(Stored.ConferenceCallingFeatureConfig)
+        case conversationGuestLinks(Stored.BasicFeatureConfig)
+        case digitalSignature(Stored.BasicFeatureConfig)
+        case endToEndIdentity(Stored.EndToEndIdentityFeatureConfig)
+        case fileSharing(Stored.BasicFeatureConfig)
+        case mls(Stored.MLSFeatureConfig)
+        case mlsMigration(Stored.MLSMigrationFeatureConfig)
+        case selfDeletingMessages(Stored.SelfDeletingMessagesFeatureConfig)
+        case channels(Stored.ChannelsFeatureConfig)
+        case unknown(featureName: String)
 
     }
 
-    let status: Stored.FeatureConfigStatus
-    let allowedToCreateChannels: Permission
-    let allowedToOpenChannels: Permission
-
-}
-
-
-
-enum Stored {
+    // MARK: Shared
 
     enum FeatureConfigStatus: String, Codable, Sendable {
 
@@ -260,4 +155,101 @@ enum Stored {
 
     }
 
+    // MARK: Feature configs
+
+    struct BasicFeatureConfig: Codable, Equatable, Sendable {
+
+        let status: Stored.FeatureConfigStatus
+
+    }
+
+    struct AppLockFeatureConfig: Codable, Equatable, Sendable {
+
+        let status: Stored.FeatureConfigStatus
+        let isMandatory: Bool
+        let inactivityTimeoutInSeconds: UInt
+
+    }
+
+    struct ClassifiedDomainsFeatureConfig: Equatable, Codable, Sendable {
+
+        let status: Stored.FeatureConfigStatus
+        let domains: [String]
+
+    }
+
+    struct ConferenceCallingFeatureConfig: Codable, Equatable, Sendable {
+
+        let status: Stored.FeatureConfigStatus
+        let useSFTForOneToOneCalls: Bool
+
+    }
+
+    struct EndToEndIdentityFeatureConfig: Equatable, Codable, Sendable {
+
+        let status: Stored.FeatureConfigStatus
+        let acmeDiscoveryURL: String?
+        let verificationExpiration: UInt
+        let crlProxy: String?
+        let useProxyOnMobile: Bool
+
+    }
+
+    struct MLSFeatureConfig: Equatable, Codable, Sendable {
+
+        let status: Stored.FeatureConfigStatus
+        let protocolToggleUsers: [UUID]
+        let defaultProtocol: Stored.MessageProtocol
+        let allowedCipherSuites: [Stored.MLSCipherSuite]
+        let defaultCipherSuite: Stored.MLSCipherSuite
+        let supportedProtocols: [Stored.MessageProtocol]
+
+    }
+
+    struct MLSMigrationFeatureConfig: Equatable, Codable, Sendable {
+
+        let status: Stored.FeatureConfigStatus
+        let startTime: Date?
+        let finaliseRegardlessAfter: Date?
+
+    }
+
+    struct SelfDeletingMessagesFeatureConfig: Equatable, Codable, Sendable {
+
+        let status: Stored.FeatureConfigStatus
+        let enforcedTimeoutSeconds: UInt
+
+    }
+
+    struct ChannelsFeatureConfig: Codable, Equatable, Sendable {
+
+        enum Permission: String, Codable, Sendable {
+
+            case teamMembers
+            case everyone
+            case admins
+
+            init(_ value: WireAPI.ChannelsPermision) {
+                switch value {
+                case .teamMembers:
+                    self = .teamMembers
+                case .everyone:
+                    self = .everyone
+                case .admins:
+                    self = .admins
+                }
+            }
+
+        }
+
+        let status: Stored.FeatureConfigStatus
+        let allowedToCreateChannels: Permission
+        let allowedToOpenChannels: Permission
+
+    }
+
+
 }
+
+enum Stored {}
+
