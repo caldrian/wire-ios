@@ -17,26 +17,24 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where the conversation permission was updated.
-/// This event occurs for private conversations (aka channels) only.
+extension Stored {
 
-struct ConversationAddPermissionEvent: Equatable, Codable, Sendable {
+    enum MessageProtocol: String, Codable, Sendable {
 
-    /// The id of the conversation.
+        case proteus
+        case mls
 
-    let conversationID: QualifiedID
+        init(_ value: WireAPI.MessageProtocol) {
+            switch value {
+            case .proteus:
+                self = .proteus
+            case .mls:
+                self = .mls
+            }
+        }
 
-    /// The id of the user set the permission.
+    }
 
-    let senderID: QualifiedID
-
-    /// The new permission value (`everyone` or `admins`)
-
-    let addPermission: ChannelPermission
-}
-
-enum ChannelPermission: String, Equatable, Codable, Sendable {
-    case everyone
-    case admins
 }

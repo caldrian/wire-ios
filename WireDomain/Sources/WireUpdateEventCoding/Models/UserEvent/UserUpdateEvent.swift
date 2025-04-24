@@ -52,19 +52,7 @@ struct UserUpdateEvent: Equatable, Codable, Sendable {
 
     /// The new supported protocols.
 
-    let supportedProtocols: [MessageProtocol]?
-
-}
-
-enum MessageProtocol: String, Codable, Sendable {
-
-    /// The Proteus messaging protocol.
-
-    case proteus
-
-    /// The Messaging Layer Security protocol.
-
-    case mls
+    let supportedProtocols: [Stored.MessageProtocol]?
 
 }
 

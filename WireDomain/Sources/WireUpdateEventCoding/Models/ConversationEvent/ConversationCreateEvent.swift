@@ -57,7 +57,7 @@ struct Conversation: Equatable, Codable, Sendable {
 
     /// The mls ciphersuite used for E2EE communcation.
 
-    var cipherSuite: MLSCipherSuite?
+    var cipherSuite: Stored.MLSCipherSuite?
 
     /// The current mls group epoch.
 
