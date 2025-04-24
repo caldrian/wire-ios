@@ -17,49 +17,38 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where a proteus message was received in a conversation.
+struct StorableConversationProteusMessageAddEvent: Equatable, Codable, Sendable {
 
-struct ConversationProteusMessageAddEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let timestamp: Date
+    private let message: StorableMessageContent
+    private let externalData: StorableMessageContent?
+    private let messageSenderClientID: String
+    private let messageRecipientClientID: String
 
-    /// The id of the conversation.
-
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who sent the message.
-
-    let senderID: StorableQualifiedID
-
-    /// When the message was sent.
-
-    let timestamp: Date
-
-    /// The base 64 encoded message.
-
-    var message: MessageContent
-
-    /// The base 64 encoded external data.
-
-    var externalData: MessageContent?
-
-    /// The id of the user client who sent the message.
-
-    let messageSenderClientID: String
-
-    /// The id of the user client who should receive the message.
-
-    let messageRecipientClientID: String
+    init(_ value: WireAPI.ConversationProteusMessageAddEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.timestamp = value.timestamp
+        self.message = StorableMessageContent(value.message)
+        self.externalData = value.externalData.map(StorableMessageContent.init)
+        self.messageSenderClientID = value.messageSenderClientID
+        self.messageRecipientClientID = value.messageRecipientClientID
+    }
 
 }
 
-struct MessageContent: Equatable, Codable, Sendable {
-
-    /// Encrypted message content.
+private struct StorableMessageContent: Equatable, Codable, Sendable {
 
     let encryptedMessage: String
+    let decryptedMessage: String?
 
-    /// Unencrypted message content.
-
-    var decryptedMessage: String?
+    init(_ value: WireAPI.MessageContent) {
+        self.encryptedMessage = value.encryptedMessage
+        self.decryptedMessage = value.decryptedMessage
+    }
 
 }

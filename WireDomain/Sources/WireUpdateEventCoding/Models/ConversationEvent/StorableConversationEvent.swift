@@ -64,7 +64,7 @@ enum StorableConversationEvent: Equatable, Codable, Sendable {
 
     /// An encrypted Proteus message was added to a conversation.
 
-    case proteusMessageAdd(ConversationProteusMessageAddEvent)
+    case proteusMessageAdd(StorableConversationProteusMessageAddEvent)
 
     /// A conversation's message protocol was updated.
 

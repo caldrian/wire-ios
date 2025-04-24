@@ -17,21 +17,18 @@
 //
 
 import Foundation
-
-/// An event where an mls welcome message was received in a conversation.
+import WireAPI
 
 struct ConversationMLSWelcomeEvent: Equatable, Codable, Sendable {
 
-    /// The id of the conversation.
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let welcomeMessage: String
 
-    let conversationID: StorableQualifiedID
-
-    /// The id of the user who sent the welcome message.
-
-    let senderID: StorableQualifiedID
-
-    /// The base 64 encoded welcome message.
-
-    let welcomeMessage: String
+    init(_ value: WireAPI.ConversationMLSWelcomeEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.welcomeMessage = value.welcomeMessage
+    }
 
 }
