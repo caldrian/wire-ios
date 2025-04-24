@@ -16,51 +16,22 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
+import WireAPI
 
-/// An event where the access settings of a conversation were updated.
+struct StorableConversationAccessUpdateEvent: Equatable, Codable, Sendable {
 
-struct ConversationAccessUpdateEvent: Equatable, Codable, Sendable {
+    private let conversationID: StorableQualifiedID
+    private let senderID: StorableQualifiedID
+    private let accessModes: [StorableConversationAccessMode]
+    private let accessRoles: [StorableConversationAccessRole]?
+    private let legacyAccessRole: StorableConversationAccessRoleLegacy?
 
-    let conversationID: QualifiedID
-    let senderID: QualifiedID
-    let accessModes: [ConversationAccessMode]
-    let accessRoles: [ConversationAccessRole]?
-    let legacyAccessRole: ConversationAccessRoleLegacy?
-
-}
-
-enum ConversationAccessMode: String, Equatable, Codable, Sendable {
-
-    case `private`
-    case invite
-    case link
-    case code
+    init(_ value: ConversationAccessUpdateEvent) {
+        self.conversationID = StorableQualifiedID(value.conversationID)
+        self.senderID = StorableQualifiedID(value.senderID)
+        self.accessModes = value.accessModes.map(StorableConversationAccessMode.init)
+        self.accessRoles = value.accessRoles?.map(StorableConversationAccessRole.init)
+        self.legacyAccessRole = value.legacyAccessRole.map { StorableConversationAccessRoleLegacy($0) }
+    }
 
 }
-
-enum ConversationAccessRole: String, Equatable, Codable, Sendable {
-
-    case teamMember = "team_member"
-    case nonTeamMember = "non_team_member"
-    case guest
-    case service
-
-}
-
-enum ConversationAccessRoleLegacy: String, Equatable, Codable, Sendable {
-
-    case `private`
-    case team
-    case activated
-    case nonActivated = "non_activated"
-
-}
-
-struct QualifiedID: Codable, Hashable, Equatable, Sendable {
-
-    let id: UUID
-    let domain: String
-
-}
-

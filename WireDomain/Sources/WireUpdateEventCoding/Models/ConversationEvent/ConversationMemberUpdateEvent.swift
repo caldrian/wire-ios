@@ -24,11 +24,11 @@ struct ConversationMemberUpdateEvent: Equatable, Codable, Sendable {
 
     /// The id of the conversation.
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user who changed the member.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// When the member was changed.
 
@@ -44,7 +44,7 @@ struct ConversationMemberChange: Equatable, Codable, Sendable {
 
     /// The id of the member.
 
-    public let id: QualifiedID
+    public let id: StorableQualifiedID
 
     /// The member's new role.
 

@@ -20,10 +20,10 @@ import Foundation
 
 struct ConversationMemberLeaveEvent: Equatable, Codable, Sendable {
 
-    let conversationID: QualifiedID
-    let senderID: QualifiedID
+    let conversationID: StorableQualifiedID
+    let senderID: StorableQualifiedID
     let timestamp: Date
-    let removedUserIDs: [QualifiedID]
+    let removedUserIDs: [StorableQualifiedID]
     let reason: ConversationMemberLeaveReason
 
 }

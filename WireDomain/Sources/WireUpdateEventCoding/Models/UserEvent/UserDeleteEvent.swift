@@ -25,14 +25,14 @@ struct UserDeleteEvent: Equatable, Codable, Sendable {
 
     /// The user's qualified id.
 
-    let qualifiedUserID: QualifiedID
+    let qualifiedUserID: StorableQualifiedID
 
     /// The time at which the user was deleted.
 
     let time: Date
 
     init(
-        qualifiedUserID: QualifiedID,
+        qualifiedUserID: StorableQualifiedID,
         time: Date
     ) {
         self.qualifiedUserID = qualifiedUserID

@@ -24,11 +24,11 @@ struct ConversationProtocolUpdateEvent: Equatable, Codable, Sendable {
 
     /// The id of the conversation.
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user who updated the protocol.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// The new conversation message protocol.
 

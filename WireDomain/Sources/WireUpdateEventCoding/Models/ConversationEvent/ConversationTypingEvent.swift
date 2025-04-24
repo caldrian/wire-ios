@@ -24,11 +24,11 @@ struct ConversationTypingEvent: Equatable, Codable, Sendable {
 
     /// The id of the conversation.
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user who is typing in the conversation.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// Whether the user is typing.
 

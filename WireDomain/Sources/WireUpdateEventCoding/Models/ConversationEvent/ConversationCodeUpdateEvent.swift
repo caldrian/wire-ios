@@ -24,11 +24,11 @@ struct ConversationCodeUpdateEvent: Equatable, Codable, Sendable {
 
     /// The id of the conversation.
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user who updated the code.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// The uri to the join the conversation.
 

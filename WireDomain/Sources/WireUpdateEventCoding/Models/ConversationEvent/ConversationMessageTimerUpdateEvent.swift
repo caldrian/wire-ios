@@ -24,11 +24,11 @@ struct ConversationMessageTimerUpdateEvent: Equatable, Codable, Sendable {
 
     /// The id of the conversation.
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user who updated the message timer.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// When the message timer was changed.
 

@@ -24,11 +24,11 @@ struct ConversationRenameEvent: Equatable, Codable, Sendable {
 
     /// The id of the conversation.
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user who renamed the conversation.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// When the conversation was renamed.
 

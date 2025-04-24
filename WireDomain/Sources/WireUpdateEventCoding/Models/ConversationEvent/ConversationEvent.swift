@@ -24,7 +24,7 @@ enum ConversationEvent: Equatable, Codable, Sendable {
 
     /// A conversation's access settings were updated.
 
-    case accessUpdate(ConversationAccessUpdateEvent)
+    case accessUpdate(StorableConversationAccessUpdateEvent)
 
     /// A conversation's guest link code was updated.
 

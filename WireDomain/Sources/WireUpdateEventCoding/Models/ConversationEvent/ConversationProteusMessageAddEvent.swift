@@ -24,11 +24,11 @@ struct ConversationProteusMessageAddEvent: Equatable, Codable, Sendable {
 
     /// The id of the conversation.
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user who sent the message.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// When the message was sent.
 

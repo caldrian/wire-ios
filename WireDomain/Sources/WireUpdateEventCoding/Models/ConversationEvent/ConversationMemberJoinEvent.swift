@@ -24,11 +24,11 @@ struct ConversationMemberJoinEvent: Equatable, Codable, Sendable {
 
     /// The id of the conversation.
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user who added the members.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// When the members were added.
 

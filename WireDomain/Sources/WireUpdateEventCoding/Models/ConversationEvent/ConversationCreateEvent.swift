@@ -22,8 +22,8 @@ import Foundation
 
 struct ConversationCreateEvent: Equatable, Codable, Sendable {
 
-    let conversationID: QualifiedID
-    let senderID: QualifiedID
+    let conversationID: StorableQualifiedID
+    let senderID: StorableQualifiedID
     let timestamp: Date
     let conversation: Conversation
 
@@ -37,7 +37,7 @@ struct Conversation: Equatable, Codable, Sendable {
 
     /// The qualified conversation id.
 
-    var qualifiedID: QualifiedID?
+    var StorableQualifiedID: StorableQualifiedID?
 
     /// The owning team id.
 
@@ -89,17 +89,17 @@ struct Conversation: Equatable, Codable, Sendable {
 
     /// How users can join a conversation.
 
-    var access: Set<ConversationAccessMode>?
+    var access: Set<StorableConversationAccessMode>?
 
     /// Which users are allowed to be participants.
 
-    var accessRoles: Set<ConversationAccessRole>?
+    var accessRoles: Set<StorableConversationAccessRole>?
 
     /// LEGACY: Which users are allowed to be participants.
     ///
     /// This can be removed when api v3 is the minimum supported version.
 
-    var legacyAccessRole: ConversationAccessRoleLegacy?
+    var legacyAccessRole: StorableConversationAccessRoleLegacy?
 
     var lastEvent: String?
 
@@ -137,9 +137,9 @@ enum ConversationMessageProtocol: String, Codable, Sendable {
 extension Conversation {
     struct Member: Equatable, Codable, Sendable {
 
-        let qualifiedID: QualifiedID?
+        let StorableQualifiedID: StorableQualifiedID?
         let id: UUID?
-        let qualifiedTarget: QualifiedID?
+        let qualifiedTarget: StorableQualifiedID?
         let target: UUID?
         let conversationRole: String?
         let service: Service?

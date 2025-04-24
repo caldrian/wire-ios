@@ -16,14 +16,25 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
+import WireAPI
 
-/// An event where a conversation was deleted.
+enum StorableConversationAccessRole: String, Equatable, Codable, Sendable {
 
-struct ConversationDeleteEvent: Equatable, Codable, Sendable {
+    case teamMember
+    case nonTeamMember
+    case guest
+    case service
 
-    let conversationID: StorableQualifiedID
-    let senderID: StorableQualifiedID
-    let timestamp: Date
-
+    init(_ value: WireAPI.ConversationAccessRole) {
+        switch value {
+        case .teamMember:
+            self = .teamMember
+        case .nonTeamMember:
+            self = .nonTeamMember
+        case .guest:
+            self = .guest
+        case .service:
+            self = .service
+        }
+    }
 }

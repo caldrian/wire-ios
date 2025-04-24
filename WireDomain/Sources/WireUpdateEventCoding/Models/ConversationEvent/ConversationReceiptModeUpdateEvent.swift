@@ -22,11 +22,11 @@ import Foundation
 
 struct ConversationReceiptModeUpdateEvent: Equatable, Codable, Sendable {
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user who updated the receipt mode.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// The receipt mode.
     ///

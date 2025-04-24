@@ -53,7 +53,7 @@ struct Connection: Equatable, Codable, Sendable {
 
     /// Qualified identifier of the receiver
 
-    let receiverQualifiedID: QualifiedID?
+    let receiverQualifiedID: StorableQualifiedID?
 
     /// Remote identifier of the conversation
 
@@ -61,7 +61,7 @@ struct Connection: Equatable, Codable, Sendable {
 
     /// Qualified identifier of the conversation
 
-    let qualifiedConversationID: QualifiedID?
+    let qualifiedConversationID: StorableQualifiedID?
 
     /// Time when connection was last updated
 

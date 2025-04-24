@@ -25,11 +25,11 @@ struct ConversationAddPermissionEvent: Equatable, Codable, Sendable {
 
     /// The id of the conversation.
 
-    let conversationID: QualifiedID
+    let conversationID: StorableQualifiedID
 
     /// The id of the user set the permission.
 
-    let senderID: QualifiedID
+    let senderID: StorableQualifiedID
 
     /// The new permission value (`everyone` or `admins`)
 

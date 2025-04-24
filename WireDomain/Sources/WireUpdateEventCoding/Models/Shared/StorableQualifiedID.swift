@@ -17,13 +17,16 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where a conversation was deleted.
+struct StorableQualifiedID: Codable, Hashable, Equatable, Sendable {
 
-struct ConversationDeleteEvent: Equatable, Codable, Sendable {
+    let id: UUID
+    let domain: String
 
-    let conversationID: StorableQualifiedID
-    let senderID: StorableQualifiedID
-    let timestamp: Date
+    init(_ value: WireAPI.QualifiedID) {
+        self.id = value.uuid
+        self.domain = value.domain
+    }
 
 }
