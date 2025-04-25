@@ -24,7 +24,7 @@ enum UserEvent: Equatable, Codable, Sendable {
 
     /// The self user has added a new client.
 
-    case clientAdd(UserClientAddEvent)
+    case clientAdd(StorableUserClientAddEvent)
 
     /// A self user's client was removed.
 

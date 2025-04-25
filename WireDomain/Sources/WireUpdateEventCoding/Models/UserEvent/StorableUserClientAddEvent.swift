@@ -17,11 +17,34 @@
 //
 
 import Foundation
+import WireAPI
 
-
-struct UserClientAddEvent: Equatable, Codable, Sendable {
+struct StorableUserClientAddEvent: Equatable, Codable, Sendable {
 
     private let client: StorableSelfUserClient
+
+    init(_ value: WireAPI.SelfUserClient) {
+        self.client = StorableSelfUserClient(
+            id: value.id,
+            type: StorableUserClientType(value.type),
+            activationDate: value.activationDate,
+            label: value.label,
+            model: value.model,
+            deviceClass: value.deviceClass.map(StorableDeviceClass.init),
+            lastActiveDate: value.lastActiveDate,
+            mlsPublicKeys: value.mlsPublicKeys.map {
+                StorableMLSPublicKeys(
+                    ed25519: $0.ed25519,
+                    ed448: $0.ed448,
+                    p256: $0.p256,
+                    p384: $0.p384,
+                    p512: $0.p512
+                )
+            },
+            cookie: value.cookie,
+            capabilities: value.capabilities.map(StorableUserClientCapability.init)
+        )
+    }
 
 }
 
@@ -30,30 +53,43 @@ struct UserClientAddEvent: Equatable, Codable, Sendable {
 private struct StorableSelfUserClient: Equatable, Identifiable, Codable, Sendable {
 
     let id: String
-    let type: UserClientType
+    let type: StorableUserClientType
     let activationDate: Date
     let label: String?
     let model: String?
-    let deviceClass: DeviceClass?
+    let deviceClass: StorableDeviceClass?
     let lastActiveDate: Date?
-    let mlsPublicKeys: MLSPublicKeys?
+    let mlsPublicKeys: StorableMLSPublicKeys?
     let cookie: String?
-    let capabilities: [UserClientCapability]
+    let capabilities: [StorableUserClientCapability]
 
 }
 
 
-private enum DeviceClass: String, Codable, Sendable {
+private enum StorableDeviceClass: String, Codable, Sendable {
 
     case phone
     case tablet
     case desktop
     case legalhold
 
+    init(_ value: WireAPI.DeviceClass) {
+        switch value {
+        case .phone:
+            self = .phone
+        case .tablet:
+            self = .tablet
+        case .desktop:
+            self = .desktop
+        case .legalhold:
+            self = .legalhold
+        }
+    }
+
 }
 
 
-private struct MLSPublicKeys: Equatable, Codable, Sendable {
+private struct StorableMLSPublicKeys: Equatable, Codable, Sendable {
 
     let ed25519: String?
     let ed448: String?
@@ -63,17 +99,37 @@ private struct MLSPublicKeys: Equatable, Codable, Sendable {
 
 }
 
-private enum UserClientCapability: String, Codable, Sendable {
+private enum StorableUserClientCapability: String, Codable, Sendable {
 
     case legalholdConsent
     case consumableNotifications
 
+    init(_ value: WireAPI.UserClientCapability) {
+        switch value {
+        case .legalholdConsent:
+            self = .legalholdConsent
+        case .consumableNotifications:
+            self = .consumableNotifications
+        }
+    }
+
 }
 
-private enum UserClientType: String, Codable, Sendable {
+private enum StorableUserClientType: String, Codable, Sendable {
 
     case permanent
     case temporary
     case legalhold
+
+    init(_ value: WireAPI.UserClientType) {
+        switch value {
+        case .permanent:
+            self = .permanent
+        case .temporary:
+            self = .temporary
+        case .legalhold:
+            self = .legalhold
+        }
+    }
 
 }
