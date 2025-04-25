@@ -17,15 +17,17 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where the two or more other backends stopped federating
-/// with each other.
+enum StorableFeatureConfigEvent: Equatable, Codable, Sendable {
 
-struct FederationConnectionRemovedEvent: Equatable, Codable, Sendable {
+    case update(StorableFeatureConfigUpdateEvent)
 
-    /// The domains of the backends that are no longer
-    /// federating with each other.
-
-    let domains: Set<String>
+    init(_ value: WireAPI.FeatureConfigEvent) {
+        switch value {
+        case let .update(update):
+            self = .update(StorableFeatureConfigUpdateEvent(update))
+        }
+    }
 
 }

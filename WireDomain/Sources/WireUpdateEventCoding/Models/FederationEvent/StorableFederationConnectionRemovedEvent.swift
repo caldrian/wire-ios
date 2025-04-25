@@ -17,9 +17,14 @@
 //
 
 import Foundation
+import WireAPI
 
-enum StorableFeatureConfigEvent: Equatable, Codable, Sendable {
+struct StorableFederationConnectionRemovedEvent: Equatable, Codable, Sendable {
 
-    case update(StorableFeatureConfigUpdateEvent)
+    let domains: [String]
+
+    init(_ value: WireAPI.FederationConnectionRemovedEvent) {
+        self.domains = Array(value.domains)
+    }
 
 }

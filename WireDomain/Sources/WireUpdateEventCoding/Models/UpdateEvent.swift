@@ -17,35 +17,15 @@
 //
 
 import Foundation
-
-/// Represents an update event received from the backend
-/// that can be used to incrementaly update the state of
-/// the client.
+import WireAPI
 
 enum UpdateEvent: Equatable, Codable, Sendable {
 
-    /// A conversation event.
-
     case conversation(StorableConversationEvent)
-
-    /// A feature config event.
-
     case featureConfig(StorableFeatureConfigEvent)
-
-    /// A federation event.
-
-    case federation(FederationEvent)
-
-    /// A user event.
-
+    case federation(StorableFederationEvent)
     case user(UserEvent)
-
-    /// A team event.
-
     case team(TeamEvent)
-
-    /// An event that is not known by the client.
-
     case unknown(eventType: String)
 
 }

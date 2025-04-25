@@ -17,15 +17,20 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where the self backend stopped federating
-/// with another backend.
+enum StorableFederationEvent: Equatable, Codable, Sendable {
 
-struct FederationDeleteEvent: Equatable, Codable, Sendable {
+    case connectionRemoved(StorableFederationConnectionRemovedEvent)
+    case delete(StorableFederationDeleteEvent)
 
-    /// The domain of the backend that is no longer
-    /// federating with the self backend.
-
-    let domain: String
+    init(_ value: WireAPI.FederationEvent) {
+        switch value {
+        case .connectionRemoved(let event):
+            self = .connectionRemoved(StorableFederationConnectionRemovedEvent(event))
+        case .delete(let event):
+            self = .delete(StorableFederationDeleteEvent(event))
+        }
+    }
 
 }

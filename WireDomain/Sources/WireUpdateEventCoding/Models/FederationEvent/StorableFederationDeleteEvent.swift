@@ -17,19 +17,14 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event concerning federation between domains.
+struct StorableFederationDeleteEvent: Equatable, Codable, Sendable {
 
-enum FederationEvent: Equatable, Codable, Sendable {
+    let domain: String
 
-    /// Two or more other domains have stopped federating
-    /// with each other.
-
-    case connectionRemoved(FederationConnectionRemovedEvent)
-
-    /// The self domain has stopped federating with another
-    /// domain.
-
-    case delete(FederationDeleteEvent)
+    init(_ value: WireAPI.FederationDeleteEvent) {
+        self.domain = value.domain
+    }
 
 }
