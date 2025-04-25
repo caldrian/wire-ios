@@ -21,7 +21,7 @@ import WireAPI
 
 struct StorableFederationDeleteEvent: Equatable, Codable, Sendable {
 
-    let domain: String
+    private let domain: String
 
     init(_ value: WireAPI.FederationDeleteEvent) {
         self.domain = value.domain

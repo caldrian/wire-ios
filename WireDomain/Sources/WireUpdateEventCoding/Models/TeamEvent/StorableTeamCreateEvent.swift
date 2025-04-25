@@ -17,31 +17,24 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where a user's team membership metadata was updated.
+struct StorableTeamCreateEvent: Equatable, Codable, Sendable {
 
-struct TeamMemberUpdateEvent: Equatable, Codable, Sendable {
+    private let identifier: UUID
+    private let name: String
+    private let creator: UUID
+    private let icon: String
+    private let iconKey: String?
+    private let splashScreen: String?
 
-    /// The team id.
-
-    let teamID: UUID
-
-    /// The membership id.
-
-    let membershipID: UUID
-
-    /// Create a new `TeamMemberUpdateEvent`.
-    ///
-    /// - Parameters:
-    ///   - teamID: The id of the team.
-    ///   - membershipID: The membership ID.
-
-    init(
-        teamID: UUID,
-        membershipID: UUID
-    ) {
-        self.teamID = teamID
-        self.membershipID = membershipID
+    init(_ value: WireAPI.TeamCreateEvent) {
+        self.identifier = value.identifier
+        self.name = value.name
+        self.creator = value.creator
+        self.icon = value.icon
+        self.iconKey = value.iconKey
+        self.splashScreen = value.splashScreen
     }
 
 }

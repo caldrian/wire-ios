@@ -17,31 +17,18 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where a team member left the team.
+struct StorableTeamMemberLeaveEvent: Equatable, Codable, Sendable {
 
-struct TeamMemberLeaveEvent: Equatable, Codable, Sendable {
+    private let teamID: UUID
+    private let userID: UUID
+    private let time: Date
 
-    /// The team id.
-
-    let teamID: UUID
-
-    /// The id of the member who left.
-
-    let userID: UUID
-
-    /// The time at which the member left.
-
-    let time: Date
-
-    init(
-        teamID: UUID,
-        userID: UUID,
-        time: Date
-    ) {
-        self.teamID = teamID
-        self.userID = userID
-        self.time = time
+    init(_ value: WireAPI.TeamMemberLeaveEvent) {
+        self.teamID = value.teamID
+        self.userID = value.userID
+        self.time = value.time
     }
 
 }

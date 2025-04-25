@@ -17,25 +17,26 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event concerning teams.
-
-enum TeamEvent: Equatable, Codable, Sendable {
-
-    /// The self team was deleted.
+enum StorableTeamEvent: Equatable, Codable, Sendable {
 
     case delete
+    case memberLeave(StorableTeamMemberLeaveEvent)
+    case memberUpdate(StorableTeamMemberUpdateEvent)
+    case create(StorableTeamCreateEvent)
 
-    /// A user has left a team.
-
-    case memberLeave(TeamMemberLeaveEvent)
-
-    /// A user's team membership was updated.
-
-    case memberUpdate(TeamMemberUpdateEvent)
-
-    /// A team was created.
-
-    case create(TeamCreateEvent)
+    init(_ value:  WireAPI.TeamEvent) {
+        switch value {
+        case .delete:
+            self = .delete
+        case let .memberLeave(memberLeave):
+            self = .memberLeave(StorableTeamMemberLeaveEvent(memberLeave))
+        case let .memberUpdate(memberUpdate):
+            self = .memberUpdate(StorableTeamMemberUpdateEvent(memberUpdate))
+        case let .create(create):
+            self = .create(StorableTeamCreateEvent(create))
+        }
+    }
 
 }

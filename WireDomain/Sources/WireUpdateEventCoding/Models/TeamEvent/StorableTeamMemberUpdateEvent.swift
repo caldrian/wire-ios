@@ -19,12 +19,14 @@
 import Foundation
 import WireAPI
 
-struct StorableFederationConnectionRemovedEvent: Equatable, Codable, Sendable {
+struct StorableTeamMemberUpdateEvent: Equatable, Codable, Sendable {
 
-    private let domains: [String]
+    private let teamID: UUID
+    private let membershipID: UUID
 
-    init(_ value: WireAPI.FederationConnectionRemovedEvent) {
-        self.domains = Array(value.domains)
+    init(_ value: WireAPI.TeamMemberUpdateEvent) {
+        self.teamID = value.teamID
+        self.membershipID = value.membershipID
     }
 
 }
