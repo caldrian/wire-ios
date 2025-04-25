@@ -17,13 +17,14 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where one of the self user's contacts has joined Wire.
+struct StorableUserContactJoinEvent: Equatable, Codable {
 
-struct UserContactJoinEvent: Equatable, Codable {
+    private let name: String
 
-    /// The contact's name.
-
-    let name: String
+    init(_ value: WireAPI.UserContactJoinEvent) {
+        self.name = value.name
+    }
 
 }

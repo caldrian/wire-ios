@@ -17,17 +17,14 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where legalhold was disabled for a user.
+struct StorableUserLegalholdDisableEvent: Equatable, Codable, Sendable {
 
-struct UserLegalholdDisableEvent: Equatable, Codable, Sendable {
+    private let userID: UUID
 
-    /// The user id for whom legalhold was disabled.
-
-    let userID: UUID
-
-    init(userID: UUID) {
-        self.userID = userID
+    init(_ value: WireAPI.UserLegalholdDisableEvent) {
+        self.userID = value.userID
     }
 
 }

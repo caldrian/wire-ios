@@ -28,31 +28,31 @@ enum UserEvent: Equatable, Codable, Sendable {
 
     /// A self user's client was removed.
 
-    case clientRemove(UserClientRemoveEvent)
+    case clientRemove(StorableUserClientRemoveEvent)
 
     /// A connection to another user has been updated.
 
-    case connection(UserConnectionEvent)
+    case connection(StorableUserConnectionEvent)
 
     /// A contact has joined Wire.
 
-    case contactJoin(UserContactJoinEvent)
+    case contactJoin(StorableUserContactJoinEvent)
 
     /// A user was deleted.
 
-    case delete(UserDeleteEvent)
+    case delete(StorableUserDeleteEvent)
 
     /// Legalhold was disabled for a user.
 
-    case legalholdDisable(UserLegalholdDisableEvent)
+    case legalholdDisable(StorableUserLegalholdDisableEvent)
 
     /// Legalhold was enabled for a user.
 
-    case legalholdEnable(UserLegalholdEnableEvent)
+    case legalholdEnable(StorableUserLegalholdEnableEvent)
 
     /// A user has been requested to become a legalhold subject.
 
-    case legalholdRequest(UserLegalholdRequestEvent)
+    case legalholdRequest(StorableUserLegalholdRequestEvent)
 
     /// One of the self user's persisted properties was set.
 

@@ -17,34 +17,25 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where a user was requested to become a
-/// legalhold subject.
+struct StorableUserLegalholdRequestEvent: Equatable, Codable, Sendable {
 
-struct UserLegalholdRequestEvent: Equatable, Codable, Sendable {
+    private let userID: UUID
+    private let clientID: String
+    private let lastPrekey: Prekey
 
-    /// The user id of the target legalhold subject.
-
-    let userID: UUID
-
-    /// The client id of the legalhold device.
-
-    let clientID: String
-
-    /// The last prekey of the legalhold device.
-
-    let lastPrekey: Prekey
+    init(_ value: WireAPI.UserLegalholdRequestEvent) {
+        self.userID = value.userID
+        self.clientID = value.clientID
+        self.lastPrekey = Prekey(id: value.lastPrekey.id, base64EncodedKey: value.lastPrekey.base64EncodedKey)
+    }
 
 }
 
-struct Prekey: Equatable, Codable, Sendable {
-
-    /// The prekey id.
+private struct Prekey: Equatable, Codable, Sendable {
 
     let id: Int
-
-    /// The base64-encoded prekey key.
-
     let base64EncodedKey: String
 
 }

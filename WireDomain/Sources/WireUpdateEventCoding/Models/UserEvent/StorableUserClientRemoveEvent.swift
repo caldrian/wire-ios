@@ -17,13 +17,14 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where an existing self user client was removed.
+struct StorableUserClientRemoveEvent: Equatable, Codable, Sendable {
 
-struct UserClientRemoveEvent: Equatable, Codable, Sendable {
+    private let clientID: String
 
-    /// The id of the removed client.
-
-    let clientID: String
+    init(_ value: WireAPI.UserClientRemoveEvent) {
+        self.clientID = value.clientID
+    }
 
 }

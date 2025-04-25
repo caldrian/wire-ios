@@ -17,26 +17,31 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where the account of a user (either the
-/// self user or another user) was deleted.
+struct StorableUserDeleteEvent: Equatable, Codable, Sendable {
 
-struct UserDeleteEvent: Equatable, Codable, Sendable {
+    private let qualifiedUserID: StorableQualifiedID
+    private let time: Date
 
-    /// The user's qualified id.
-
-    let qualifiedUserID: StorableQualifiedID
-
-    /// The time at which the user was deleted.
-
-    let time: Date
-
-    init(
-        qualifiedUserID: StorableQualifiedID,
-        time: Date
-    ) {
-        self.qualifiedUserID = qualifiedUserID
-        self.time = time
+    init(_ value: WireAPI.UserDeleteEvent) {
+        self.qualifiedUserID = StorableQualifiedID(value.qualifiedUserID)
+        self.time = value.time
     }
 
 }
+
+
+//struct StorableFooEvent: Equatable, Codable, Sendable {
+//
+//    private let conversationID: StorableQualifiedID
+//    private let senderID: StorableQualifiedID
+//    private let timestamp: Date
+//
+//    init(_ value: WireAPI.FooEvent) {
+//        self.conversationID = StorableQualifiedID(value.conversationID)
+//        self.senderID = StorableQualifiedID(value.senderID)
+//        self.timestamp = value.timestamp
+//    }
+//
+//}

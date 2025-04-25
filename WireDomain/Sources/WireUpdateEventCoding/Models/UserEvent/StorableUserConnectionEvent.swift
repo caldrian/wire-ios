@@ -17,90 +17,68 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where a connection between the self user and
-/// another user was updated.
+struct StorableUserConnectionEvent: Equatable, Codable, Sendable {
 
-struct UserConnectionEvent: Equatable, Codable, Sendable {
+    private let userName: String?
+    private let connection: StorableConnection
 
-    /// The name of the other user.
-
-    let userName: String?
-
-    /// The connection to the other user.
-
-    let connection: Connection
-
-    init(
-        userName: String?,
-        connection: Connection
-    ) {
-        self.userName = userName
-        self.connection = connection
+    init(_ value: WireAPI.UserConnectionEvent) {
+        self.userName = value.userName
+        self.connection = StorableConnection(
+            senderID: value.connection.senderID,
+            receiverID: value.connection.receiverID,
+            receiverQualifiedID: value.connection.receiverQualifiedID.map(StorableQualifiedID.init),
+            conversationID: value.connection.conversationID,
+            qualifiedConversationID: value.connection.qualifiedConversationID.map(StorableQualifiedID.init),
+            lastUpdate: value.connection.lastUpdate,
+            status: StorableConnectionStatus(value.connection.status)
+        )
     }
 
 }
 
-struct Connection: Equatable, Codable, Sendable {
-
-    /// Remote identifier of the sender
+private struct StorableConnection: Equatable, Codable, Sendable {
 
     let senderID: UUID?
-
-    /// Remote identifier of the receiver
-
     let receiverID: UUID?
-
-    /// Qualified identifier of the receiver
-
     let receiverQualifiedID: StorableQualifiedID?
-
-    /// Remote identifier of the conversation
-
     let conversationID: UUID?
-
-    /// Qualified identifier of the conversation
-
     let qualifiedConversationID: StorableQualifiedID?
-
-    /// Time when connection was last updated
-
     let lastUpdate: Date
-
-    /// current status of connection
-
-    let status: ConnectionStatus
+    let status: StorableConnectionStatus
 
 }
 
 
-enum ConnectionStatus: String, Codable, Equatable, Sendable {
-
-    /// The connection is complete and the conversation is in its normal state
+private enum StorableConnectionStatus: String, Codable, Equatable, Sendable {
 
     case accepted
-
-    /// The user has been blocked
-
     case blocked
-
-    /// The other user has sent a connection request to this one
-
     case pending
-
-    /// The connection has been ignored
-
     case ignored
-
-    /// This user has sent a connection request to another user
-
     case sent
-
-    /// The connection has been cancelled
-
     case cancelled
+    case missingLegalholdConsent
 
-    /// The connection is missing legal hold consent
+    init(_ value: WireAPI.ConnectionStatus) {
+        switch value {
+        case .accepted:
+            self = .accepted
+        case .blocked:
+            self = .blocked
+        case .pending:
+            self = .pending
+        case .ignored:
+            self = .ignored
+        case .sent:
+            self = .sent
+        case .cancelled:
+            self = .cancelled
+        case .missingLegalholdConsent:
+            self = .missingLegalholdConsent
+        }
+    }
 
-    case missingLegalholdConsent = "missing-legalhold-consent"
 }
