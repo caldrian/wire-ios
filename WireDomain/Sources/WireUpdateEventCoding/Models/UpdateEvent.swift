@@ -30,7 +30,7 @@ enum UpdateEvent: Equatable, Codable, Sendable {
 
     /// A feature config event.
 
-    case featureConfig(FeatureConfigEvent)
+    case featureConfig(StorableFeatureConfigEvent)
 
     /// A federation event.
 

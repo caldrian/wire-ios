@@ -19,22 +19,18 @@
 import Foundation
 import WireAPI
 
-extension Stored {
+enum StorableMessageProtocol: String, Codable, Sendable {
 
-    enum MessageProtocol: String, Codable, Sendable {
+    case proteus
+    case mls
 
-        case proteus
-        case mls
-
-        init(_ value: WireAPI.MessageProtocol) {
-            switch value {
-            case .proteus:
-                self = .proteus
-            case .mls:
-                self = .mls
-            }
+    init(_ value: WireAPI.MessageProtocol) {
+        switch value {
+        case .proteus:
+            self = .proteus
+        case .mls:
+            self = .mls
         }
-
     }
 
 }

@@ -18,12 +18,8 @@
 
 import Foundation
 
-/// An event concerning feature configs.
+enum StorableFeatureConfigEvent: Equatable, Codable, Sendable {
 
-enum FeatureConfigEvent: Equatable, Codable, Sendable {
-
-    /// A feature config was updated.
-
-    case update(FeatureConfigUpdateEvent)
+    case update(StorableFeatureConfigUpdateEvent)
 
 }

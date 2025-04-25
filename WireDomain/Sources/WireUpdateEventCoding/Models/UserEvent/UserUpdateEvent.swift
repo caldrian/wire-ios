@@ -52,7 +52,7 @@ struct UserUpdateEvent: Equatable, Codable, Sendable {
 
     /// The new supported protocols.
 
-    let supportedProtocols: [Stored.MessageProtocol]?
+    let supportedProtocols: [StorableMessageProtocol]?
 
 }
 
