@@ -17,18 +17,14 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where one of the self user's persisted
-/// properties was deleted.
+struct StorableUserPropertiesDeleteEvent: Equatable, Codable, Sendable {
 
-struct UserPropertiesDeleteEvent: Equatable, Codable, Sendable {
+    private let key: String
 
-    /// The property key that was deleted.
-
-    let key: String
-
-    init(key: String) {
-        self.key = key
+    init(_ value: WireAPI.UserPropertiesDeleteEvent) {
+        self.key = value.key
     }
 
 }

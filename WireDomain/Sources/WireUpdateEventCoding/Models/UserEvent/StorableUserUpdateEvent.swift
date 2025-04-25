@@ -17,78 +17,67 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where a user's metadata was updated.
+struct StorableUserUpdateEvent: Equatable, Codable, Sendable {
 
-struct UserUpdateEvent: Equatable, Codable, Sendable {
+    private let userID: UUID
+    private let accentColorID: Int?
+    private let name: String?
+    private let handle: String?
+    private let email: String?
+    private let isSSOIDDeleted: Bool?
+    private let assets: [StorableUserAsset]?
+    private let supportedProtocols: [StorableMessageProtocol]?
 
-    /// The updated user's id.
-
-    let userID: UUID
-
-    /// The new accent color id.
-
-    let accentColorID: Int?
-
-    /// The new user name.
-
-    let name: String?
-
-    /// The new user handle.
-
-    let handle: String?
-
-    /// The new email address.
-
-    let email: String?
-
-    /// Whether the user's sso id was deleted.
-
-    let isSSOIDDeleted: Bool?
-
-    /// The new user assets.
-
-    let assets: [UserAsset]?
-
-    /// The new supported protocols.
-
-    let supportedProtocols: [StorableMessageProtocol]?
+    init(_ value: WireAPI.UserUpdateEvent) {
+        self.userID = value.userID
+        self.accentColorID = value.accentColorID
+        self.name = value.name
+        self.handle = value.handle
+        self.email = value.email
+        self.isSSOIDDeleted = value.isSSOIDDeleted
+        self.assets = value.assets?.map {
+            StorableUserAsset(key: $0.key, size: StorableUserAssetSize($0.size), type: StorableUserAssetType($0.type))
+        }
+        self.supportedProtocols = value.supportedProtocols?.map { StorableMessageProtocol($0) }
+    }
 
 }
 
-enum UserAssetSize: String, Codable, Equatable, Sendable {
-
-    /// Smaller version of the asset optimised for size
+private enum StorableUserAssetSize: String, Codable, Equatable, Sendable {
 
     case preview
-
-    /// Complete version of the asset
-
     case complete
+
+    init(_ value: WireAPI.UserAssetSize) {
+        switch value {
+        case .preview:
+            self = .preview
+        case .complete:
+            self = .complete
+        }
+    }
+
 }
 
-/// Describes the purpose of the user asset.
-
-enum UserAssetType: String, Codable, Equatable, Sendable {
-
-    /// User profile image
+private enum StorableUserAssetType: String, Codable, Equatable, Sendable {
 
     case image
+
+    init(_ value: WireAPI.UserAssetType) {
+        switch value {
+        case .image:
+            self = .image
+        }
+    }
+
 }
 
-/// An asset associated with a user, typically a profile picture.
-
-struct UserAsset: Codable, Equatable, Sendable {
-
-    /// Unique key for this asset, if the asset is updated it will be assigned new key.
+private struct StorableUserAsset: Codable, Equatable, Sendable {
 
     let key: String
+    let size: StorableUserAssetSize
+    let type: StorableUserAssetType
 
-    /// Asset size
-
-    let size: UserAssetSize
-
-    /// Asset type
-
-    let type: UserAssetType
 }

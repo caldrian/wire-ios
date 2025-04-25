@@ -23,16 +23,16 @@ struct StorableUserClientAddEvent: Equatable, Codable, Sendable {
 
     private let client: StorableSelfUserClient
 
-    init(_ value: WireAPI.SelfUserClient) {
+    init(_ value: WireAPI.UserClientAddEvent) {
         self.client = StorableSelfUserClient(
-            id: value.id,
-            type: StorableUserClientType(value.type),
-            activationDate: value.activationDate,
-            label: value.label,
-            model: value.model,
-            deviceClass: value.deviceClass.map(StorableDeviceClass.init),
-            lastActiveDate: value.lastActiveDate,
-            mlsPublicKeys: value.mlsPublicKeys.map {
+            id: value.client.id,
+            type: StorableUserClientType(value.client.type),
+            activationDate: value.client.activationDate,
+            label: value.client.label,
+            model: value.client.model,
+            deviceClass: value.client.deviceClass.map(StorableDeviceClass.init),
+            lastActiveDate: value.client.lastActiveDate,
+            mlsPublicKeys: value.client.mlsPublicKeys.map {
                 StorableMLSPublicKeys(
                     ed25519: $0.ed25519,
                     ed448: $0.ed448,
@@ -41,8 +41,8 @@ struct StorableUserClientAddEvent: Equatable, Codable, Sendable {
                     p512: $0.p512
                 )
             },
-            cookie: value.cookie,
-            capabilities: value.capabilities.map(StorableUserClientCapability.init)
+            cookie: value.client.cookie,
+            capabilities: value.client.capabilities.map(StorableUserClientCapability.init)
         )
     }
 

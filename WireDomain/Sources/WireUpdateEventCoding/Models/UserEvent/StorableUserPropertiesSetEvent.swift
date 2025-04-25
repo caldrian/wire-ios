@@ -17,58 +17,54 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event where one of the self user's persisted
-/// properties was set.
+struct StorableUserPropertiesSetEvent: Equatable, Codable {
 
-struct UserPropertiesSetEvent: Equatable, Codable {
+    private let property: StorableUserProperty
 
-    /// The updated user property.
-
-    let property: UserProperty
-
-    init(property: UserProperty) {
-        self.property = property
+    init(_ value: WireAPI.UserPropertiesSetEvent) {
+        self.property = StorableUserProperty(value.property)
     }
 
 }
 
-enum UserProperty: Equatable, Codable {
-
-    /// Whether the self user has enabled read receipts.
+private enum StorableUserProperty: Equatable, Codable {
 
     case areReadReceiptsEnabled(Bool)
-
-    /// Whether the self user has enabled typing indicators.
-
     case areTypingIndicatorsEnabled(Bool)
-
-    /// The conversation labels setting.
-
-    case conversationLabels([ConversationLabel])
-
-    /// An unknown property.
-
+    case conversationLabels([StorableConversationLabel])
     case unknown(key: String)
+
+    init(_ value: WireAPI.UserProperty) {
+        switch value {
+        case let .areReadReceiptsEnabled(isEnabled):
+            self = .areReadReceiptsEnabled(isEnabled)
+        case let .areTypingIndicatorsEnabled(isEnabled):
+            self = .areTypingIndicatorsEnabled(isEnabled)
+        case let .conversationLabels(labels):
+            self = .conversationLabels(
+                labels.map {
+                    StorableConversationLabel(
+                        id: $0.id,
+                        name: $0.name,
+                        type: $0.type,
+                        conversationIDs: $0.conversationIDs
+                    )
+                }
+            )
+        case let .unknown(key):
+            self = .unknown(key: key)
+        }
+    }
 
 }
 
-struct ConversationLabel: Equatable, Codable, Sendable {
-
-    /// The label's id.
+private struct StorableConversationLabel: Equatable, Codable, Sendable {
 
     let id: UUID
-
-    /// The label's name.
-
     let name: String?
-
-    /// The label's raw type.
-
     let type: Int16
-
-    /// The conversation ids associated with the label.
-
     let conversationIDs: [UUID]
 
 }

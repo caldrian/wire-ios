@@ -17,57 +17,50 @@
 //
 
 import Foundation
+import WireAPI
 
-/// An event concerning users.
-
-enum UserEvent: Equatable, Codable, Sendable {
-
-    /// The self user has added a new client.
+enum StorableUserEvent: Equatable, Codable, Sendable {
 
     case clientAdd(StorableUserClientAddEvent)
-
-    /// A self user's client was removed.
-
     case clientRemove(StorableUserClientRemoveEvent)
-
-    /// A connection to another user has been updated.
-
     case connection(StorableUserConnectionEvent)
-
-    /// A contact has joined Wire.
-
     case contactJoin(StorableUserContactJoinEvent)
-
-    /// A user was deleted.
-
     case delete(StorableUserDeleteEvent)
-
-    /// Legalhold was disabled for a user.
-
     case legalholdDisable(StorableUserLegalholdDisableEvent)
-
-    /// Legalhold was enabled for a user.
-
     case legalholdEnable(StorableUserLegalholdEnableEvent)
-
-    /// A user has been requested to become a legalhold subject.
-
     case legalholdRequest(StorableUserLegalholdRequestEvent)
-
-    /// One of the self user's persisted properties was set.
-
-    case propertiesSet(UserPropertiesSetEvent)
-
-    /// One of the self user's persisted properties was deleted.
-
-    case propertiesDelete(UserPropertiesDeleteEvent)
-
-    /// One of the self user's push tokens was removed.
-
+    case propertiesSet(StorableUserPropertiesSetEvent)
+    case propertiesDelete(StorableUserPropertiesDeleteEvent)
     case pushRemove
+    case update(StorableUserUpdateEvent)
 
-    /// A user's metadata was updated.
-
-    case update(UserUpdateEvent)
+    init(_ value: WireAPI.UserEvent) {
+        switch value {
+        case let .clientAdd(clientAdd):
+            self = .clientAdd(StorableUserClientAddEvent(clientAdd))
+        case let .clientRemove(clientRemove):
+            self = .clientRemove(StorableUserClientRemoveEvent(clientRemove))
+        case let .connection(connection):
+            self = .connection(StorableUserConnectionEvent(connection))
+        case let .contactJoin(contactJoin):
+            self = .contactJoin(StorableUserContactJoinEvent(contactJoin))
+        case let .delete(delete):
+            self = .delete(StorableUserDeleteEvent(delete))
+        case let .legalholdDisable(legalholdDisable):
+            self = .legalholdDisable(StorableUserLegalholdDisableEvent(legalholdDisable))
+        case let .legalholdEnable(legalholdEnable):
+            self = .legalholdEnable(StorableUserLegalholdEnableEvent(legalholdEnable))
+        case let .legalholdRequest(legalholdRequest):
+            self = .legalholdRequest(StorableUserLegalholdRequestEvent(legalholdRequest))
+        case let .propertiesSet(propertiesSet):
+            self = .propertiesSet(StorableUserPropertiesSetEvent(propertiesSet))
+        case let .propertiesDelete(propertiesDelete):
+            self = .propertiesDelete(StorableUserPropertiesDeleteEvent(propertiesDelete))
+        case .pushRemove:
+            self = .pushRemove
+        case let .update(update):
+            self = .update(StorableUserUpdateEvent(update))
+        }
+    }
 
 }
