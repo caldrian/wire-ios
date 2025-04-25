@@ -26,6 +26,6 @@ public struct UpdateEventCoder {
     public init() {}
 
     public func encode(_ value: UpdateEventEnvelope) throws -> Data {
-        try encoder.encode(value)
+        try encoder.encode(StorableUpdateEventEnvelope(value))
     }
 }

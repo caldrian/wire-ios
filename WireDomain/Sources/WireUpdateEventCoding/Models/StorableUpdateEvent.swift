@@ -19,13 +19,30 @@
 import Foundation
 import WireAPI
 
-enum UpdateEvent: Equatable, Codable, Sendable {
+enum StorableUpdateEvent: Equatable, Codable, Sendable {
 
     case conversation(StorableConversationEvent)
     case featureConfig(StorableFeatureConfigEvent)
     case federation(StorableFederationEvent)
-    case user(UserEvent)
-    case team(TeamEvent)
+    case user(StorableUserEvent)
+    case team(StorableTeamEvent)
     case unknown(eventType: String)
+
+    init(_ value: WireAPI.UpdateEvent) {
+        switch value {
+        case let .conversation(conversation):
+            self = .conversation(StorableConversationEvent(conversation))
+        case let .featureConfig(featureConfig):
+            self = .featureConfig(StorableFeatureConfigEvent(featureConfig))
+        case let .federation(federation):
+            self = .federation(StorableFederationEvent(federation))
+        case let .user(user):
+            self = .user(StorableUserEvent(user))
+        case let .team(team):
+            self = .team(StorableTeamEvent(team))
+        case let .unknown(eventType):
+            self = .unknown(eventType: eventType)
+        }
+    }
 
 }

@@ -16,4 +16,19 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-enum StoredUpdateEvent {}
+import Foundation
+import WireAPI
+
+struct StorableUpdateEventEnvelope: Equatable, Codable, Sendable {
+
+    private let id: UUID
+    private let events: [StorableUpdateEvent]
+    private let isTransient: Bool
+
+    init(_ value: WireAPI.UpdateEventEnvelope) {
+        self.id = value.id
+        self.events = value.events.map(StorableUpdateEvent.init)
+        self.isTransient = value.isTransient
+    }
+
+}
