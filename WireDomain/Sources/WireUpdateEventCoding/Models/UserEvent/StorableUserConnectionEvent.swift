@@ -81,4 +81,23 @@ private enum StorableConnectionStatus: String, Codable, Equatable, Sendable {
         }
     }
 
+    func toAPIModel() -> WireAPI.ConnectionStatus {
+        switch self {
+        case .accepted:
+            return .accepted
+        case .blocked:
+            return .blocked
+        case .pending:
+            return .pending
+        case .ignored:
+            return .ignored
+        case .sent:
+            return .sent
+        case .cancelled:
+            return .cancelled
+        case .missingLegalholdConsent:
+            return .missingLegalholdConsent
+        }
+    }
+
 }

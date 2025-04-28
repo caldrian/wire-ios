@@ -37,4 +37,17 @@ enum StorableConversationAccessRole: String, Equatable, Codable, Sendable {
             self = .service
         }
     }
+
+    func toAPIModel() -> WireAPI.ConversationAccessRole {
+        switch self {
+        case .teamMember:
+            return .teamMember
+        case .nonTeamMember:
+            return .nonTeamMember
+        case .guest:
+            return .guest
+        case .service:
+            return .service
+        }
+    }
 }

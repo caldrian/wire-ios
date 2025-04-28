@@ -35,4 +35,15 @@ enum StorableConversationMessageProtocol: String, Codable, Sendable {
         }
     }
 
+    func toAPIModel() -> WireAPI.ConversationMessageProtocol {
+        switch self {
+        case .proteus:
+            return .proteus
+        case .mixed:
+            return .mixed
+        case .mls:
+            return .mls
+        }
+    }
+
 }

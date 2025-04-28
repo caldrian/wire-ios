@@ -104,6 +104,19 @@ private enum StorableConversationType: String, Codable, Sendable {
         }
     }
 
+    func toAPIModel() -> WireAPI.ConversationType {
+        switch self {
+        case .group:
+            return .group
+        case .self:
+            return .self
+        case .oneOnOne:
+            return .oneOnOne
+        case .connection:
+            return .connection
+        }
+    }
+
 }
 
 private enum StorableConversationGroupType: String, Codable, Sendable {
@@ -117,6 +130,15 @@ private enum StorableConversationGroupType: String, Codable, Sendable {
             self = .group
         case .channel:
             self = .channel
+        }
+    }
+
+    func toAPIModel() -> WireAPI.ConversationGroupType {
+        switch self {
+        case .group:
+            return .group
+        case .channel:
+            return .channel
         }
     }
 

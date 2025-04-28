@@ -86,6 +86,19 @@ private enum StorableDeviceClass: String, Codable, Sendable {
         }
     }
 
+    func toAPIModel() -> WireAPI.DeviceClass {
+        switch self {
+        case .phone:
+            return .phone
+        case .tablet:
+            return .tablet
+        case .desktop:
+            return .desktop
+        case .legalhold:
+            return .legalhold
+        }
+    }
+
 }
 
 
@@ -129,6 +142,17 @@ private enum StorableUserClientType: String, Codable, Sendable {
             self = .temporary
         case .legalhold:
             self = .legalhold
+        }
+    }
+
+    func toAPIModel() -> WireAPI.UserClientType {
+        switch self {
+        case .permanent:
+            return .permanent
+        case .temporary:
+            return .temporary
+        case .legalhold:
+            return .legalhold
         }
     }
 

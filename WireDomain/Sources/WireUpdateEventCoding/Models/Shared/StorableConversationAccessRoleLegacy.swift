@@ -38,4 +38,17 @@ enum StorableConversationAccessRoleLegacy: String, Equatable, Codable, Sendable 
         }
     }
 
+    func toAPIModel() -> WireAPI.ConversationAccessRoleLegacy {
+        switch self {
+        case .private:
+            return .private
+        case .team:
+            return .team
+        case .activated:
+            return .activated
+        case .nonActivated:
+            return .nonActivated
+        }
+    }
+
 }

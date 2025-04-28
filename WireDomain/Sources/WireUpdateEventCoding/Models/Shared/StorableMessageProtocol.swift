@@ -33,4 +33,13 @@ enum StorableMessageProtocol: String, Codable, Sendable {
         }
     }
 
+    func toAPIModel() -> WireAPI.MessageProtocol {
+        switch self {
+        case .proteus:
+            return .proteus
+        case .mls:
+            return .mls
+        }
+    }
+
 }

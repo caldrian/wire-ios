@@ -31,4 +31,14 @@ enum StorableChannelPermission: String, Equatable, Codable, Sendable {
             self = .admins
         }
     }
+
+    func toAPIModel() -> WireAPI.ChannelPermission {
+        switch self {
+        case .everyone:
+            return .everyone
+        case .admins:
+            return .admins
+        }
+    }
+
 }

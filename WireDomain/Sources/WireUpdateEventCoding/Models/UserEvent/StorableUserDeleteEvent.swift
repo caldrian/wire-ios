@@ -30,18 +30,3 @@ struct StorableUserDeleteEvent: Equatable, Codable, Sendable {
     }
 
 }
-
-
-//struct StorableFooEvent: Equatable, Codable, Sendable {
-//
-//    private let conversationID: StorableQualifiedID
-//    private let senderID: StorableQualifiedID
-//    private let timestamp: Date
-//
-//    init(_ value: WireAPI.FooEvent) {
-//        self.conversationID = StorableQualifiedID(value.conversationID)
-//        self.senderID = StorableQualifiedID(value.senderID)
-//        self.timestamp = value.timestamp
-//    }
-//
-//}
