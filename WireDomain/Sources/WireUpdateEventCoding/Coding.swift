@@ -22,10 +22,16 @@ public import WireAPI
 public struct UpdateEventCoder {
 
     private let encoder = JSONEncoder()
+    private let decoder = JSONDecoder()
 
     public init() {}
 
     public func encode(_ value: UpdateEventEnvelope) throws -> Data {
         try encoder.encode(StorableUpdateEventEnvelope(value))
+    }
+
+    public func decode(_ data: Data) throws -> UpdateEventEnvelope {
+        let event = try decoder.decode(StorableUpdateEventEnvelope.self, from: data)
+        return event.toAPIModel()
     }
 }
