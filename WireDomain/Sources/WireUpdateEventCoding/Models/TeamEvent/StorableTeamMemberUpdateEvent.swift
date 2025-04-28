@@ -29,4 +29,11 @@ struct StorableTeamMemberUpdateEvent: Equatable, Codable, Sendable {
         self.membershipID = value.membershipID
     }
 
+    func toAPIModel() -> WireAPI.TeamMemberUpdateEvent {
+        .init(
+            teamID: teamID,
+            membershipID: membershipID
+        )
+    }
+
 }

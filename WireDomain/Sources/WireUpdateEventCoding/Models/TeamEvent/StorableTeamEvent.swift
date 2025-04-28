@@ -39,4 +39,17 @@ enum StorableTeamEvent: Equatable, Codable, Sendable {
         }
     }
 
+    func toAPIModel() -> WireAPI.TeamEvent {
+        switch self {
+        case .delete:
+            return .delete
+        case let .memberLeave(memberLeave):
+            return .memberLeave(memberLeave.toAPIModel())
+        case let .memberUpdate(memberUpdate):
+            return .memberUpdate(memberUpdate.toAPIModel())
+        case let .create(create):
+            return .create(create.toAPIModel())
+        }
+    }
+
 }

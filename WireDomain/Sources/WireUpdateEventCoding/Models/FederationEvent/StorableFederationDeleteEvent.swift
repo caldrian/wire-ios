@@ -27,4 +27,8 @@ struct StorableFederationDeleteEvent: Equatable, Codable, Sendable {
         self.domain = value.domain
     }
 
+    func toAPIModel() -> WireAPI.FederationDeleteEvent {
+        .init(domain: domain)
+    }
+
 }

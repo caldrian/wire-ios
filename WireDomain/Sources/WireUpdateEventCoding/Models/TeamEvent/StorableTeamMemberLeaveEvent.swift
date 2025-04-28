@@ -31,4 +31,12 @@ struct StorableTeamMemberLeaveEvent: Equatable, Codable, Sendable {
         self.time = value.time
     }
 
+    func toAPIModel() -> WireAPI.TeamMemberLeaveEvent {
+        .init(
+            teamID: teamID,
+            userID: userID,
+            time: time
+        )
+    }
+
 }

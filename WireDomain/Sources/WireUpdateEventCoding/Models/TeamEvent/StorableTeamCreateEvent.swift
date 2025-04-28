@@ -37,4 +37,15 @@ struct StorableTeamCreateEvent: Equatable, Codable, Sendable {
         self.splashScreen = value.splashScreen
     }
 
+    func toAPIModel() -> WireAPI.TeamCreateEvent {
+        .init(
+            identifier: identifier,
+            name: name,
+            creator: creator,
+            icon: icon,
+            iconKey: iconKey,
+            splashScreen: splashScreen
+        )
+    }
+
 }

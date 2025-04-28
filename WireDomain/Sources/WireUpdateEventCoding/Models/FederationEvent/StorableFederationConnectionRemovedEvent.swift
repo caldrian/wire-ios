@@ -27,4 +27,8 @@ struct StorableFederationConnectionRemovedEvent: Equatable, Codable, Sendable {
         self.domains = Array(value.domains)
     }
 
+    func toAPIModel() -> WireAPI.FederationConnectionRemovedEvent {
+        .init(domains: Set(domains))
+    }
+
 }
