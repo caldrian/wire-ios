@@ -116,6 +116,94 @@ struct StorableFeatureConfigUpdateEvent: Equatable, Codable, Sendable {
         }
     }
 
+    func toAPIModel() -> WireAPI.FeatureConfigUpdateEvent {
+        let config: WireAPI.FeatureConfig = switch featureConfig {
+        case let .appLock(config):
+            .appLock(
+                .init(
+                    status: config.status.toAPIModel(),
+                    isMandatory: config.isMandatory,
+                    inactivityTimeoutInSeconds: config.inactivityTimeoutInSeconds
+                )
+            )
+        case let .classifiedDomains(config):
+            .classifiedDomains(
+                .init(
+                    status: config.status.toAPIModel(),
+                    domains: config.domains.toSet()
+                )
+            )
+        case let .conferenceCalling(config):
+            .conferenceCalling(
+                .init(
+                    status: config.status.toAPIModel(),
+                    useSFTForOneToOneCalls: config.useSFTForOneToOneCalls
+                )
+            )
+        case let .conversationGuestLinks(config):
+            .conversationGuestLinks(
+                .init(
+                    status: config.status.toAPIModel()
+                )
+            )
+        case let .digitalSignature(config):
+            .digitalSignature(
+                .init(
+                    status: config.status.toAPIModel()
+                )
+            )
+        case let .endToEndIdentity(config):
+            .endToEndIdentity(
+                .init(
+                    status: config.status.toAPIModel(),
+                    acmeDiscoveryURL: config.acmeDiscoveryURL,
+                    verificationExpiration: config.verificationExpiration,
+                    crlProxy: config.crlProxy,
+                    useProxyOnMobile: config.useProxyOnMobile
+                )
+            )
+        case let .fileSharing(config):
+            .fileSharing(
+                .init(
+                    status: config.status.toAPIModel()
+                )
+            )
+        case let .mls(config):
+            .mls(
+                .init(
+                    status: config.status.toAPIModel(),
+                    protocolToggleUsers: config.protocolToggleUsers.toSet(),
+                    defaultProtocol: config.defaultProtocol.toAPIModel(),
+                    allowedCipherSuites: config.allowedCipherSuites.map { $0.toAPIModel() },
+                    defaultCipherSuite: config.defaultCipherSuite.toAPIModel(),
+                    supportedProtocols: config.supportedProtocols.map { $0.toAPIModel() }.toSet()
+                )
+            )
+        case let .mlsMigration(config):
+            // FIXME: Implement
+            fatalError()
+        case let .selfDeletingMessages(config):
+                .selfDeletingMessages(
+                    .init(
+                        status: config.status.toAPIModel(),
+                        enforcedTimeoutSeconds: config.enforcedTimeoutSeconds
+                    )
+                )
+        case let .channels(config):
+                .channels(
+                    ChannelsFeatureConfig(
+                        status: config.status.toAPIModel(),
+                        allowedToCreateChannels: config.allowedToCreateChannels.toAPIModel(),
+                        allowedToOpenChannels: config.allowedToOpenChannels.toAPIModel()
+                    )
+                )
+        case let .unknown(featureName):
+            .unknown(featureName: featureName)
+        }
+
+        return .init(featureConfig: config)
+    }
+
 }
 
 // MARK: Private Models
@@ -150,6 +238,15 @@ private enum StorableFeatureConfigStatus: String, Codable, Sendable {
             self = .enabled
         case .disabled:
             self = .disabled
+        }
+    }
+
+    func toAPIModel() -> WireAPI.FeatureConfigStatus {
+        switch self {
+        case .enabled:
+            return .enabled
+        case .disabled:
+            return .disabled
         }
     }
 
@@ -237,6 +334,17 @@ private struct StorableChannelsFeatureConfig: Codable, Equatable, Sendable {
                 self = .everyone
             case .admins:
                 self = .admins
+            }
+        }
+
+        func toAPIModel() -> WireAPI.ChannelsPermision {
+            switch self {
+            case .teamMembers:
+                return .teamMembers
+            case .everyone:
+                return .everyone
+            case .admins:
+                return .admins
             }
         }
 
