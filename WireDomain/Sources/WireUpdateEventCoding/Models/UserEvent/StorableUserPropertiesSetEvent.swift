@@ -27,6 +27,10 @@ struct StorableUserPropertiesSetEvent: Equatable, Codable {
         self.property = StorableUserProperty(value.property)
     }
 
+    func toAPIModel() -> WireAPI.UserPropertiesSetEvent {
+        .init(property: property.toAPIModel())
+    }
+
 }
 
 private enum StorableUserProperty: Equatable, Codable {
@@ -55,6 +59,28 @@ private enum StorableUserProperty: Equatable, Codable {
             )
         case let .unknown(key):
             self = .unknown(key: key)
+        }
+    }
+
+    func toAPIModel() -> WireAPI.UserProperty {
+        switch self {
+        case let .areReadReceiptsEnabled(isEnabled):
+            return .areReadReceiptsEnabled(isEnabled)
+        case let .areTypingIndicatorsEnabled(isEnabled):
+            return .areTypingIndicatorsEnabled(isEnabled)
+        case let .conversationLabels(labels):
+            return .conversationLabels(
+                labels.map {
+                    WireAPI.ConversationLabel(
+                        id: $0.id,
+                        name: $0.name,
+                        type: $0.type,
+                        conversationIDs: $0.conversationIDs
+                    )
+                }
+            )
+        case let .unknown(key):
+            return .unknown(key: key)
         }
     }
 

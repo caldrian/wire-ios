@@ -46,6 +46,31 @@ struct StorableUserClientAddEvent: Equatable, Codable, Sendable {
         )
     }
 
+    func toAPIModel() -> WireAPI.UserClientAddEvent {
+        .init(
+            client: .init(
+                id: client.id,
+                type: client.type.toAPIModel(),
+                activationDate: client.activationDate,
+                label: client.label,
+                model: client.model,
+                deviceClass: client.deviceClass?.toAPIModel(),
+                lastActiveDate: client.lastActiveDate,
+                mlsPublicKeys: client.mlsPublicKeys.map {
+                    WireAPI.MLSPublicKeys(
+                        ed25519: $0.ed25519,
+                        ed448: $0.ed448,
+                        p256: $0.p256,
+                        p384: $0.p384,
+                        p512: $0.p512
+                    )
+                },
+                cookie: client.cookie,
+                capabilities: client.capabilities.map { $0.toAPIModel() }
+            )
+        )
+    }
+
 }
 
 // MARK: - Private models
@@ -123,6 +148,15 @@ private enum StorableUserClientCapability: String, Codable, Sendable {
             self = .legalholdConsent
         case .consumableNotifications:
             self = .consumableNotifications
+        }
+    }
+
+    func toAPIModel() -> WireAPI.UserClientCapability {
+        switch self {
+        case .legalholdConsent:
+            return .legalholdConsent
+        case .consumableNotifications:
+            return .consumableNotifications
         }
     }
 

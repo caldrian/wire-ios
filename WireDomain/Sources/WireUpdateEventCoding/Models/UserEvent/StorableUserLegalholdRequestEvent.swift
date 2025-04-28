@@ -31,6 +31,17 @@ struct StorableUserLegalholdRequestEvent: Equatable, Codable, Sendable {
         self.lastPrekey = Prekey(id: value.lastPrekey.id, base64EncodedKey: value.lastPrekey.base64EncodedKey)
     }
 
+    func toAPIModel() -> WireAPI.UserLegalholdRequestEvent {
+        .init(
+            userID: userID,
+            clientID: clientID,
+            lastPrekey: WireAPI.Prekey(
+                id: lastPrekey.id,
+                base64EncodedKey: lastPrekey.base64EncodedKey
+            )
+        )
+    }
+
 }
 
 private struct Prekey: Equatable, Codable, Sendable {

@@ -43,6 +43,21 @@ struct StorableUserUpdateEvent: Equatable, Codable, Sendable {
         self.supportedProtocols = value.supportedProtocols?.map { StorableMessageProtocol($0) }
     }
 
+    func toAPIModel() -> WireAPI.UserUpdateEvent {
+        .init(
+            userID: userID,
+            accentColorID: accentColorID,
+            name: name,
+            handle: handle,
+            email: email,
+            isSSOIDDeleted: isSSOIDDeleted,
+            assets: assets?.map {
+                WireAPI.UserAsset(key: $0.key, size: $0.size.toAPIModel(), type: $0.type.toAPIModel())
+            },
+            supportedProtocols: supportedProtocols?.map { $0.toAPIModel() }.toSet()
+        )
+    }
+
 }
 
 private enum StorableUserAssetSize: String, Codable, Equatable, Sendable {

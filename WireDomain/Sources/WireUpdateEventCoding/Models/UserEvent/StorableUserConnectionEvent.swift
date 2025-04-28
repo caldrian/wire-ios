@@ -37,6 +37,21 @@ struct StorableUserConnectionEvent: Equatable, Codable, Sendable {
         )
     }
 
+    func toAPIModel() -> WireAPI.UserConnectionEvent {
+        .init(
+            userName: userName,
+            connection: .init(
+                senderID: connection.senderID,
+                receiverID: connection.receiverID,
+                receiverQualifiedID: connection.receiverQualifiedID?.toAPIModel(),
+                conversationID: connection.conversationID,
+                qualifiedConversationID: connection.qualifiedConversationID?.toAPIModel(),
+                lastUpdate: connection.lastUpdate,
+                status: connection.status.toAPIModel()
+            )
+        )
+    }
+
 }
 
 private struct StorableConnection: Equatable, Codable, Sendable {

@@ -27,4 +27,8 @@ struct StorableUserPropertiesDeleteEvent: Equatable, Codable, Sendable {
         self.key = value.key
     }
 
+    func toAPIModel() -> WireAPI.UserPropertiesDeleteEvent {
+        .init(key: key)
+    }
+
 }

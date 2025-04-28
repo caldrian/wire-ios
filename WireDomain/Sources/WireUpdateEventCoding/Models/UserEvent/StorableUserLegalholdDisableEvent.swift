@@ -27,4 +27,8 @@ struct StorableUserLegalholdDisableEvent: Equatable, Codable, Sendable {
         self.userID = value.userID
     }
 
+    func toAPIModel() -> WireAPI.UserLegalholdDisableEvent {
+        .init(userID: userID)
+    }
+
 }

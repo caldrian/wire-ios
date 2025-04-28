@@ -27,4 +27,8 @@ struct StorableUserClientRemoveEvent: Equatable, Codable, Sendable {
         self.clientID = value.clientID
     }
 
+    func toAPIModel() -> WireAPI.UserClientRemoveEvent {
+        .init(clientID: clientID)
+    }
+
 }

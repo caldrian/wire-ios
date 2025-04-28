@@ -29,4 +29,11 @@ struct StorableUserDeleteEvent: Equatable, Codable, Sendable {
         self.time = value.time
     }
 
+    func toAPIModel() -> WireAPI.UserDeleteEvent {
+        .init(
+            qualifiedUserID: qualifiedUserID.toAPIModel(),
+            time: time
+        )
+    }
+
 }
