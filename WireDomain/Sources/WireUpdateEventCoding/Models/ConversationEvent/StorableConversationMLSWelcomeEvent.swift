@@ -31,4 +31,12 @@ struct StorableConversationMLSWelcomeEvent: Equatable, Codable, Sendable {
         self.welcomeMessage = value.welcomeMessage
     }
 
+    func toAPIModel() -> WireAPI.ConversationMLSWelcomeEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            welcomeMessage: welcomeMessage
+        )
+    }
+
 }

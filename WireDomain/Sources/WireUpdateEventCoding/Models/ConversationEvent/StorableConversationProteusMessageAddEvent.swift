@@ -39,6 +39,18 @@ struct StorableConversationProteusMessageAddEvent: Equatable, Codable, Sendable 
         self.messageRecipientClientID = value.messageRecipientClientID
     }
 
+    func toAPIModel() -> WireAPI.ConversationProteusMessageAddEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            timestamp: timestamp,
+            message: message.toAPIModel(),
+            externalData: externalData?.toAPIModel(),
+            messageSenderClientID: messageSenderClientID,
+            messageRecipientClientID: messageRecipientClientID
+        )
+    }
+
 }
 
 private struct StorableMessageContent: Equatable, Codable, Sendable {
@@ -49,6 +61,13 @@ private struct StorableMessageContent: Equatable, Codable, Sendable {
     init(_ value: WireAPI.MessageContent) {
         self.encryptedMessage = value.encryptedMessage
         self.decryptedMessage = value.decryptedMessage
+    }
+
+    func toAPIModel() -> WireAPI.MessageContent {
+        .init(
+            encryptedMessage: encryptedMessage,
+            decryptedMessage: decryptedMessage
+        )
     }
 
 }

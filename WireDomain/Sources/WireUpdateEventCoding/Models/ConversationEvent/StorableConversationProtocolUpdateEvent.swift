@@ -30,4 +30,12 @@ struct StorableConversationProtocolUpdateEvent: Equatable, Codable, Sendable {
         self.newProtocol = StorableConversationMessageProtocol(value.newProtocol)
     }
 
+    func toAPIModel() -> WireAPI.ConversationProtocolUpdateEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            newProtocol: newProtocol.toAPIModel()
+        )
+    }
+
 }

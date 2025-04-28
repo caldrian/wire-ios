@@ -33,4 +33,13 @@ struct StorableConversationMessageTimerUpdateEvent: Equatable, Codable, Sendable
         self.newTimer = value.newTimer
     }
 
+    func toAPIModel() -> WireAPI.ConversationMessageTimerUpdateEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            timestamp: timestamp,
+            newTimer: newTimer
+        )
+    }
+
 }

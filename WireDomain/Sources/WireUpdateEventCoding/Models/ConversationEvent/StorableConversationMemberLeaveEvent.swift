@@ -35,6 +35,16 @@ struct StorableConversationMemberLeaveEvent: Equatable, Codable, Sendable {
         self.reason = StorableConversationMemberLeaveReason(value.reason)
     }
 
+    func toAPIModel() -> WireAPI.ConversationMemberLeaveEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            timestamp: timestamp,
+            removedUserIDs: removedUserIDs.map { $0.toAPIModel() }.toSet(),
+            reason: reason.toAPIModel()
+        )
+    }
+
 }
 
 private enum StorableConversationMemberLeaveReason: String, Codable, Sendable {

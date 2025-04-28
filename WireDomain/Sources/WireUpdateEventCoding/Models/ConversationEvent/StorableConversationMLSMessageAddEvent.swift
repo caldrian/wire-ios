@@ -37,6 +37,17 @@ struct StorableConversationMLSMessageAddEvent: Equatable, Codable, Sendable {
         self.decryptedMessages = value.decryptedMessages.map(StorableDecryptedMessage.init)
     }
 
+    func toAPIModel() -> WireAPI.ConversationMLSMessageAddEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            subconversation: subconversation,
+            message: message,
+            timestamp: timestamp,
+            decryptedMessages: decryptedMessages.map { $0.toAPIModel() }
+        )
+    }
+
 }
 
 private struct StorableDecryptedMessage: Equatable, Codable, Sendable {
@@ -47,6 +58,13 @@ private struct StorableDecryptedMessage: Equatable, Codable, Sendable {
     init(_ value: WireAPI.ConversationMLSMessageAddEvent.DecryptedMessage) {
         self.message = value.message
         self.senderClientID = value.senderClientID
+    }
+
+    func toAPIModel() -> WireAPI.ConversationMLSMessageAddEvent.DecryptedMessage {
+        .init(
+            message: message,
+            senderClientID: senderClientID
+        )
     }
 
 }

@@ -30,4 +30,12 @@ struct StorableConversationReceiptModeUpdateEvent: Equatable, Codable, Sendable 
         self.newReceiptMode = value.newReceiptMode
     }
 
+    func toAPIModel() -> WireAPI.ConversationReceiptModeUpdateEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            newReceiptMode: newReceiptMode
+        )
+    }
+
 }

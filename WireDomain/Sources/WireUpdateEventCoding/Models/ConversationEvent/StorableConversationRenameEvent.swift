@@ -33,4 +33,13 @@ struct StorableConversationRenameEvent: Equatable, Codable, Sendable {
         self.newName = value.newName
     }
 
+    func toAPIModel() -> WireAPI.ConversationRenameEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            timestamp: timestamp,
+            newName: newName
+        )
+    }
+
 }

@@ -30,4 +30,12 @@ struct StorableConversationTypingEvent: Equatable, Codable, Sendable {
         self.isTyping = value.isTyping
     }
 
+    func toAPIModel() -> WireAPI.ConversationTypingEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            isTyping: isTyping
+        )
+    }
+
 }

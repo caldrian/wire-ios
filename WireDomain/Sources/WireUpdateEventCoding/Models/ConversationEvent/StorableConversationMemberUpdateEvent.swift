@@ -40,6 +40,22 @@ struct StorableConversationMemberUpdateEvent: Equatable, Codable, Sendable {
         )
     }
 
+    func toAPIModel() -> WireAPI.ConversationMemberUpdateEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            timestamp: timestamp,
+            memberChange: WireAPI.ConversationMemberChange(
+                id: memberChange.id.toAPIModel(),
+                newRoleName: memberChange.newRoleName,
+                newMuteStatus: memberChange.newMuteStatus,
+                muteStatusReferenceDate: memberChange.muteStatusReferenceDate,
+                newArchivedStatus: memberChange.newArchivedStatus,
+                archivedStatusReferenceDate: memberChange.archivedStatusReferenceDate
+            )
+        )
+    }
+
 }
 
 private struct StorableConversationMemberChange: Equatable, Codable, Sendable {

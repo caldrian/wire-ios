@@ -75,4 +75,41 @@ enum StorableConversationEvent: Equatable, Codable, Sendable {
         }
     }
 
+    func toAPIModel() -> WireAPI.ConversationEvent {
+        switch self {
+        case let .accessUpdate(event):
+            return .accessUpdate(event.toAPIModel())
+        case let .codeUpdate(event):
+            return .codeUpdate(event.toAPIModel())
+        case let .create(event):
+            return .create(event.toAPIModel())
+        case let .delete(event):
+            return .delete(event.toAPIModel())
+        case let .memberJoin(event):
+            return .memberJoin(event.toAPIModel())
+        case let .memberLeave(event):
+            return .memberLeave(event.toAPIModel())
+        case let .memberUpdate(event):
+            return .memberUpdate(event.toAPIModel())
+        case let .messageTimerUpdate(event):
+            return .messageTimerUpdate(event.toAPIModel())
+        case let .mlsMessageAdd(event):
+            return .mlsMessageAdd(event.toAPIModel())
+        case let .mlsWelcome(event):
+            return .mlsWelcome(event.toAPIModel())
+        case let .proteusMessageAdd(event):
+            return .proteusMessageAdd(event.toAPIModel())
+        case let .protocolUpdate(event):
+            return .protocolUpdate(event.toAPIModel())
+        case let .receiptModeUpdate(event):
+            return .receiptModeUpdate(event.toAPIModel())
+        case let .rename(event):
+            return .rename(event.toAPIModel())
+        case let .typing(event):
+            return .typing(event.toAPIModel())
+        case let .permissionUpdate(event):
+            return .permissionUpdate(event.toAPIModel())
+        }
+    }
+
 }
