@@ -31,4 +31,12 @@ struct StorableUpdateEventEnvelope: Equatable, Codable, Sendable {
         self.isTransient = value.isTransient
     }
 
+    func toAPIModel() -> WireAPI.UpdateEventEnvelope {
+        .init(
+            id: id,
+            events: events.map { $0.toAPIModel() },
+            isTransient: isTransient
+        )
+    }
+
 }

@@ -30,4 +30,11 @@ enum StorableFeatureConfigEvent: Equatable, Codable, Sendable {
         }
     }
 
+    func toAPIModel() -> WireAPI.FeatureConfigEvent {
+        switch self {
+        case let .update(update):
+            return .update(update.toAPIModel())
+        }
+    }
+
 }
