@@ -49,6 +49,23 @@ struct StorableConversationMember: Equatable, Codable, Sendable {
         self.mutedReference = value.mutedReference
     }
 
+    func toAPIModel() -> WireAPI.Conversation.Member {
+        return .init(
+            qualifiedID: self.qualifiedID?.toAPIModel(),
+            id: self.id,
+            qualifiedTarget: self.qualifiedTarget?.toAPIModel(),
+            target: self.target,
+            conversationRole: self.conversationRole,
+            service: self.service.map { WireAPI.Service(id: $0.id, provider: $0.provider) },
+            archived: self.archived,
+            archivedReference: self.archivedReference,
+            hidden: self.hidden,
+            hiddenReference: self.hiddenReference,
+            mutedStatus: self.mutedStatus,
+            mutedReference: self.mutedReference
+        )
+    }
+
 }
 
 private struct StorableService: Equatable, Codable, Sendable {
@@ -57,4 +74,3 @@ private struct StorableService: Equatable, Codable, Sendable {
     let provider: UUID
 
 }
-

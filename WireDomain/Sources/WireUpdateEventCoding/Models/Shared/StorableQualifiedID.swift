@@ -29,4 +29,8 @@ struct StorableQualifiedID: Codable, Hashable, Equatable, Sendable {
         self.domain = value.domain
     }
 
+    func toAPIModel() -> WireAPI.QualifiedID {
+        return .init(uuid: id, domain: domain)
+    }
+
 }
