@@ -16,26 +16,10 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
-import WireAPI
+extension Array where Element: Hashable {
 
-struct StorableConversationDeleteEvent: Equatable, Codable, Sendable {
-
-    private let conversationID: StorableQualifiedID
-    private let senderID: StorableQualifiedID
-    private let timestamp: Date
-
-    init(_ value: WireAPI.ConversationDeleteEvent) {
-        self.conversationID = StorableQualifiedID(value.conversationID)
-        self.senderID = StorableQualifiedID(value.senderID)
-        self.timestamp = value.timestamp
+    func toSet() -> Set<Element> {
+        Set(self)
     }
-
-    func toAPIModel() -> WireAPI.ConversationDeleteEvent {
-        .init(
-            conversationID: conversationID.toAPIModel(),
-            senderID: senderID.toAPIModel(),
-            timestamp: timestamp
-        )
-    }
+    
 }

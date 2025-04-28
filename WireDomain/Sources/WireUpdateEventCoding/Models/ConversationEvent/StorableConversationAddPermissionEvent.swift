@@ -29,4 +29,12 @@ struct StorableConversationAddPermissionEvent: Equatable, Codable, Sendable {
         self.senderID = StorableQualifiedID(value.senderID)
         self.addPermission = StorableChannelPermission(value.addPermission)
     }
+
+    func toAPIModel() -> WireAPI.ConversationAddPermissionEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            addPermission: addPermission.toAPIModel()
+        )
+    }
 }

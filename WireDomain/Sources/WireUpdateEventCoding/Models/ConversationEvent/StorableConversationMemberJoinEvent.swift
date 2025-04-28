@@ -33,4 +33,13 @@ struct StorableConversationMemberJoinEvent: Equatable, Codable, Sendable {
         self.members = value.members.map(StorableConversationMember.init)
     }
 
+    func toAPIModel() -> WireAPI.ConversationMemberJoinEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            timestamp: timestamp,
+            members: members.map { $0.toAPIModel() }
+        )
+    }
+
 }

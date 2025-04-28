@@ -55,6 +55,37 @@ struct StorableConversationCreateEvent: Equatable, Codable, Sendable {
         )
     }
 
+    func toAPIModel() -> WireAPI.ConversationCreateEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            timestamp: timestamp,
+            conversation: WireAPI.Conversation(
+                id: conversation.id,
+                qualifiedID: conversation.qualifiedID?.toAPIModel(),
+                teamID: conversation.teamID,
+                type: conversation.type?.toAPIModel(),
+                messageProtocol: conversation.messageProtocol?.toAPIModel(),
+                mlsGroupID: conversation.mlsGroupID,
+                cipherSuite: conversation.cipherSuite?.toAPIModel(),
+                epoch: conversation.epoch,
+                epochTimestamp: conversation.epochTimestamp,
+                creator: conversation.creator,
+                members: conversation.members?.toAPIModel(),
+                name: conversation.name,
+                messageTimer: conversation.messageTimer,
+                readReceiptMode: conversation.readReceiptMode,
+                access: conversation.access?.map { $0.toAPIModel() }.toSet(),
+                accessRoles: conversation.accessRoles?.map { $0.toAPIModel() }.toSet(),
+                legacyAccessRole: conversation.legacyAccessRole.map { $0.toAPIModel() },
+                lastEvent: conversation.lastEvent,
+                lastEventTime: conversation.lastEventTime,
+                groupType: conversation.groupType?.toAPIModel(),
+                addPermission: conversation.addPermission?.toAPIModel()
+            )
+        )
+    }
+
 }
 
 private struct StorableConversation: Equatable, Codable, Sendable {
@@ -152,6 +183,13 @@ private struct StorableConversationMembers: Equatable, Codable, Sendable {
     init(_ value: WireAPI.Conversation.Members) {
         self.others = value.others.map { StorableConversationMember($0) }
         self.selfMember = StorableConversationMember(value.selfMember)
+    }
+
+    func toAPIModel() -> WireAPI.Conversation.Members {
+        .init(
+            others: others.map { $0.toAPIModel() },
+            selfMember: selfMember.toAPIModel()
+        )
     }
 
 }

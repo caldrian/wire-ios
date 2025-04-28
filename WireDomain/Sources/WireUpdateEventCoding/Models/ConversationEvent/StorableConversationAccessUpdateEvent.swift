@@ -26,12 +26,22 @@ struct StorableConversationAccessUpdateEvent: Equatable, Codable, Sendable {
     private let accessRoles: [StorableConversationAccessRole]?
     private let legacyAccessRole: StorableConversationAccessRoleLegacy?
 
-    init(_ value: ConversationAccessUpdateEvent) {
+    init(_ value: WireAPI.ConversationAccessUpdateEvent) {
         self.conversationID = StorableQualifiedID(value.conversationID)
         self.senderID = StorableQualifiedID(value.senderID)
         self.accessModes = value.accessModes.map(StorableConversationAccessMode.init)
         self.accessRoles = value.accessRoles?.map(StorableConversationAccessRole.init)
         self.legacyAccessRole = value.legacyAccessRole.map { StorableConversationAccessRoleLegacy($0) }
+    }
+
+    func toAPIModel() -> WireAPI.ConversationAccessUpdateEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            accessModes: accessModes.map { $0.toAPIModel() }.toSet(),
+            accessRoles: accessRoles?.map { $0.toAPIModel() }.toSet(),
+            legacyAccessRole: legacyAccessRole?.toAPIModel()
+        )
     }
 
 }

@@ -36,4 +36,15 @@ struct StorableConversationCodeUpdateEvent: Equatable, Codable, Sendable {
         self.isPasswordProtected = value.isPasswordProtected
     }
 
+    func toAPIModel() -> WireAPI.ConversationCodeUpdateEvent {
+        .init(
+            conversationID: conversationID.toAPIModel(),
+            senderID: senderID.toAPIModel(),
+            uri: uri,
+            key: key,
+            code: code,
+            isPasswordProtected: isPasswordProtected
+        )
+    }
+
 }
