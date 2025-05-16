@@ -14,7 +14,7 @@ jobs:
   trigger_tests:
     strategy:
       matrix:
-        branch: [develop, release/cycle-3.120, release/cycle-3.123, release/cycle-3.124]  # List other branches here
+        branch: [chore/xcode-16.3-update-WPB-17070]  # List other branches here
       fail-fast: false # avoid to fail one job
     uses: ./.github/workflows/_reusable_run_tests.yml
     with:
