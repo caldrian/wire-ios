@@ -19,6 +19,7 @@
 import Combine
 import Foundation
 import WireCoreCrypto
+import WireCoreCryptoUniffi
 import WireLogging
 import WireSystem
 
