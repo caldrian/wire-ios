@@ -314,7 +314,7 @@ public actor CoreCryptoProvider: CoreCryptoProviderProtocol {
 
     private func generateClientPublicKeys(
         with coreCrypto: CoreCryptoContextProtocol,
-        credentialType: MlsCredentialType
+        credentialType: CredentialType
     ) async throws {
         WireLogger.mls.info("generating public key")
         let ciphersuite = await featureRespository.fetchMLS().config.defaultCipherSuite
