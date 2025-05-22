@@ -43,7 +43,7 @@ public class SafeCoreCrypto: SafeCoreCryptoProtocol {
 
         let coreCrypto = try await CoreCrypto(
             keystorePath: path,
-            keystoreSecret: Data(key.utf8)
+            key: Data(key.utf8)
         )
 
         setLogger(logger: CoreCryptoLoggerProxy(), level: .info)
