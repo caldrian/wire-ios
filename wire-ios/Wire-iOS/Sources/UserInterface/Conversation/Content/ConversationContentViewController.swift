@@ -17,6 +17,7 @@
 //
 
 import UIKit
+import Foundation
 import WireCommonComponents
 import WireDataModel
 import WireDesign
@@ -602,13 +603,27 @@ extension ConversationContentViewController: UITableViewDelegate {
     ) -> UISwipeActionsConfiguration? {
 
         let sections = dataSource.currentSections
+        let sectionContains = sections.indices.contains(indexPath.section)
+        let rowContains = sections[ifExists: indexPath.section]?.elements.indices.contains(indexPath.row) ?? false
+        let description = sections[ifExists: indexPath.section]?.elements[ifExists: indexPath.row]?.instance
+        let descriptionString = if let description {
+            NSStringFromClass(type(of: description))
+        } else {
+            "-"
+        }
+        let cellDescriptionSupportsActions = description?.supportsActions ?? false
+        let actionController = sections[ifExists: indexPath.section]?.elements[ifExists: indexPath.row]?.actionController
+        let canAddReaction = actionController?.message.canAddReaction ?? false
         guard
-            sections.indices.contains(indexPath.section),
-            sections[indexPath.section].elements.indices.contains(indexPath.row),
-            sections[indexPath.section].elements[indexPath.row].instance.supportsActions,
-            let actionController = sections[indexPath.section].elements[indexPath.row].actionController,
+            sectionContains,
+            rowContains,
+            cellDescriptionSupportsActions,
+            let actionController,
             actionController.message.canAddReaction
-        else { return nil }
+        else {
+            logger.info("DS: Swipe from left: description: \(descriptionString), sectionContains: \(sectionContains), rowContains: \(rowContains), cellDescriptionSupportsActions: \(cellDescriptionSupportsActions), hasActionController: \(actionController != nil), canAddReaction: \(canAddReaction)")
+                        return nil
+        }
 
         // setting an empty title string since it would be displayed upside down
         // TODO: [WPB-16341] set "Reply" as text for accessibility reasons
@@ -634,13 +649,27 @@ extension ConversationContentViewController: UITableViewDelegate {
     ) -> UISwipeActionsConfiguration? {
 
         let sections = dataSource.currentSections
+        let sectionContains = sections.indices.contains(indexPath.section)
+        let rowContains = sections[ifExists: indexPath.section]?.elements.indices.contains(indexPath.row) ?? false
+        let description = sections[ifExists: indexPath.section]?.elements[ifExists: indexPath.row]?.instance
+        let descriptionString = if let description {
+            NSStringFromClass(type(of: description))
+        } else {
+            "-"
+        }
+        let cellDescriptionSupportsActions = description?.supportsActions ?? false
+        let actionController = sections[ifExists: indexPath.section]?.elements[ifExists: indexPath.row]?.actionController
+        let canAddReaction = actionController?.canPerformAction(action: .react("❤️")) ?? false
         guard
-            sections.indices.contains(indexPath.section),
-            sections[indexPath.section].elements.indices.contains(indexPath.row),
-            sections[indexPath.section].elements[indexPath.row].instance.supportsActions,
-            let actionController = sections[indexPath.section].elements[indexPath.row].actionController,
-            actionController.canPerformAction(action: .react("❤️"))
-        else { return nil }
+            sectionContains,
+            rowContains,
+            cellDescriptionSupportsActions,
+            let actionController,
+            actionController.message.canAddReaction
+        else {
+            logger.info("DS: Swipe from right: description: \(descriptionString), sectionContains: \(sectionContains), rowContains: \(rowContains), cellDescriptionSupportsActions: \(cellDescriptionSupportsActions), hasActionController: \(actionController != nil), canAddReaction: \(canAddReaction)")
+            return nil
+        }
 
         // since the table view is flipped vertically we also render the image flipped
         // TODO: [WPB-16341] use the real image, remove the upsideDownImage
