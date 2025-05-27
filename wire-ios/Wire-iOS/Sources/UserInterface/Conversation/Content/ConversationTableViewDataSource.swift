@@ -177,7 +177,6 @@ final class ConversationTableViewDataSource: NSObject {
             DispatchQueue.main.async {
                 var sections = [Section]()
 
-                let allMessages = messagesOnMainThread
                 for (messageObjectId, sectionController, context) in result {
 
                     // saving calculations result in local cache
@@ -285,11 +284,16 @@ final class ConversationTableViewDataSource: NSObject {
     }
 
     func resetSectionControllers() {
-        sectionControllers.reset()
-        calculateSections { [weak self] sections in
-            guard let self else { return }
-            currentSections = sections
-            tableView.reloadData()
+        WireLogger.conversation.info("DS: resetSectionControllers")
+        debouncer.call(id: nil) { [weak self] in
+            self?.sectionControllers.reset()
+            self?.calculateSections { [weak self] sections in
+                guard let self else { return }
+                WireLogger.conversation.info("DS: resetSectionControllers: settING currentSections")
+                currentSections = sections
+                WireLogger.conversation.info("DS: resetSectionControllers: settED currentSections")
+                tableView.reloadData()
+            }
         }
     }
 
@@ -463,11 +467,15 @@ final class ConversationTableViewDataSource: NSObject {
         hasOlderMessagesToLoad = allMessages.count == fetchRequest.fetchLimit
         hasNewerMessagesToLoad = offset > 0
         firstUnreadMessage = conversation.firstUnreadMessage
-
-        calculateSections(forceRecalculate: forceRecalculate) { [weak self] sections in
-            self?.currentSections = sections
-            self?.tableView.reloadData()
-            completion?()
+        
+        debouncer.call(id: nil) { [weak self] in
+            self?.calculateSections(forceRecalculate: forceRecalculate) { [weak self] sections in
+                WireLogger.conversation.info("DS: loadMessages offset finished: \(offset), uuid: \(uuid), settING currentSections")
+                self?.currentSections = sections
+                WireLogger.conversation.info("DS: loadMessages offset finished: settED currentSections")
+                self?.tableView.reloadData()
+                completion?()
+            }
         }
     }
 

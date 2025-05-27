@@ -612,17 +612,20 @@ extension ConversationContentViewController: UITableViewDelegate {
             "-"
         }
         let cellDescriptionSupportsActions = description?.supportsActions ?? false
-        let actionController = sections[ifExists: indexPath.section]?.elements[ifExists: indexPath.row]?.actionController
+        let actionController: ConversationMessageActionController? = sections[ifExists: indexPath.section]?.elements[ifExists: indexPath.row]?.actionController
+        let backupActionController: ConversationMessageActionController? = dataSource.sectionControllers.get(
+            for: description!.message!.nonce!
+        )?.actionController
         let canAddReaction = actionController?.message.canAddReaction ?? false
         guard
             sectionContains,
             rowContains,
             cellDescriptionSupportsActions,
-            let actionController,
+            let actionController = actionController ?? backupActionController,
             actionController.message.canAddReaction
         else {
             logger.info("DS: Swipe from left: description: \(descriptionString), sectionContains: \(sectionContains), rowContains: \(rowContains), cellDescriptionSupportsActions: \(cellDescriptionSupportsActions), hasActionController: \(actionController != nil), canAddReaction: \(canAddReaction)")
-                        return nil
+            return nil
         }
 
         // setting an empty title string since it would be displayed upside down
@@ -658,13 +661,14 @@ extension ConversationContentViewController: UITableViewDelegate {
             "-"
         }
         let cellDescriptionSupportsActions = description?.supportsActions ?? false
-        let actionController = sections[ifExists: indexPath.section]?.elements[ifExists: indexPath.row]?.actionController
+        let actionController: ConversationMessageActionController? = sections[ifExists: indexPath.section]?.elements[ifExists: indexPath.row]?.actionController
+        let backupActionController: ConversationMessageActionController? = dataSource.sectionControllers.get(for: description!.message!.nonce!)?.actionController
         let canAddReaction = actionController?.canPerformAction(action: .react("❤️")) ?? false
         guard
             sectionContains,
             rowContains,
             cellDescriptionSupportsActions,
-            let actionController,
+            let actionController = actionController ?? backupActionController,
             actionController.message.canAddReaction
         else {
             logger.info("DS: Swipe from right: description: \(descriptionString), sectionContains: \(sectionContains), rowContains: \(rowContains), cellDescriptionSupportsActions: \(cellDescriptionSupportsActions), hasActionController: \(actionController != nil), canAddReaction: \(canAddReaction)")
