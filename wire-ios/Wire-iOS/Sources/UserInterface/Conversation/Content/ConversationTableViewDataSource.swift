@@ -470,9 +470,7 @@ final class ConversationTableViewDataSource: NSObject {
         
         debouncer.call(id: nil) { [weak self] in
             self?.calculateSections(forceRecalculate: forceRecalculate) { [weak self] sections in
-                WireLogger.conversation.info("DS: loadMessages offset finished: \(offset), uuid: \(uuid), settING currentSections")
                 self?.currentSections = sections
-                WireLogger.conversation.info("DS: loadMessages offset finished: settED currentSections")
                 self?.tableView.reloadData()
                 completion?()
             }
