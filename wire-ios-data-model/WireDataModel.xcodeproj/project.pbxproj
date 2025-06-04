@@ -525,6 +525,7 @@
 		CB1821A52D412FA100A80AB4 /* OneOnOneSourceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1821A42D412FA100A80AB4 /* OneOnOneSourceTests.swift */; };
 		CB1BF6FC2C8AF6A5001EC670 /* ExpirationReason+Description.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB1BF6FB2C8AF6A5001EC670 /* ExpirationReason+Description.swift */; };
 		CB417B082D9FDA2B00F0701B /* store2-123-0.wiredatabase in Resources */ = {isa = PBXBuildFile; fileRef = CB417B072D9FDA2B00F0701B /* store2-123-0.wiredatabase */; };
+		CB50EB782DF07003005EECD7 /* MultipartAttachment.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB50EB772DF07003005EECD7 /* MultipartAttachment.swift */; };
 		CB5212122D95A76800CF8099 /* ZMConversation+PrivateChannelPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB5212112D95A76800CF8099 /* ZMConversation+PrivateChannelPermission.swift */; };
 		CB7979182C747652006FBA58 /* WireTransportSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = CB7979172C747652006FBA58 /* WireTransportSupport.framework */; };
 		CB79791B2C7476AC006FBA58 /* TestSetup.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB79791A2C7476AC006FBA58 /* TestSetup.swift */; };
@@ -1437,6 +1438,7 @@
 		CB1821A42D412FA100A80AB4 /* OneOnOneSourceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OneOnOneSourceTests.swift; sourceTree = "<group>"; };
 		CB1BF6FB2C8AF6A5001EC670 /* ExpirationReason+Description.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ExpirationReason+Description.swift"; sourceTree = "<group>"; };
 		CB417B072D9FDA2B00F0701B /* store2-123-0.wiredatabase */ = {isa = PBXFileReference; lastKnownFileType = file; path = "store2-123-0.wiredatabase"; sourceTree = "<group>"; };
+		CB50EB772DF07003005EECD7 /* MultipartAttachment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MultipartAttachment.swift; sourceTree = "<group>"; };
 		CB5212112D95A76800CF8099 /* ZMConversation+PrivateChannelPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ZMConversation+PrivateChannelPermission.swift"; sourceTree = "<group>"; };
 		CB7979172C747652006FBA58 /* WireTransportSupport.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = WireTransportSupport.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		CB79791A2C7476AC006FBA58 /* TestSetup.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestSetup.swift; sourceTree = "<group>"; };
@@ -2965,6 +2967,7 @@
 				541E4F941CBD182100D82D69 /* FileAssetCache.swift */,
 				16313D611D227DC1001B2AB3 /* LinkPreview+ProtocolBuffer.swift */,
 				165DC51E21491C0400090B7B /* Mention.swift */,
+				CB50EB772DF07003005EECD7 /* MultipartAttachment.swift */,
 				54E3EE401F616BA600A261E3 /* ZMAssetClientMessage.swift */,
 				54E3EE441F61A53C00A261E3 /* ZMAssetClientMessage+Ephemeral.swift */,
 				0651D00523FC481B00411A22 /* ZMAssetClientMessage+Confirmations.swift */,
@@ -4249,6 +4252,7 @@
 				165E0F69217F871400E36D08 /* ZMOTRMessage+ContentHashing.swift in Sources */,
 				F9C348921E2E3FF60015D69D /* SnapshotCenter.swift in Sources */,
 				0651D00623FC481B00411A22 /* ZMAssetClientMessage+Confirmations.swift in Sources */,
+				CB50EB782DF07003005EECD7 /* MultipartAttachment.swift in Sources */,
 				54E3EE471F61A78B00A261E3 /* ZMAssetClientMessage+Deletion.swift in Sources */,
 				F9331C781CB4165100139ECC /* NSString+ZMPersonName.m in Sources */,
 				63B1335529A503D100009D84 /* ProteusService.swift in Sources */,
@@ -4384,7 +4388,6 @@
 				5980C7012BE4E17100278363 /* E2EINotifications.swift in Sources */,
 				F9A706811CAEE01D00C2F5FE /* ZMMessage.m in Sources */,
 				76E000BA2DAFED1B00853C45 /* WireCellsMessageAttachmentDraftEntity.swift in Sources */,
-				639971B02B27346B009DD5CF /* CommitError.swift in Sources */,
 				631A0578240420380062B387 /* UserClient+SafeLogging.swift in Sources */,
 				165DC52121491D8700090B7B /* ZMClientMessage+TextMessageData.swift in Sources */,
 				EEE95CD52A432FA100E136CB /* LeaveSubconversationAction.swift in Sources */,

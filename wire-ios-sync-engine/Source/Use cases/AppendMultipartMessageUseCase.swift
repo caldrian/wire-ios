@@ -20,12 +20,6 @@ import WireAnalytics
 import WireDataModel
 import WireLogging
 
-public struct MultipartAttachment {
-
-    public init() {}
-
-}
-
 public protocol AppendMultipartMessageUseCaseProtocol {
 
     func invoke(
@@ -54,6 +48,16 @@ public struct AppendMultipartMessageUseCase: AppendMultipartMessageUseCaseProtoc
         fetchLinkPreview: Bool,
         attachments: [MultipartAttachment]
     ) throws {
-        WireLogger.wireCells.info("append text: \(text), attachment count: \(attachments.count)")
+        try conversation.appendMultipart(
+            text: text,
+            attachments: attachments,
+            mentions: mentions,
+            replyingTo: replyingTo,
+            fetchLinkPreview: fetchLinkPreview,
+            nonce: UUID()
+        )
+        conversation.draftMessage = nil
+
+        // TODO: Track analytics event
     }
 }

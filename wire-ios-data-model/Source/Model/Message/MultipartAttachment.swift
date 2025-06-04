@@ -16,31 +16,20 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-package import Foundation
-package import UniformTypeIdentifiers
+public struct MultipartAttachment {
 
-public struct WireCellsDraft: Hashable, Sendable {
+    /// The wire cells UUID of the attachment.
+    public let uuid: UUID
 
-    public let id: WireCellsNodeID
-    package let assetURL: URL
-    package let fileType: UTType?
-    public var status: WireCellsUploadStatus
-    public var name: String
-    public let bytes: Int
+    /// The full name of the attachment, including cell prefix. E.g. "<conversation-qualified-id>/<file-name>"
+    public let name: String
 
-    package init(
-        id: WireCellsNodeID,
-        assetURL: URL,
-        fileType: UTType?,
-        status: WireCellsUploadStatus,
-        name: String,
-        bytes: Int
+    public init(
+        uuid: UUID,
+        name: String
     ) {
-        self.id = id
-        self.assetURL = assetURL
-        self.fileType = fileType
-        self.status = status
+        self.uuid = uuid
         self.name = name
-        self.bytes = bytes
     }
+
 }

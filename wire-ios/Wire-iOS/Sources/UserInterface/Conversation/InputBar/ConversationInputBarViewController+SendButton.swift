@@ -53,7 +53,12 @@ extension ConversationInputBarViewController {
                 await wireCellsClearPublishedDraftsUseCase.invoke()
                 delegate?.conversationInputBarViewControllerDidComposeText(
                     text: text,
-                    attachments: attachments.map { _ in MultipartAttachment() },
+                    attachments: attachments.map { draft in
+                        MultipartAttachment(
+                            uuid: draft.id.uuid,
+                            name: draft.name
+                        )
+                    },
                     mentions: mentions,
                     replyingTo: quote
                 )

@@ -96,12 +96,13 @@ final class RestAPI: Sendable {
 
     func publishDraft(uuid: UUID, versionID: UUID) async throws {
         let parameters = RestPromoteParameters(publish: true)
-        _ = try await NodeServiceAPI.promoteVersion(
+        let result = try await NodeServiceAPI.promoteVersion(
             uuid: uuid.uuidString,
             versionId: versionID.uuidString,
             parameters: parameters,
             apiConfiguration: configuration
         )
+        print(">>>> PUBLISHED: \(result.node)")
     }
 
     func cancelDraft(uuid: UUID, versionID: UUID) async throws {
