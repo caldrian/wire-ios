@@ -217,7 +217,7 @@ final class ConversationInputBarViewController: UIViewController,
     var callCountWhileCameraKeyboardWasVisible = 0
     var callStateObserverToken: Any?
     var wasRecordingBeforeCall = false
-    let sendButtonState: ConversationInputBarButtonState = .init()
+    let inputBarButtonState: ConversationInputBarButtonState = .init()
     var inRotation = false
 
     private var singleTapGestureRecognizer: UITapGestureRecognizer = .init()
@@ -343,7 +343,7 @@ final class ConversationInputBarViewController: UIViewController,
             singleTapGestureRecognizer.isEnabled = singleTapGestureRecognizerEnabled
             selectInputControllerButton(selectedButton)
 
-            updateRightAccessoryView()
+            updateButtonStates()
         }
     }
 
@@ -466,7 +466,7 @@ final class ConversationInputBarViewController: UIViewController,
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        updateRightAccessoryView()
+        updateButtonStates()
         inputBar.updateReturnKey()
         inputBar.updateEphemeralState()
         updateMentionList()
@@ -531,12 +531,12 @@ final class ConversationInputBarViewController: UIViewController,
         view.addGestureRecognizer(singleTapGestureRecognizer)
     }
 
-    func updateRightAccessoryView() {
+    func updateButtonStates() {
         updateEphemeralIndicatorButtonTitle(ephemeralIndicatorButton)
 
         let trimmed = inputBar.textView.text.trimmingCharacters(in: CharacterSet.whitespacesAndNewlines)
 
-        sendButtonState.update(
+        inputBarButtonState.update(
             textLength: trimmed.count,
             editing: editingMessage != nil,
             markingDown: inputBar.isMarkingDown,
@@ -547,10 +547,10 @@ final class ConversationInputBarViewController: UIViewController,
             isEphemeralTimeoutForced: conversation.isSelfDeletingMessageTimeoutForced
         )
 
-        sendButton.isEnabled = sendButtonState.sendButtonEnabled
-        sendButton.isHidden = sendButtonState.sendButtonHidden
-        ephemeralIndicatorButton.isHidden = sendButtonState.ephemeralIndicatorButtonHidden
-        ephemeralIndicatorButton.isEnabled = sendButtonState.ephemeralIndicatorButtonEnabled
+        sendButton.isEnabled = inputBarButtonState.sendButtonEnabled
+        sendButton.isHidden = inputBarButtonState.sendButtonHidden
+        ephemeralIndicatorButton.isHidden = inputBarButtonState.ephemeralIndicatorButtonHidden
+        ephemeralIndicatorButton.isEnabled = inputBarButtonState.ephemeralIndicatorButtonEnabled
 
         ephemeralIndicatorButton.setBackgroundImage(conversation.timeoutImage, for: .normal)
         ephemeralIndicatorButton.setBackgroundImage(conversation.disabledTimeoutImage, for: .disabled)
@@ -564,7 +564,7 @@ final class ConversationInputBarViewController: UIViewController,
         inputBar.textView.text = ""
         inputBar.markdownView.resetIcons()
         inputBar.textView.resetMarkdown()
-        updateRightAccessoryView()
+        updateButtonStates()
         conversation.setIsTyping(false)
         replyComposingView?.removeFromSuperview()
         replyComposingView = nil
@@ -576,7 +576,7 @@ final class ConversationInputBarViewController: UIViewController,
     }
 
     func updateAccessoryViews() {
-        updateRightAccessoryView()
+        updateButtonStates()
     }
 
     func updateInputBarVisibility() {
