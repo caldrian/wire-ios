@@ -46,6 +46,10 @@ public struct WireCellsAssembly {
         ObserveDraftsUseCase(cellName: cellName, draftRepository: Self.draftsRepository)
     }
 
+    public func makePublishDraftsUseCase(cellName: String) -> any WireCellsPublishDraftsUseCaseProtocol {
+        PublishDraftsUseCase(cellName: cellName, draftRepository: Self.draftsRepository)
+    }
+
     public func makeClearPublishedDraftsUseCase(cellName: String) -> any WireCellsClearPublishedDraftsUseCaseProtocol {
         ClearPublishedDraftsUseCase(cellName: cellName, draftRepository: Self.draftsRepository)
     }
