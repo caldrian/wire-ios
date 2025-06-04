@@ -23,13 +23,14 @@ extension ConversationInputBarViewController {
     func sendText() {
 
         let checker = PrivacyWarningChecker(conversation: conversation) {
-            self._sendText()
+            Task { await self._sendText() }
         }
 
         checker.performAction()
     }
 
-    private func _sendText() {
+    @MainActor
+    private func _sendText() async {
         let (text, mentions) = inputBar.textView.preparedText
         let quote = quotedMessage
 
@@ -42,12 +43,24 @@ extension ConversationInputBarViewController {
             editingMessage = nil
             updateWritingState(animated: true)
         } else {
-            clearInputBar()
-            delegate?.conversationInputBarViewControllerDidComposeText(
-                text: text,
-                mentions: mentions,
-                replyingTo: quote
-            )
+            let publishTask = Task.detached { [wireCellsPublishDraftsUseCase] in
+                try await wireCellsPublishDraftsUseCase.invoke()
+            }
+            do {
+                try await publishTask.value
+                clearInputBar()
+                await wireCellsClearPublishedDraftsUseCase.invoke()
+                delegate?.conversationInputBarViewControllerDidComposeText(
+                    text: text,
+                    attachments: attachments,
+                    mentions: mentions,
+                    replyingTo: quote
+                )
+
+            } catch {
+                // TODO: handle error
+                print(">>> Failed to publish drafts: \(error)")
+            }
         }
 
         dismissMentionsIfNeeded()

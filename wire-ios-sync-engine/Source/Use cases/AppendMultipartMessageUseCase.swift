@@ -20,7 +20,11 @@ import WireAnalytics
 import WireDataModel
 import WireLogging
 
-public struct MultipartAttachment {}
+public struct MultipartAttachment {
+
+    public init() {}
+
+}
 
 public protocol AppendMultipartMessageUseCaseProtocol {
 

@@ -87,6 +87,7 @@ final class ConversationInputBarViewController: UIViewController,
 
     var textfieldObserverToken: Any?
     lazy var audioSession: AVAudioSessionType = AVAudioSession.sharedInstance()
+    private(set) var attachments: [MultipartAttachment] = []
 
     // MARK: buttons
 
@@ -226,6 +227,8 @@ final class ConversationInputBarViewController: UIViewController,
     let userSession: UserSession
     let fileMetaDataGenerator: FileMetaDataGeneratorProtocol
     let wireCellsUploadDraftUseCase: WireCellsUploadDraftUseCaseProtocol
+    let wireCellsPublishDraftsUseCase: WireCellsPublishDraftsUseCaseProtocol
+    let wireCellsClearPublishedDraftsUseCase: WireCellsClearPublishedDraftsUseCaseProtocol
     private let wireCellsObserveDraftsUseCase: WireCellsObserveDraftsUseCaseProtocol
     private let attachmentsCarouselViewModel = AttachmentsCarouselViewModel(items: [])
 
@@ -364,6 +367,12 @@ final class ConversationInputBarViewController: UIViewController,
             cellName: "" // Pass in correct cell name.
         )
         self.wireCellsObserveDraftsUseCase = wireCellsAssembly.makeObserveDraftsUseCase(
+            cellName: "" // Pass in correct cell name.
+        )
+        self.wireCellsClearPublishedDraftsUseCase = wireCellsAssembly.makeClearPublishedDraftsUseCase(
+            cellName: "" // Pass in correct cell name.
+        )
+        self.wireCellsPublishDraftsUseCase = wireCellsAssembly.makePublishDraftsUseCase(
             cellName: "" // Pass in correct cell name.
         )
 
@@ -1196,12 +1205,19 @@ extension ConversationInputBarViewController: UIGestureRecognizerDelegate {
             for await drafts in observed {
                 await attachmentsCarouselViewModel.update(with: drafts)
                 await self?.syncCarouselVisible(drafts: drafts)
+                await self?.setAttachments(drafts: drafts)
             }
         }
     }
 
     private func syncCarouselVisible(drafts: [WireCellsDraft]) {
         inputBar.attachmentsContainer.isHidden = drafts.filter { $0.status != .cancelled }.isEmpty
+    }
+
+    private func setAttachments(drafts: [WireCellsDraft]) {
+        attachments = drafts.map { draft in
+            MultipartAttachment()
+        }
     }
 
 }
