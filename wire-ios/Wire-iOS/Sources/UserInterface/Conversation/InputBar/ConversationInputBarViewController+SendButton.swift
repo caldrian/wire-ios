@@ -17,6 +17,7 @@
 //
 
 import UIKit
+import WireSyncEngine
 import WireCommonComponents
 
 extension ConversationInputBarViewController {
@@ -52,7 +53,7 @@ extension ConversationInputBarViewController {
                 await wireCellsClearPublishedDraftsUseCase.invoke()
                 delegate?.conversationInputBarViewControllerDidComposeText(
                     text: text,
-                    attachments: attachments,
+                    attachments: attachments.map { _ in MultipartAttachment() },
                     mentions: mentions,
                     replyingTo: quote
                 )

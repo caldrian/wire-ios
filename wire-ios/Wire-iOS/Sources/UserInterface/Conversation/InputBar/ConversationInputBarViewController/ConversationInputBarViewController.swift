@@ -87,7 +87,7 @@ final class ConversationInputBarViewController: UIViewController,
 
     var textfieldObserverToken: Any?
     lazy var audioSession: AVAudioSessionType = AVAudioSession.sharedInstance()
-    private(set) var attachments: [MultipartAttachment] = []
+    private(set) var attachments: [WireCellsDraft] = []
 
     // MARK: buttons
 
@@ -544,7 +544,8 @@ final class ConversationInputBarViewController: UIViewController,
             mode: mode,
             syncedMessageDestructionTimeout: conversation.hasSyncedMessageDestructionTimeout,
             isEphemeralSendingDisabled: conversation.isSelfDeletingMessageSendingDisabled,
-            isEphemeralTimeoutForced: conversation.isSelfDeletingMessageTimeoutForced
+            isEphemeralTimeoutForced: conversation.isSelfDeletingMessageTimeoutForced,
+            attachmentState: AttachmentState(attachments)
         )
 
         sendButton.isEnabled = inputBarButtonState.sendButtonEnabled
@@ -1215,9 +1216,23 @@ extension ConversationInputBarViewController: UIGestureRecognizerDelegate {
     }
 
     private func setAttachments(drafts: [WireCellsDraft]) {
-        attachments = drafts.map { draft in
-            MultipartAttachment()
+        attachments = drafts
+        let attachmentState = AttachmentState(drafts)
+        if inputBarButtonState.attachmentState != attachmentState {
+            updateButtonStates()
         }
     }
 
+}
+
+private extension AttachmentState {
+    init(_ drafts: [WireCellsDraft]) {
+        if drafts.isEmpty {
+            self = .none
+        } else if drafts.allSatisfy({ $0.status.isUploaded }) {
+            self = .allUploaded
+        } else {
+            self = .someUploaded
+        }
+    }
 }
