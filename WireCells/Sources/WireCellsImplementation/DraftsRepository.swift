@@ -103,7 +103,7 @@ package actor DraftsRepository: DraftsRepositoryProtocol {
         let continuationID = UUID()
         let (stream, continuation) = AsyncStream.makeStream(
             of: [WireCellsDraft].self,
-            bufferingPolicy: .bufferingOldest(0)
+            bufferingPolicy: .bufferingNewest(1)
         )
 
         let cancellable = drafts.sink { drafts in
