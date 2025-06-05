@@ -73,7 +73,8 @@ package actor DraftsRepository: DraftsRepositoryProtocol {
             fileType: fileType,
             status: .uploading(progress: 0),
             name: fileName,
-            bytes: assetSize
+            bytes: assetSize,
+            mimeType: nil
         )
         drafts.value[cellName, default: [:]][draft.id] = draft
 
@@ -93,6 +94,12 @@ package actor DraftsRepository: DraftsRepositoryProtocol {
             for await status in stream {
                 setStatus(status, cellName: cellName, id: draft.id)
             }
+
+//            // Set post upload values
+//            let latestNode = try await nodesAPI.getNode(nodeUUID: draft.id.uuid)
+//            if let mimeTime = latestNode.mimeType {
+//                drafts.value[cellName]?[draft.id]?.mimeType = mimeTime
+//            }
 
         } catch {
             setStatus(.failed(error: WireCellsUploadError(error)), cellName: cellName, id: draft.id)

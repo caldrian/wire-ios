@@ -594,7 +594,7 @@ extension MultipartAttachment {
         Attachment.with { attachment in
             attachment.cellAsset = CellAsset.with { asset in
                 asset.uuid = uuid.uuidString
-                asset.contentType = "video/quicktime"
+                asset.contentType = contentType
                 asset.initialName = name
             }
         }

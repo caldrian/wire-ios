@@ -24,12 +24,17 @@ public struct MultipartAttachment {
     /// The full name of the attachment, including cell prefix. E.g. "<conversation-qualified-id>/<file-name>"
     public let name: String
 
+    /// The mime type of the attachment.
+    public let contentType: String
+
     public init(
         uuid: UUID,
-        name: String
+        name: String,
+        contentType: String?
     ) {
         self.uuid = uuid
         self.name = name
+        self.contentType = contentType ?? "application/octet-stream"
     }
 
 }

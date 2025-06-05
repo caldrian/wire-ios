@@ -27,6 +27,7 @@ public struct WireCellsDraft: Hashable, Sendable {
     public var status: WireCellsUploadStatus
     public var name: String
     public let bytes: Int
+    public var mimeType: String?
 
     package init(
         id: WireCellsNodeID,
@@ -34,7 +35,8 @@ public struct WireCellsDraft: Hashable, Sendable {
         fileType: UTType?,
         status: WireCellsUploadStatus,
         name: String,
-        bytes: Int
+        bytes: Int,
+        mimeType: String?
     ) {
         self.id = id
         self.assetURL = assetURL
@@ -42,5 +44,6 @@ public struct WireCellsDraft: Hashable, Sendable {
         self.status = status
         self.name = name
         self.bytes = bytes
+        self.mimeType = mimeType
     }
 }

@@ -21,6 +21,7 @@ import Foundation
 import WireCellsAPI
 
 enum WireCellsNodesAPIError: Error {
+    case notFound
     case failedToDecodeNode
     case missingData(String)
 }
@@ -42,8 +43,17 @@ final class RestAPI: Sendable {
     }
 
     func getNode(uuid: UUID) async throws -> WireCellsNodeDTO {
-        let response = try await NodeServiceAPI.getByUuid(uuid: uuid.uuidString, apiConfiguration: configuration)
-        guard let dto = response.toDTO() else {
+        let request = RestLookupRequest.init(
+            flags: [.withVersionsAll, .withMetaDefaults],
+            locators: RestNodeLocators(many: [RestNodeLocator(uuid: uuid.uuidString)])
+        )
+
+        let response = try await NodeServiceAPI.lookup(body: request, apiConfiguration: configuration)
+        guard let node = response.nodes?.first else {
+            throw WireCellsNodesAPIError.notFound
+        }
+
+        guard let dto = node.toDTO() else {
             throw WireCellsNodesAPIError.failedToDecodeNode
         }
         return dto
