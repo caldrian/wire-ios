@@ -27,13 +27,6 @@ extension ZMClientMessage: TextMessageData {
     }
 
     public override var textMessageData: TextMessageData? {
-        switch underlyingMessage?.content { // FIXME: REMOVE
-        case .multipart:
-            return self
-        default:
-            break
-        }
-
         guard underlyingMessage?.textData != nil else {
             return nil
         }
@@ -49,18 +42,6 @@ extension ZMClientMessage: TextMessageData {
     }
 
     public var messageText: String? {
-        switch underlyingMessage?.content {
-        case .multipart(let multipart):  // FIXME: REMOVE
-            var message = "Multipart message with \(multipart.attachments.count) attachments"
-            for attachment in multipart.attachments {
-                let fileName = URL(string: attachment.cellAsset.initialName)?.lastPathComponent ?? "Unknown file name"
-                message.append("\n - \(fileName)")
-            }
-            return message
-        default:
-            break
-        }
-
         return underlyingMessage?.textData?.content.removingExtremeCombiningCharacters
     }
 
