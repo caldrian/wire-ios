@@ -364,22 +364,23 @@ final class ConversationInputBarViewController: UIViewController,
         self.networkStatusObservable = networkStatusObservable
         self.fileMetaDataGenerator = FileMetaDataGenerator.shared
         self.wireCellsUploadDraftUseCase = wireCellsAssembly.makeUploadDraftUseCase(
-            cellName: "" // Pass in correct cell name.
+            cellName: conversation.wireCellName
         )
         self.wireCellsObserveDraftsUseCase = wireCellsAssembly.makeObserveDraftsUseCase(
-            cellName: "" // Pass in correct cell name.
+            cellName: conversation.wireCellName
         )
         self.wireCellsClearPublishedDraftsUseCase = wireCellsAssembly.makeClearPublishedDraftsUseCase(
-            cellName: "" // Pass in correct cell name.
+            cellName: conversation.wireCellName
         )
         self.wireCellsPublishDraftsUseCase = wireCellsAssembly.makePublishDraftsUseCase(
-            cellName: "" // Pass in correct cell name.
+            cellName: conversation.wireCellName
         )
 
         super.init(nibName: nil, bundle: nil)
 
         if !ProcessInfo.processInfo.isRunningTests,
            let conversation = conversation as? ZMConversation {
+            conversation.qualifiedID
             self.conversationObserverToken = ConversationChangeInfo.add(observer: self, for: conversation)
             self.typingObserverToken = conversation.addTypingObserver(self)
         }
