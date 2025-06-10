@@ -588,15 +588,3 @@ public extension ZMConversation {
     }
 
 }
-
-extension MultipartAttachment {
-    func toProto() -> Attachment {
-        Attachment.with { attachment in
-            attachment.cellAsset = CellAsset.with { asset in
-                asset.uuid = uuid.uuidString
-                asset.contentType = contentType
-                asset.initialName = name
-            }
-        }
-    }
-}

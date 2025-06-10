@@ -56,8 +56,10 @@ extension ConversationInputBarViewController {
                     attachments: attachments.map { draft in
                         MultipartAttachment(
                             uuid: draft.id.uuid,
-                            name: draft.name,
                             contentType: draft.mimeType,
+                            initialName: draft.name,
+                            initialSize: draft.bytes,
+                            initialMetadata: nil // FIXME: [WPB-18130] Send metadata
                         )
                     },
                     mentions: mentions,

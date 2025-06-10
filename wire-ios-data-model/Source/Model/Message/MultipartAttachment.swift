@@ -16,25 +16,113 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
+import WireProtos
+
 public struct MultipartAttachment {
 
+    public enum Metadata {
+
+        /// Image metadata, containing width and height in pixels.
+
+        case image(width: Int, height: Int)
+
+        /// Video metadata, containing width and height in pixels, and duration in milliseconds.
+
+        case video(width: Int?, height: Int?, duration: Int?)
+
+        /// Audio metadata, containing duration in milliseconds and normalized loudness data.
+        ///
+        /// - note: Currently, normalized loudness is not sent.
+
+        case audio(duration: Int?, normalizedLoudness: Data?)
+
+    }
+
     /// The wire cells UUID of the attachment.
+
     public let uuid: UUID
 
-    /// The full name of the attachment, including cell prefix. E.g. "<conversation-qualified-id>/<file-name>"
-    public let name: String
-
     /// The mime type of the attachment.
+
     public let contentType: String
+
+    /// The full name of the attachment, including cell prefix. E.g. "<conversation-qualified-id>/<file-name>"
+    ///
+    /// - note: This is the initial value when the document was first sent and may no longer be accurate.
+
+    public let initialName: String?
+
+    /// The initial size of the attachment, in bytes.
+    ///
+    /// - note: This is the initial value when the document was first sent and may no longer be accurate.
+
+    public let initialSize: Int?
+
+    /// The initial metadata of the attachment, if relevant.
+    ///
+    /// - note: This is the initial value when the document was first sent and may no longer be accurate.
+
+    public let initialMetadata: Metadata?
 
     public init(
         uuid: UUID,
-        name: String,
-        contentType: String?
+        contentType: String?,
+        initialName: String?,
+        initialSize: Int?,
+        initialMetadata: Metadata?
     ) {
         self.uuid = uuid
-        self.name = name
         self.contentType = contentType ?? "application/octet-stream"
+        self.initialName = initialName
+        self.initialSize = initialSize
+        self.initialMetadata = initialMetadata
+    }
+
+}
+
+extension MultipartAttachment {
+
+    func toProto() -> Attachment {
+        Attachment.with { attachment in
+            attachment.cellAsset = CellAsset.with { asset in
+                asset.uuid = uuid.uuidString
+                asset.contentType = contentType
+
+                // Only set if values are not nil to avoid protobufs setting nonsense defaults.
+                initialName.map { asset.initialName = $0 }
+                initialSize.map { asset.initialSize = Int64($0) }
+
+                if let initialMetadata {
+                    switch initialMetadata {
+                    case .image(let width, let height):
+                        asset.initialMetaData = .image(
+                            CellAsset.ImageMetaData.with { metadata in
+                                // Only set if values are not nil to avoid protobufs setting nonsense defaults.
+                                metadata.width = Int32(width)
+                                metadata.height = Int32(height)
+                            }
+                        )
+                    case .video(let width, let height, let duration):
+                        asset.initialMetaData = .video(
+                            CellAsset.VideoMetaData.with { metadata in
+                                // Only set if values are not nil to avoid protobufs setting nonsense defaults.
+                                width.map { metadata.width = Int32($0) }
+                                height.map { metadata.height = Int32($0) }
+                                duration.map { metadata.durationInMillis = UInt64($0) }
+                            }
+                        )
+                    case .audio(let duration, let normalizedLoudness):
+                        asset.initialMetaData = .audio(
+                            CellAsset.AudioMetaData.with { metadata in
+                                // Only set if values are not nil to avoid protobufs setting nonsense defaults.
+                                duration.map { metadata.durationInMillis = UInt64($0) }
+                                normalizedLoudness.map { metadata.normalizedLoudness = $0 }
+                            }
+                        )
+                    }
+                }
+            }
+        }
     }
 
 }
