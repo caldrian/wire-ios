@@ -55,7 +55,7 @@ final class RestAPI: Sendable {
 
         guard let dto = node.toDTO() else {
             throw WireCellsNodesAPIError.failedToDecodeNode
-        }
+        }	
         return dto
     }
 

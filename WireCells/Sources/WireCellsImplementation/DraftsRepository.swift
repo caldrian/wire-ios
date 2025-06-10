@@ -95,11 +95,11 @@ package actor DraftsRepository: DraftsRepositoryProtocol {
                 setStatus(status, cellName: cellName, id: draft.id)
             }
 
-//            // Set post upload values
-//            let latestNode = try await nodesAPI.getNode(nodeUUID: draft.id.uuid)
-//            if let mimeTime = latestNode.mimeType {
-//                drafts.value[cellName]?[draft.id]?.mimeType = mimeTime
-//            }
+            // Set post upload values
+            let latestNode = try await nodesAPI.getNode(nodeUUID: draft.id.uuid)
+            if let mimeTime = latestNode.mimeType {
+                drafts.value[cellName]?[draft.id]?.mimeType = mimeTime
+            }
 
         } catch {
             setStatus(.failed(error: WireCellsUploadError(error)), cellName: cellName, id: draft.id)
