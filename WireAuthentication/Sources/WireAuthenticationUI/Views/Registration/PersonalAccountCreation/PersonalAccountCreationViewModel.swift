@@ -16,18 +16,8 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import WireAnalytics
+package final class PersonalAccountCreationViewModel {
 
-public extension AnalyticsEvent.Segmentation.Conversation.ConversationType {
+    package init() {}
 
-    init?(_ conversationType: ZMConversationType) {
-        switch conversationType {
-        case .oneOnOne:
-            self = .oneOnOne
-        case .group:
-            self = .group
-        case .invalid, .self, .connection:
-            return nil
-        }
-    }
 }

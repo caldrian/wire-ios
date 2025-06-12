@@ -16,11 +16,8 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
+package protocol NoHistoryFactory {
 
-struct SyncStatusLog: Codable {
-    var phase: String
-    var isSyncing: Bool
-    var pushChannelEstablishedDate: String?
-    var message: String?
+    @MainActor var viewModel: NoHistoryViewModel { get }
+
 }
