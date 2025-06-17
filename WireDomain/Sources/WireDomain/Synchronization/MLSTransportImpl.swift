@@ -35,6 +35,7 @@ final class MLSTransportImpl: MlsTransport {
         let events: [UpdateEvent]
 
         do {
+            print("commit: \(commitBundle.commit.base64EncodedString())")
             events = try await mlsAPI.postCommitBundle(commitBundle.toAPIModel())
         } catch let error as MLSAPIError {
             do {
