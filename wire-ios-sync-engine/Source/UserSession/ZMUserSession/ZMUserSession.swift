@@ -1715,6 +1715,11 @@ extension ZMUserSession {
                 contextProvider: coreDataStack,
                 conversationLocalStore: clientSessionComponent?.conversationLocalStore,
                 protobufMessageProcessor: clientSessionComponent?.conversationProtobufMessageProcessor
+            ),
+            AppVersionMigration_4_9_0(
+                contextProvider: coreDataStack,
+                conversationLocalStore: clientSessionComponent?.conversationLocalStore,
+                protobufMessageProcessor: clientSessionComponent?.conversationProtobufMessageProcessor
             )
         ]
     }

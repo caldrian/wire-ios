@@ -115,7 +115,6 @@ public extension JournalProtocol {
 
     var lastCompletedAppVersionMigration: SemanticVersion? {
         get {
-            self[.lastCompletedAppVersionMigration] = "4.7.0" // TODO: delete
             return self[.lastCompletedAppVersionMigration].map(SemanticVersion.init)
         }
         set {
