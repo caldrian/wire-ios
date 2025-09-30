@@ -31,86 +31,12 @@ struct AppVersionMigration_4_8_0: AppVersionMigration {
 
     func perform() async throws {
         try await processUnknownMessages()
-        // try await processUnknownMessagesPB()
-    }
-
-    /// This code will never run, but it is a template for future migrations after the protobuf declaration changes and clients potentially have stored unprocessed events for later re-processing.
-
-    private func processUnknownMessages() async throws {
-
-        let context = contextProvider.syncContext
-        let unknownMessages = try await context.perform {
-            let fetchRequest = UnknownMessage.fetchRequest()
-            let unknownMessages = try context.fetch(fetchRequest)
-            return unknownMessages.map { ($0, $0.payload) }
-        }
-
-        for (unknownMessage, payload) in unknownMessages {
-            guard let payload, let genericMessage = GenericMessage(from: payload, validate: false), genericMessage.content != nil else {
-                continue
-            }
-
-            let (
-                conversation,
-                conversationID,
-                senderID,
-                senderClientID,
-                eventTimestamp
-            ) = await context.perform {
-                (
-                    unknownMessage.conversation,
-                    unknownMessage.conversation?.qualifiedID,
-                    unknownMessage.sender?.qualifiedID,
-                    unknownMessage.senderClientID,
-                    unknownMessage.eventTimestamp
-                )
-            }
-
-            if
-                let conversationLocalStore,
-                let protobufMessageProcessor,
-                let conversation,
-                let conversationID,
-                let senderID,
-                let eventTimestamp {
-
-                await conversationLocalStore.updateSecurityLevelAfterReceivingMessage(
-                    conversation: conversation,
-                    genericMessage: genericMessage,
-                    date: eventTimestamp
-                )
-
-                await conversationLocalStore.addParticipantIfNeeded(
-                    participantID: senderID.uuid,
-                    participantDomain: senderID.domain,
-                    in: conversation,
-                    date: eventTimestamp.addingTimeInterval(-0.01)
-                )
-
-                try await protobufMessageProcessor.processProtobufMessage(
-                    genericMessage,
-                    conversation: conversation,
-                    conversationID: .init(id: conversationID.uuid, domain: conversationID.domain),
-                    senderID: .init(id: senderID.uuid, domain: senderID.domain),
-                    senderClientID: senderClientID,
-                    date: eventTimestamp,
-                    eventMessage: "unknown-message"
-                )
-
-            } else {
-                continue
-            }
-
-            await context.perform {
-                context.delete(unknownMessage)
-            }
-        }
     }
 
     /// Processes stored unknown messages by attempting to decode them with the current protobuf definitions.
     /// This migration enables the app to process messages that were received before the app was updated
     /// with support for new message content types.
-    private func processUnknownMessagesPB() async throws {
+    private func processUnknownMessages() async throws {
         guard let conversationLocalStore,
               let protobufMessageProcessor else {
             WireLogger.session.warn("Missing dependencies for unknown message processing migration")

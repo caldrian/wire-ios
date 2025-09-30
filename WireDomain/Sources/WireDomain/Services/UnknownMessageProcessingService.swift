@@ -45,7 +45,7 @@ public final class UnknownMessageProcessingService {
     /// Messages that still cannot be decoded remain in the database for future processing.
     public func processStoredUnknownMessages() async throws {
         let context = contextProvider.syncContext
-        
+
         let unknownMessages = try await context.perform {
             let fetchRequest = UnknownMessage.fetchRequest()
             let unknownMessages = try context.fetch(fetchRequest)
@@ -155,4 +155,5 @@ public final class UnknownMessageProcessingService {
             context.delete(unknownMessage)
         }
     }
+
 }
