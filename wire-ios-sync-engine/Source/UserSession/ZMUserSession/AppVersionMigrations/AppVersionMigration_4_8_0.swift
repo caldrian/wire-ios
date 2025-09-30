@@ -19,6 +19,7 @@
 import GenericMessageProtocol
 import WireDataModel
 import WireDomain
+import WireLogging
 import WireNetwork
 
 struct AppVersionMigration_4_8_0: AppVersionMigration {
@@ -30,6 +31,7 @@ struct AppVersionMigration_4_8_0: AppVersionMigration {
 
     func perform() async throws {
         try await processUnknownMessages()
+        // try await processUnknownMessagesPB()
     }
 
     /// This code will never run, but it is a template for future migrations after the protobuf declaration changes and clients potentially have stored unprocessed events for later re-processing.
@@ -103,6 +105,25 @@ struct AppVersionMigration_4_8_0: AppVersionMigration {
                 context.delete(unknownMessage)
             }
         }
+    }
+
+    /// Processes stored unknown messages by attempting to decode them with the current protobuf definitions.
+    /// This migration enables the app to process messages that were received before the app was updated
+    /// with support for new message content types.
+    private func processUnknownMessagesPB() async throws {
+        guard let conversationLocalStore,
+              let protobufMessageProcessor else {
+            WireLogger.session.warn("Missing dependencies for unknown message processing migration")
+            return
+        }
+
+        let unknownMessageProcessingService = UnknownMessageProcessingService(
+            contextProvider: contextProvider,
+            conversationLocalStore: conversationLocalStore,
+            protobufMessageProcessor: protobufMessageProcessor
+        )
+
+        try await unknownMessageProcessingService.processStoredUnknownMessages()
     }
 
 }
