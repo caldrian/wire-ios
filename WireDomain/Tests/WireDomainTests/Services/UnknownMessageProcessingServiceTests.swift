@@ -16,19 +16,19 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import Foundation
-import XCTest
+import GenericMessageProtocol
 import WireDataModel
+import WireDataModelSupport
 import WireDomain
+import WireDomainSupport
 import WireNetwork
-
-@testable import WireDomain
+import XCTest
 
 final class UnknownMessageProcessingServiceTests: XCTestCase {
 
     private var sut: UnknownMessageProcessingService!
-    private var conversationLocalStore: MockConversationLocalStoreProtocol!
-    private var protobufMessageProcessor: MockConversationProtobufMessageProcessorProtocol!
+    private var conversationLocalStoreMock: MockConversationLocalStoreProtocol!
+    private var protobufMessageProcessorMock: MockConversationProtobufMessageProcessorProtocol!
 
     private var coreDataStack: CoreDataStack!
     private var coreDataStackHelper: CoreDataStackHelper!
@@ -39,25 +39,23 @@ final class UnknownMessageProcessingServiceTests: XCTestCase {
     }
 
     override func setUp() async throws {
-        try await super.setUp()
         modelHelper = ModelHelper()
         coreDataStackHelper = CoreDataStackHelper()
         coreDataStack = try await coreDataStackHelper.createStack()
-        conversationLocalStore = MockConversationLocalStoreProtocol()
-        protobufMessageProcessor = MockConversationProtobufMessageProcessorProtocol()
+        conversationLocalStoreMock = MockConversationLocalStoreProtocol()
+        protobufMessageProcessorMock = MockConversationProtobufMessageProcessorProtocol()
 
         sut = UnknownMessageProcessingService(
             contextProvider: coreDataStack,
-            conversationLocalStore: conversationLocalStore,
-            protobufMessageProcessor: protobufMessageProcessor
+            conversationLocalStore: conversationLocalStoreMock,
+            protobufMessageProcessor: protobufMessageProcessorMock
         )
     }
 
     override func tearDown() async throws {
-        try await super.tearDown()
         sut = nil
-        conversationLocalStore = nil
-        protobufMessageProcessor = nil
+        conversationLocalStoreMock = nil
+        protobufMessageProcessorMock = nil
         modelHelper = nil
         coreDataStack = nil
         try coreDataStackHelper.cleanupDirectory()
@@ -71,14 +69,25 @@ final class UnknownMessageProcessingServiceTests: XCTestCase {
         try await sut.processStoredUnknownMessages()
 
         // Then
-        XCTAssertEqual(protobufMessageProcessor.processProtobufMessage_Invocations.count, 0)
+        XCTAssertEqual(
+            protobufMessageProcessorMock
+                .processProtobufMessageConversationConversationIDSenderIDSenderClientIDDateEventMessage_Invocations
+                .count,
+            0
+        )
     }
 
     func testProcessStoredUnknownMessages_WithProcessableMessage() async throws {
+        let m = GenericMessage.with { genericMessage in
+            genericMessage.messageID = UUID().uuidString
+            genericMessage.content = .text(.init(content: "abcd"))
+        }
+        print(m.validateFields())
+
         // Given
         let conversation = await context.perform { [self] in
             modelHelper.createGroupConversation(
-                id: Scaffolding.conversationID.id,
+                id: Scaffolding.conversationID.uuid,
                 domain: Scaffolding.conversationID.domain,
                 in: context
             )
@@ -86,34 +95,46 @@ final class UnknownMessageProcessingServiceTests: XCTestCase {
 
         let sender = await context.perform { [self] in
             modelHelper.createUser(
-                id: Scaffolding.senderID.id,
+                id: Scaffolding.senderID.uuid,
                 domain: Scaffolding.senderID.domain,
                 in: context
             )
         }
 
-        let unknownMessage = await context.perform { [self] in
+        try await context.perform { [context] in
             let message = UnknownMessage(
                 nonce: Scaffolding.messageID,
                 managedObjectContext: context
             )
             message.payload = Scaffolding.validPayload
-            message.conversation = conversation
+            message.visibleInConversation = conversation
             message.sender = sender
             message.eventTimestamp = Scaffolding.eventTimestamp
             message.senderClientID = Scaffolding.senderClientID
             try context.save()
-            return message
         }
+
+        conversationLocalStoreMock
+            .updateSecurityLevelAfterReceivingMessageConversationGenericMessageDate_MockMethod = { _, _, _ in }
+        conversationLocalStoreMock
+            .addParticipantIfNeededParticipantIDParticipantDomainInDate_MockMethod = { _, _, _, _ in }
+        protobufMessageProcessorMock
+            .processProtobufMessageConversationConversationIDSenderIDSenderClientIDDateEventMessage_MockMethod =
+            { _, _, _, _, _, _, _ in }
 
         // When
         try await sut.processStoredUnknownMessages()
 
         // Then
-        XCTAssertEqual(protobufMessageProcessor.processProtobufMessage_Invocations.count, 1)
-        
+        XCTAssertEqual(
+            protobufMessageProcessorMock
+                .processProtobufMessageConversationConversationIDSenderIDSenderClientIDDateEventMessage_Invocations
+                .count,
+            1
+        )
+
         // Verify the message was deleted
-        let remainingMessages = try await context.perform {
+        let remainingMessages = try await context.perform { [context] in
             let fetchRequest = UnknownMessage.fetchRequest()
             return try context.fetch(fetchRequest)
         }
@@ -124,7 +145,7 @@ final class UnknownMessageProcessingServiceTests: XCTestCase {
         // Given
         let conversation = await context.perform { [self] in
             modelHelper.createGroupConversation(
-                id: Scaffolding.conversationID.id,
+                id: Scaffolding.conversationID.uuid,
                 domain: Scaffolding.conversationID.domain,
                 in: context
             )
@@ -132,43 +153,48 @@ final class UnknownMessageProcessingServiceTests: XCTestCase {
 
         let sender = await context.perform { [self] in
             modelHelper.createUser(
-                id: Scaffolding.senderID.id,
+                id: Scaffolding.senderID.uuid,
                 domain: Scaffolding.senderID.domain,
                 in: context
             )
         }
 
-        let unknownMessage = await context.perform { [self] in
+        try await context.perform { [context] in
             let message = UnknownMessage(
                 nonce: Scaffolding.messageID,
                 managedObjectContext: context
             )
             message.payload = Scaffolding.invalidPayload
-            message.conversation = conversation
+            message.visibleInConversation = conversation
             message.sender = sender
             message.eventTimestamp = Scaffolding.eventTimestamp
             try context.save()
-            return message
         }
 
         // When
         try await sut.processStoredUnknownMessages()
 
         // Then
-        XCTAssertEqual(protobufMessageProcessor.processProtobufMessage_Invocations.count, 0)
-        
+        XCTAssertEqual(
+            protobufMessageProcessorMock
+                .processProtobufMessageConversationConversationIDSenderIDSenderClientIDDateEventMessage_Invocations
+                .count,
+            0
+        )
+
         // Verify the message was NOT deleted (still unprocessable)
-        let remainingMessages = try await context.perform {
+        let remainingMessages = try await context.perform { [context] in
             let fetchRequest = UnknownMessage.fetchRequest()
             return try context.fetch(fetchRequest)
         }
         XCTAssertEqual(remainingMessages.count, 1)
-        XCTAssertEqual(remainingMessages.first?.nonce, Scaffolding.messageID)
+        let nonce = await context.perform { remainingMessages.first?.nonce }
+        XCTAssertEqual(nonce, Scaffolding.messageID)
     }
 
     func testProcessStoredUnknownMessages_WithMessageMissingContext() async throws {
         // Given - create unknown message without proper conversation/sender context
-        let unknownMessage = await context.perform { [self] in
+        try await context.perform { [context] in
             let message = UnknownMessage(
                 nonce: Scaffolding.messageID,
                 managedObjectContext: context
@@ -177,17 +203,21 @@ final class UnknownMessageProcessingServiceTests: XCTestCase {
             message.eventTimestamp = Scaffolding.eventTimestamp
             // No conversation or sender set
             try context.save()
-            return message
         }
 
         // When
         try await sut.processStoredUnknownMessages()
 
         // Then
-        XCTAssertEqual(protobufMessageProcessor.processProtobufMessage_Invocations.count, 0)
-        
+        XCTAssertEqual(
+            protobufMessageProcessorMock
+                .processProtobufMessageConversationConversationIDSenderIDSenderClientIDDateEventMessage_Invocations
+                .count,
+            0
+        )
+
         // Verify the message was deleted (missing context is considered unprocessable)
-        let remainingMessages = try await context.perform {
+        let remainingMessages = try await context.perform { [context] in
             let fetchRequest = UnknownMessage.fetchRequest()
             return try context.fetch(fetchRequest)
         }
@@ -202,10 +232,13 @@ final class UnknownMessageProcessingServiceTests: XCTestCase {
         static let messageID = UUID()
         static let senderClientID = "client123"
         static let eventTimestamp = Date()
-        
+
         // Valid protobuf payload that can be decoded
-        static let validPayload = Data(base64Encoded: "CgR0ZXN0")! // "test" as base64
-        
+        static let validPayload = try! GenericMessage.with { genericMessage in
+            genericMessage.messageID = UUID().uuidString
+            genericMessage.content = .text(.init(content: "abcd"))
+        }.serializedData()
+
         // Invalid payload that cannot be decoded
         static let invalidPayload = Data("invalid protobuf data".utf8)
     }

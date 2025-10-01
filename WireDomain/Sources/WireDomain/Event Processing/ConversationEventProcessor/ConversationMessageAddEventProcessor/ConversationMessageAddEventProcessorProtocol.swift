@@ -18,8 +18,8 @@
 
 import Foundation
 import GenericMessageProtocol
-import WireNetwork
 import WireDataModel
+import WireNetwork
 
 /// The purpose of this protocol is sharing code between `ConversationMLSMessageAddEventProcessor` and
 /// `ConversationProteusMessageAddEventProcessor`.
@@ -34,7 +34,7 @@ protocol ConversationMessageAddEventProcessorProtocol {
         date: Date
     ) async
 
-    func addInvalidSystemMessage( // TODO: same text?
+    func addInvalidSystemMessage(
         senderID: UserID,
         conversationID: ConversationID,
         date: Date
