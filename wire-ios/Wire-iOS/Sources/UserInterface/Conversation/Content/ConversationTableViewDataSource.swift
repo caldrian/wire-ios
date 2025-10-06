@@ -162,11 +162,12 @@ final class ConversationTableViewDataSource: NSObject {
                     cachedSectionController
                 } else {
                     self.makeSectionController(
-                        message: element,
+                        messageObjectID: element.objectID,
                         index: offset,
                         messages: messages,
                         selfUser: selfUserOnBackgroundThread,
-                        firstUnreadMessageNonce: firstUnreadMessageNonce
+                        firstUnreadMessageNonce: firstUnreadMessageNonce,
+                        context: backgroundContext
                     )
                 }
 
@@ -185,15 +186,13 @@ final class ConversationTableViewDataSource: NSObject {
                     self.sectionControllers.set(value: sectionController, for: messageObjectId)
                     self.actionControllers.set(value: sectionController.actionController, for: messageObjectId)
 
-                    // Re-set messages from Main thread to section controller to not have crash with later interactions
-                    // with data
-                    if let managedID = (sectionController.message as? ZMMessage)?.objectID,
-                       let mainThreadMessage = try? mainThreadContext.existingObject(with: managedID) as? ZMMessage {
+                    // Update section controller with main thread message to avoid context conflicts
+                    if let mainThreadMessage = try? mainThreadContext.existingObject(with: messageObjectId) as? ZMMessage {
                         sectionController.updateMessage(mainThreadMessage)
                     } else {
                         WireLogger.conversation
                             .debug(
-                                "No message found to reset from background to main thread, nonce: \(String(describing: sectionController.message.nonce))"
+                                "No message found to reset from background to main thread, objectID: \(messageObjectId)"
                             )
                     }
 
@@ -333,13 +332,18 @@ final class ConversationTableViewDataSource: NSObject {
     }
 
     private func makeSectionController(
-        message: ZMMessage,
+        messageObjectID: NSManagedObjectID,
         index: Int,
         messages: [ZMMessage],
         selfUser: any UserType,
-        firstUnreadMessageNonce: UUID?
+        firstUnreadMessageNonce: UUID?,
+        context: NSManagedObjectContext
     ) -> ConversationMessageSectionController {
-        let context = context(
+        guard let message = try? context.existingObject(with: messageObjectID) as? ZMMessage else {
+            fatalError("Could not fetch message with objectID: \(messageObjectID)")
+        }
+        
+        let messageContext = context(
             for: message,
             at: index,
             firstUnreadMessageNonce: firstUnreadMessageNonce,
@@ -348,7 +352,7 @@ final class ConversationTableViewDataSource: NSObject {
         )
         let sectionController = ConversationMessageSectionController(
             message: message,
-            context: context,
+            context: messageContext,
             selfUser: selfUser,
             selected: message.isEqual(selectedMessage),
             userSession: userSession,
@@ -380,11 +384,12 @@ final class ConversationTableViewDataSource: NSObject {
         }
 
         let sectionController = makeSectionController(
-            message: message,
+            messageObjectID: message.objectID,
             index: index,
             messages: messages,
             selfUser: selfUser,
-            firstUnreadMessageNonce: firstUnreadMessage?.nonce
+            firstUnreadMessageNonce: firstUnreadMessage?.nonce,
+            context: message.managedObjectContext!
         )
 
         if let nonce = message.nonce {
