@@ -54,6 +54,7 @@ public final class LeadingTrailingDebouncer<ID: Hashable> {
             // LEADING: run immediately
             block()
             state.isCooldown = true
+            states[key] = state
 
             queue.asyncAfter(deadline: .now() + cooldownTime) { [weak self] in
                 guard let self else { return }
@@ -77,9 +78,8 @@ public final class LeadingTrailingDebouncer<ID: Hashable> {
         } else {
             // Store for TRAILING
             state.pendingCall = block
+            states[key] = state
         }
-
-        states[key] = state
     }
 }
 
