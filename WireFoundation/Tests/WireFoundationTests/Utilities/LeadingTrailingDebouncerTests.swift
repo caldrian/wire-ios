@@ -23,20 +23,7 @@ import Testing
 
 struct LeadingTrailingDebouncerTests {
 
-    @Test func int_id() async throws {
-        let sut = LeadingTrailingDebouncer(cooldownTime: 0.5)
-
-        var result = [Int]()
-
-        sut.call { result += [0] }
-        sut.call { result += [1] }
-        try await Task.sleep(for: .seconds(1))
-        sut.call { result += [2] }
-
-        #expect(result == [0, 1, 2])
-    }
-
-    @Test func uuid_id() async throws {
+    @Test func todo() async throws {
         let sut = LeadingTrailingDebouncer(cooldownTime: 0.5)
 
         var result = [Int]()

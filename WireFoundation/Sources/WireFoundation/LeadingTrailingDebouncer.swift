@@ -21,8 +21,7 @@ public import Foundation
 /// A debouncer that triggers the action immediately on the first call (leading)
 /// and once more after a delay if additional calls occur (trailing).
 /// Useful for responding instantly but also handling final state after other input.
-@MainActor
-public final class LeadingTrailingDebouncer {
+public final class LeadingTrailingDebouncer: @unchecked Sendable {
 
     private struct DebounceState {
         var isCooldown = false
@@ -31,10 +30,7 @@ public final class LeadingTrailingDebouncer {
 
     private let cooldownTime: TimeInterval
     private let queue: DispatchQueue
-    private var states: [AnyHashable: DebounceState] = [:]
-
-    // Unique key for `nil` ID
-    private let nilKey = UUID()
+    private var state = DebounceState()
 
     public init(cooldownTime: TimeInterval, queue: DispatchQueue = .main) {
         self.cooldownTime = cooldownTime
@@ -42,14 +38,7 @@ public final class LeadingTrailingDebouncer {
     }
 
     public func call(block: @escaping () -> Void) {
-
-        let key = nilKey
-
-        if states[key] == nil {
-            states[key] = DebounceState()
-        }
-
-        var state = states[key]!
+        precondition(Thread.isMainThread)
 
         if !state.isCooldown {
             // LEADING: run immediately
@@ -59,7 +48,7 @@ public final class LeadingTrailingDebouncer {
             queue.asyncAfter(deadline: .now() + cooldownTime) { [weak self] in
                 guard let self else { return }
 
-                var updatedState = states[key] ?? DebounceState()
+                var updatedState = state
                 updatedState.isCooldown = false
 
                 if let trailing = updatedState.pendingCall {
@@ -68,19 +57,18 @@ public final class LeadingTrailingDebouncer {
                     updatedState.isCooldown = true
 
                     queue.asyncAfter(deadline: .now() + cooldownTime) {
-                        self.states[key]?.isCooldown = false
-                        self.states[key]?.pendingCall = nil
+                        self.state.isCooldown = false
+                        self.state.pendingCall = nil
                     }
                 }
 
-                states[key] = updatedState
+                self.state = updatedState
             }
         } else {
             // Store for TRAILING
             state.pendingCall = block
         }
 
-        states[key] = state
     }
 }
 
