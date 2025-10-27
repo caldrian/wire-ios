@@ -60,19 +60,15 @@ public final class LeadingTrailingDebouncer<ID: Hashable> {
                 guard let self else { return }
 
                 var updatedState = states[key] ?? DebounceState()
-                updatedState.isCooldown = false
-
+                
+                // Execute trailing call if pending
                 if let trailing = updatedState.pendingCall {
                     trailing()
-                    updatedState.pendingCall = nil
-                    updatedState.isCooldown = true
-
-                    queue.asyncAfter(deadline: .now() + cooldownTime) {
-                        self.states[key]?.isCooldown = false
-                        self.states[key]?.pendingCall = nil
-                    }
                 }
-
+                
+                // Reset state
+                updatedState.isCooldown = false
+                updatedState.pendingCall = nil
                 states[key] = updatedState
             }
         } else {
@@ -162,3 +158,4 @@ buttonDebouncer.debounce {
 
 // Trailing edge will fire after 1 second if no new calls
 */
+
