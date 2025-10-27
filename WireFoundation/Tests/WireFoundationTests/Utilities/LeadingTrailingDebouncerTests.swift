@@ -23,15 +23,30 @@ import Testing
 
 struct LeadingTrailingDebouncerTests {
 
+    @MainActor
     @Test func todo() async throws {
-        let sut = LeadingTrailingDebouncer(cooldownTime: 0.5)
+        let sut = LeadingTrailingDebouncer<UUID>(cooldownTime: 0.5)
 
         var result = [Int]()
 
-        sut.call { result += [0] }
-        sut.call { result += [1] }
+        sut.call(id: nil) { result += [0] }
+        sut.call(id: nil) { result += [1] }
         try await Task.sleep(for: .seconds(1))
-        sut.call { result += [2] }
+        sut.call(id: nil) { result += [2] }
+
+        #expect(result == [0, 1, 2])
+    }
+
+    @MainActor
+    @Test func todo1() async throws {
+        let sut = SimpleDebouncer(delay: 0.5)
+
+        var result = [Int]()
+
+        sut.debounce { result += [0] }
+        sut.debounce { result += [1] }
+        try await Task.sleep(for: .seconds(1))
+        sut.debounce { result += [2] }
 
         #expect(result == [0, 1, 2])
     }

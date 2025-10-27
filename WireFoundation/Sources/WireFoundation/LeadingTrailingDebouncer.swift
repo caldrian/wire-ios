@@ -41,6 +41,7 @@ public final class LeadingTrailingDebouncer<ID: Hashable> {
     }
 
     public func call(id: ID?, block: @escaping () -> Void) {
+        precondition(Thread.isMainThread)
 
         let key: AnyHashable = id.map { AnyHashable($0) } ?? AnyHashable(nilKey)
 
