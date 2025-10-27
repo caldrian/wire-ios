@@ -75,7 +75,7 @@ final class ConversationTableViewDataSource: NSObject {
     weak var messageActionResponder: MessageActionResponder?
     private let getUserByIDUseCase: GetUserByIDUseCaseProtocol
 
-    let debouncer = LeadingTrailingDebouncer(cooldownTime: 0.3)
+    let debouncer = LeadingTrailingDebouncer<UUID>(cooldownTime: 0.3)
 
     var contentWidth: CGFloat = UIScreen.main.bounds.width {
         didSet {
@@ -304,7 +304,7 @@ final class ConversationTableViewDataSource: NSObject {
     }
 
     func resetSectionControllers() {
-        debouncer.call { [weak self] in
+        debouncer.call(id: nil) { [weak self] in
             self?.sectionControllers.reset()
             self?.calculateSections { [weak self] sections in
                 guard let self else { return }
@@ -490,7 +490,7 @@ final class ConversationTableViewDataSource: NSObject {
         hasNewerMessagesToLoad = offset > 0
         firstUnreadMessage = conversation.firstUnreadMessage
 
-        debouncer.call { [weak self] in
+        debouncer.call(id: nil) { [weak self] in
             self?.calculateSections(forceRecalculate: forceRecalculate) { [weak self] sections in
                 self?.currentSections = sections
                 self?.tableView.reloadData()
@@ -630,7 +630,7 @@ extension ConversationTableViewDataSource: NSFetchedResultsControllerDelegate {
     }
 
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        debouncer.call { [weak self] in
+        debouncer.call(id: nil) { [weak self] in
             self?.calculateSections { sections in
                 self?.reloadSections(newSections: sections)
             }

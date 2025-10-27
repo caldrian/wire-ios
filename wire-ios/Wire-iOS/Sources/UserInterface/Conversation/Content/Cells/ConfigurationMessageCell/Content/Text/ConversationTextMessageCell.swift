@@ -16,7 +16,6 @@
 // along with this program. If not, see http://www.gnu.org/licenses/.
 //
 
-import os
 import UIKit
 import WireDesign
 import WireMessagingDomain
@@ -154,15 +153,7 @@ final class ConversationTextMessageCell: UIView, ConversationMessageCell, TextVi
         messageTextView.linkTextAttributes = linkTextAttributes
     }
 
-    // static var ob: ConversationTextMessageCell?
-
     func configure(with object: Configuration, animated: Bool) {
-
-        if object.attributedText.string.contains("Results for poll") {
-            let logger = os.Logger(subsystem: Bundle.main.bundleIdentifier!, category: "bug-fix")
-            logger.fault("ConversationTextMessageCell.configure(with: \"\(object.attributedText.string)\")")
-        }
-
         if isChatBubbleSimpleEnabled {
             let paragraphStyle = NSMutableParagraphStyle()
             paragraphStyle.firstLineHeadIndent = 0
@@ -253,7 +244,6 @@ final class ConversationTextMessageCell: UIView, ConversationMessageCell, TextVi
     }
 
     private var isChatBubbleSimpleEnabled: Bool {
-        return false
         // the additional DeveloperFlag check is needed for the snapshot test
         ZMUserSession.isChatBubbleEnabled || DeveloperFlag.chatBubblesSimple.isOn
     }
