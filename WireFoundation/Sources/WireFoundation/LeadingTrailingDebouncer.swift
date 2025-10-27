@@ -21,7 +21,8 @@ public import Foundation
 /// A debouncer that triggers the action immediately on the first call (leading)
 /// and once more after a delay if additional calls occur (trailing).
 /// Useful for responding instantly but also handling final state after other input.
-public final class LeadingTrailingDebouncer<ID: Hashable> {
+@MainActor
+public final class LeadingTrailingDebouncer {
 
     private struct DebounceState {
         var isCooldown = false
@@ -40,9 +41,9 @@ public final class LeadingTrailingDebouncer<ID: Hashable> {
         self.queue = queue
     }
 
-    public func call(id: ID?, block: @escaping () -> Void) {
+    public func call(block: @escaping () -> Void) {
 
-        let key: AnyHashable = id.map { AnyHashable($0) } ?? AnyHashable(nilKey)
+        let key = nilKey
 
         if states[key] == nil {
             states[key] = DebounceState()
@@ -82,3 +83,83 @@ public final class LeadingTrailingDebouncer<ID: Hashable> {
         states[key] = state
     }
 }
+
+
+/// A simple leading-trailing debouncer that calls actions on the leading edge (immediately)
+/// and debounces trailing edge calls.
+final class SimpleDebouncer {
+    private var workItem: DispatchWorkItem?
+    private let queue: DispatchQueue
+    private let delay: TimeInterval
+
+    /// - Parameters:
+    ///   - delay: The debounce delay in seconds
+    ///   - queue: The dispatch queue to execute on (default: main)
+    init(delay: TimeInterval, queue: DispatchQueue = .main) {
+        self.delay = delay
+        self.queue = queue
+    }
+
+    /// Call the action on the leading edge immediately, then debounce subsequent calls
+    func debounce(action: @escaping () -> Void) {
+        // Cancel any pending work
+        workItem?.cancel()
+
+        // Execute leading edge immediately
+        action()
+
+        // Schedule trailing edge debounce
+        let item = DispatchWorkItem {
+            // Trailing edge action (executed after delay if no new calls)
+            action()
+        }
+
+        self.workItem = item
+        queue.asyncAfter(deadline: .now() + delay, execute: item)
+    }
+
+    /// Cancel any pending work
+    func cancel() {
+        workItem?.cancel()
+    }
+}
+
+// MARK: - Usage Example
+
+/*
+// Example 1: Basic usage
+let debouncer = SimpleDebouncer(delay: 0.5)
+
+// First call executes immediately (leading edge)
+debouncer.debounce {
+    print("Action executed")
+}
+
+// Subsequent calls within 0.5 seconds are debounced
+// but if called again later, it will fire again
+
+// Example 2: Search text field
+class SearchViewController {
+    private let debouncer = SimpleDebouncer(delay: 0.3)
+
+    func textDidChange(to text: String) {
+        debouncer.debounce {
+            self.performSearch(query: text)
+        }
+    }
+
+    func performSearch(query: String) {
+        // Search logic here
+        print("Searching for: \(query)")
+    }
+}
+
+// Example 3: Button tap tracking
+let buttonDebouncer = SimpleDebouncer(delay: 1.0)
+
+buttonDebouncer.debounce {
+    print("Button tapped at leading edge")
+}
+
+// Trailing edge will fire after 1 second if no new calls
+*/

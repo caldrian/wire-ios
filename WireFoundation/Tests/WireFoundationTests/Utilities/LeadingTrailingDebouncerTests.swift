@@ -24,27 +24,27 @@ import Testing
 struct LeadingTrailingDebouncerTests {
 
     @Test func int_id() async throws {
-        let sut = LeadingTrailingDebouncer<Int>(cooldownTime: 0.5)
+        let sut = LeadingTrailingDebouncer(cooldownTime: 0.5)
 
         var result = [Int]()
 
-        sut.call(id: nil) { result += [0] }
-        sut.call(id: nil) { result += [1] }
+        sut.call { result += [0] }
+        sut.call { result += [1] }
         try await Task.sleep(for: .seconds(1))
-        sut.call(id: nil) { result += [2] }
+        sut.call { result += [2] }
 
         #expect(result == [0, 1, 2])
     }
 
     @Test func uuid_id() async throws {
-        let sut = LeadingTrailingDebouncer<UUID>(cooldownTime: 0.5)
+        let sut = LeadingTrailingDebouncer(cooldownTime: 0.5)
 
         var result = [Int]()
 
-        sut.call(id: nil) { result += [0] }
-        sut.call(id: nil) { result += [1] }
+        sut.call { result += [0] }
+        sut.call { result += [1] }
         try await Task.sleep(for: .seconds(1))
-        sut.call(id: nil) { result += [2] }
+        sut.call { result += [2] }
 
         #expect(result == [0, 1, 2])
     }
