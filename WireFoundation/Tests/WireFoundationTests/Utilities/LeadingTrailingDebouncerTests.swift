@@ -24,17 +24,49 @@ import Testing
 struct LeadingTrailingDebouncerTests {
 
     @MainActor
-    @Test func todo_find_name() async throws {
-        let sut = LeadingTrailingDebouncer<UUID>(cooldownTime: 0.5)
+    @Test func single() async throws {
+        let sut = LeadingTrailingDebouncer<UUID>(cooldownTime: 0.2)
+
+        var result = [Int]()
+
+        sut.call(id: nil) { result += [0] }
+        try await Task.sleep(for: .seconds(0.3))
+
+        #expect(result == [0])
+    }
+
+    @MainActor
+    @Test func firstAndLast() async throws {
+        let sut = LeadingTrailingDebouncer<UUID>(cooldownTime: 0.2)
 
         var result = [Int]()
 
         sut.call(id: nil) { result += [0] }
         sut.call(id: nil) { result += [1] }
-        try await Task.sleep(for: .seconds(1))
         sut.call(id: nil) { result += [2] }
+        sut.call(id: nil) { result += [3] }
+        sut.call(id: nil) { result += [4] }
+        try await Task.sleep(for: .seconds(0.3))
 
-        #expect(result == [0, 1, 2])
+        #expect(result == [0, 4])
+    }
+
+    @MainActor
+    @Test func skip1() async throws {
+        let sut = LeadingTrailingDebouncer<UUID>(cooldownTime: 0.2)
+
+        var result = [Int]()
+
+        sut.call(id: nil) { result += [0] }
+        sut.call(id: nil) { result += [1] }
+        try await Task.sleep(for: .seconds(0.05))
+        sut.call(id: nil) { result += [2] }
+        try await Task.sleep(for: .seconds(0.3))
+        sut.call(id: nil) { result += [3] }
+        sut.call(id: nil) { result += [4] }
+        try await Task.sleep(for: .seconds(0.3))
+
+        #expect(result == [0, 2, 3, 4])
     }
 
 }
