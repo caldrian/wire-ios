@@ -4,11 +4,10 @@
 # It is triggered whenever a pull request is merged into any `release/*` branch.
 #
 # Target branch selection:
-# - If the source branch matches `release/cycle-X.Y` pattern:
-#   a. First checks if `release/cycle-X.(Y+1)` exists (next minor version)
-#   b. If not, checks if `release/cycle-(X+1).0` exists (next major version)
-#   c. If neither exists, targets `develop`
-# - Otherwise, the cherry-pick targets `develop`.
+# - Gets all release branches and sorts them
+# - Finds the position of the source branch in the sorted list
+# - Selects the next branch in the sorted list, or `develop` if no next branch exists
+# - If the source branch doesn't match `release/cycle-*` pattern, targets `develop`
 #
 # The action performs the following steps:
 # 1. Checkout the merged PR.
@@ -51,40 +50,88 @@ jobs:
           fetch-depth: 1
           submodules: recursive
 
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
       - name: Determine target branch
         id: target-branch
         run: |
-          BASE_BRANCH="${{ github.event.pull_request.base.ref }}"
+          python3 << 'EOF'
+          import os
+          import re
+          import subprocess
+          import sys
+
+          BASE_BRANCH = "${{ github.event.pull_request.base.ref }}"
           
-          # Check if base branch matches release/cycle-X.Y pattern
-          if [[ "$BASE_BRANCH" =~ ^release/cycle-([0-9]+)\.([0-9]+)$ ]]; then
-              MAJOR="${BASH_REMATCH[1]}"
-              MINOR="${BASH_REMATCH[2]}"
+          # Check if base branch matches release/cycle-* pattern
+          if not BASE_BRANCH.startswith("release/cycle-"):
+              print(f"Base branch {BASE_BRANCH} doesn't match release/cycle-* pattern, using develop")
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write(f"target=develop\n")
+              sys.exit(0)
+          
+          # Get all remote branches
+          result = subprocess.run(
+              ["git", "ls-remote", "--heads", "origin"],
+              capture_output=True,
+              text=True
+          )
+          
+          # Extract branch names matching release/cycle-* pattern
+          branches = []
+          for line in result.stdout.strip().split('\n'):
+              if line:
+                  # Format: <hash> refs/heads/release/cycle-X.Y
+                  parts = line.split()
+                  if len(parts) >= 2:
+                      branch = parts[1].replace('refs/heads/', '')
+                      if branch.startswith('release/cycle-'):
+                          branches.append(branch)
+          
+          if not branches:
+              print(f"No release branches found, using develop")
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write(f"target=develop\n")
+              sys.exit(0)
+          
+          # Sort branches by version number (extract X.Y and sort numerically)
+          def version_key(branch):
+              # Extract version from release/cycle-X.Y pattern
+              match = re.search(r'release/cycle-(\d+)\.(\d+)', branch)
+              if match:
+                  return (int(match.group(1)), int(match.group(2)))
+              # Fallback: sort lexicographically
+              return (0, 0)
+          
+          branches.sort(key=version_key)
+          
+          print(f"Found {len(branches)} release branches:")
+          for branch in branches:
+              print(f"  - {branch}")
+          
+          # Find the position of the base branch
+          try:
+              index = branches.index(BASE_BRANCH)
+              print(f"\nBase branch {BASE_BRANCH} found at position {index + 1} of {len(branches)}")
               
-              # First, check for next minor version (X.Y+1)
-              NEXT_MINOR=$((MINOR + 1))
-              NEXT_MINOR_BRANCH="release/cycle-${MAJOR}.${NEXT_MINOR}"
-              
-              if git ls-remote --heads origin "$NEXT_MINOR_BRANCH" | grep -q "$NEXT_MINOR_BRANCH"; then
-                  echo "target=$NEXT_MINOR_BRANCH" >> $GITHUB_OUTPUT
-                  echo "Found next minor release branch: $NEXT_MINOR_BRANCH"
-              else
-                  # If next minor doesn't exist, check for next major version (X+1.0)
-                  NEXT_MAJOR=$((MAJOR + 1))
-                  NEXT_MAJOR_BRANCH="release/cycle-${NEXT_MAJOR}.0"
-                  
-                  if git ls-remote --heads origin "$NEXT_MAJOR_BRANCH" | grep -q "$NEXT_MAJOR_BRANCH"; then
-                      echo "target=$NEXT_MAJOR_BRANCH" >> $GITHUB_OUTPUT
-                      echo "Found next major release branch: $NEXT_MAJOR_BRANCH"
-                  else
-                      echo "target=develop" >> $GITHUB_OUTPUT
-                      echo "Next release branches ($NEXT_MINOR_BRANCH, $NEXT_MAJOR_BRANCH) not found, using develop"
-                  fi
-              fi
-          else
-              echo "target=develop" >> $GITHUB_OUTPUT
-              echo "Base branch $BASE_BRANCH doesn't match release/cycle-X.Y pattern, using develop"
-          fi
+              # Get the next branch
+              if index + 1 < len(branches):
+                  next_branch = branches[index + 1]
+                  print(f"Next release branch: {next_branch}")
+                  with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                      f.write(f"target={next_branch}\n")
+              else:
+                  print(f"No next release branch found, using develop")
+                  with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                      f.write(f"target=develop\n")
+          except ValueError:
+              print(f"Base branch {BASE_BRANCH} not found in release branches, using develop")
+              with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                  f.write(f"target=develop\n")
+          EOF
 
       - name: Cherry pick to target branch
         uses: wireapp/action-auto-cherry-pick@v1.0.2
