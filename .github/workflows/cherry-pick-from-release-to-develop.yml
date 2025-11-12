@@ -60,6 +60,10 @@ jobs:
         run: |
           scripts/determine-cherry-pick-target.py "${{ github.event.pull_request.base.ref }}"
 
+      - name: Fetch target branch
+        run: |
+          git fetch origin ${{ steps.target-branch.outputs.target }}:${{ steps.target-branch.outputs.target }}
+
       - name: Cherry pick to target branch
         uses: wireapp/action-auto-cherry-pick@v1.0.2
         with:
